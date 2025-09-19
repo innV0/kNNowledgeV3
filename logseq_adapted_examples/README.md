@@ -1,0 +1,1 @@
+This folder contains examples of metamodels and models adapted for Logseq, converted from the original kNNnowledgeV2 format.

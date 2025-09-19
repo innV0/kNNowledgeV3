@@ -1,0 +1,1495 @@
+# Metamodel: Business Metamodel
+
+- id:: biz.kNN
+- name:: Business metamodel
+- version:: 1.0.0
+
+## Item Types
+
+- ### Business summary
+  - is_instantiable:: true
+  - name:: Business summary
+  - type:: text
+  - summary:: Brief description of your business, how it creates value for whom, and the logic behind how it generates revenue.
+  - weight:: 90
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Market
+  - is_instantiable:: true
+  - name:: Market
+  - type:: category
+  - weight:: 90
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Stakeholders
+  - is_instantiable:: true
+  - name:: Stakeholders
+  - parentItem:: [[Market]]
+  - type:: weight
+  - summary:: A stakeholder in business is any individual or group with an interest in or influence over a company's activities, decisions, and goals, with the primary stakeholder always being the customer.
+  - weight:: 80
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 🤔
+  - fields::
+    - name:: stakeholder_type
+      type:: select
+      label:: Stakeholder Type
+      required:: false
+      options:: partner, customer, investor, other
+  - relations::
+
+- ### Segments
+  - is_instantiable:: true
+  - name:: Segments
+  - parentItem:: [[Market]]
+  - type:: weight
+  - summary:: A segment list refers to a categorized compilation of target customer groups based on shared characteristics or needs.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 🙋
+  - fields::
+  - relations::
+
+- ### Profiles
+  - is_instantiable:: true
+  - name:: Profiles
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: A definition of who our client is narrowing down the segmentation criteria to specific values.
+  - weight:: 80
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 🙎
+  - fields::
+  - relations::
+
+- ### Segmentation
+  - is_instantiable:: true
+  - name:: Segmentation
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Segmentation criteria are the variables or characteristics used to divide a market into smaller, more homogeneous groups, known as segments..\nThe process of dividing a market into distinct groups of customers with similar needs or characteristics by assigning specific values or value ranges to the segment's segmentation criteria.
+  - weight:: 60
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: ✂️
+  - fields::
+  - relations::
+
+- ### Market trends
+  - is_instantiable:: true
+  - name:: Market trends
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: The identification and analysis of specific customer groups and their evolving needs and preferences within a business model.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 📈
+  - fields::
+  - relations::
+
+- ### Market size
+  - is_instantiable:: true
+  - name:: Market size
+  - parentItem:: [[Segments]]
+  - type:: text
+  - summary:: Size of a market is the amount of money that is involved in transactions between suppliers and customers
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Competition
+  - is_instantiable:: true
+  - name:: Competition
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Entities or organizations or people who are trying to solve the same problems for the same clients.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 🏅
+  - fields::
+  - relations::
+
+- ### Roles
+  - is_instantiable:: true
+  - name:: Roles
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Roles involved in the purchasing decision of our product or service by the customers. For example, it can be the financial director, the technical director, a member of the core family, etcetera.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 🎩
+  - fields::
+  - relations::
+
+- ### Persona
+  - is_instantiable:: true
+  - name:: Persona
+  - parentItem:: [[Segments]]
+  - type:: text
+  - summary:: Client archetype with many details about their circumstances that helps us understand and connect with our clients. It also serves to communicate to whom we are addressing.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Problems
+  - is_instantiable:: true
+  - name:: Problems
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Problems, needs or desires that our stakeholders have and are relevant to my business.
+  - weight:: 85
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 😟
+  - fields::
+  - relations::
+
+- ### Value propositions
+  - is_instantiable:: true
+  - name:: Value propositions
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: The reason that will convince this profile to take the action we want them to take, such as buying a product.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 💎
+  - fields::
+  - relations::
+
+- ### Messages
+  - is_instantiable:: true
+  - name:: Messages
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Messages that we want to communicate to... that they carry out a specific action.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 📣
+  - fields::
+  - relations::
+
+- ### Channels
+  - is_instantiable:: true
+  - name:: Channels
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Means through which we interact with our clients throughout the customer journey. Channels represent the means through which a company delivers its value proposition to its customers.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 🎙️
+  - fields::
+  - relations::
+
+- ### Relationships
+  - is_instantiable:: true
+  - name:: Relationships
+  - parentItem:: [[Segments]]
+  - type:: text
+  - summary:: Relationship that we maintain with our stakeholders, which can be personal, automated, self-service, etc.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 4
+  - emoji:: 🤝
+  - fields::
+  - relations::
+
+- ### Perceptions
+  - is_instantiable:: true
+  - name:: Perceptions
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Signals that our stakeholders receive... that generate some kind of emotion for them
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 7
+  - emoji:: 👁️
+  - fields::
+  - relations::
+
+- ### Emotions
+  - is_instantiable:: true
+  - name:: Emotions
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Emotions that our stakeholders feel and that are relevant to empathize with them and be able to design a value proposition that resonates with them.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 😐
+  - fields::
+  - relations::
+
+- ### Behaviors
+  - is_instantiable:: true
+  - name:: Behaviors
+  - parentItem:: [[Segments]]
+  - type:: weight
+  - summary:: Behaviors refers to what customers express (say) and their observable actions (do) during their experience with a product or service, both the verbal feedback provided by customers—such as comments, quotes, and reviews—and their actual behaviors or interactions.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 🦾
+  - fields::
+  - relations::
+
+- ### Journey
+  - is_instantiable:: true
+  - name:: Journey
+  - parentItem:: [[Segments]]
+  - type:: steps
+  - summary:: The Stateholder's journey is a sequence formed by the different stages that a stakeholder goes through in their relationship with my business.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: ✈️
+  - fields::
+  - relations::
+
+- ### Solutions
+  - is_instantiable:: true
+  - name:: Solutions
+  - type:: category
+  - weight:: 90
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Products and services
+  - is_instantiable:: true
+  - name:: Products and services
+  - parentItem:: [[Solutions]]
+  - type:: weight
+  - summary:: the products, services, or processes that a business offers to address the needs or problems of its customers.
+  - weight:: 80
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 💊
+  - fields::
+  - relations::
+
+- ### Portfolio
+  - is_instantiable:: true
+  - name:: Portfolio
+  - parentItem:: [[Products and services]]
+  - type:: text
+  - weight:: 80
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - emoji:: 💼
+  - fields::
+  - relations::
+
+- ### Components
+  - is_instantiable:: true
+  - name:: Components
+  - parentItem:: [[Products and services]]
+  - type:: weight
+  - summary:: Technologies and components that are part of the final solution, that is, the product or service offered to the customer to solve their problem. For example, the programming language used, the cloud platform used, or the parts that are part of the... in the case of being a physical product.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 🧩
+  - fields::
+  - relations::
+
+- ### Features
+  - is_instantiable:: true
+  - name:: Features
+  - parentItem:: [[Products and services]]
+  - type:: weight
+  - summary:: the unique characteristics and functionalities of a product or service that addresses the needs of a specific customer segment within a business model.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 🌟
+  - fields::
+  - relations::
+
+- ### Roadmap
+  - is_instantiable:: true
+  - name:: Roadmap
+  - parentItem:: [[Products and services]]
+  - type:: steps
+  - summary:: plan that outlines the steps and strategies needed to implement a business model solution.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Pricing
+  - is_instantiable:: true
+  - name:: Pricing
+  - parentItem:: [[Products and services]]
+  - type:: text
+  - summary:: The approach the business will take to determine the price points for its products or services. It considers various factors, including the cost structure, target market positioning, perceived value, and competitive landscape.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Offerings
+  - is_instantiable:: true
+  - name:: Offerings
+  - parentItem:: [[Products and services]]
+  - type:: weight
+  - summary:: the products or services that a business model provides to its customers to fulfill their needs or solve their problems.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 🛍️
+  - fields::
+  - relations::
+
+- ### Marketing
+  - is_instantiable:: true
+  - name:: Marketing
+  - parentItem:: [[Solutions]]
+  - type:: category
+  - summary:: Marketing is the process of identifying and satisfying customer needs through the creation, promotion, and distribution of products or services.
+  - weight:: 60
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Naming
+  - is_instantiable:: true
+  - name:: Naming
+  - parentItem:: [[Marketing]]
+  - type:: text
+  - summary:: the process of choosing and defining the name of a business, product, or service within a business model.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Branding
+  - is_instantiable:: true
+  - name:: Branding
+  - parentItem:: [[Marketing]]
+  - type:: text
+  - summary:: Branding is the process of creating a unique image and identity for a business, product, or service.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Visual identity
+  - is_instantiable:: true
+  - name:: Visual identity
+  - parentItem:: [[Marketing]]
+  - type:: text
+  - summary:: the overall look and feel of a company's brand, including its logo, color scheme, typography, and other visual elements.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 2
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Logo
+  - is_instantiable:: true
+  - name:: Logo
+  - parentItem:: [[Marketing]]
+  - type:: text
+  - summary:: A logo is a visual symbol or design that represents a company or brand and is used to promote recognition and awareness.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 2
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Media plan
+  - is_instantiable:: true
+  - name:: Media plan
+  - parentItem:: [[Marketing]]
+  - type:: text
+  - summary:: A marketing plan outlines the strategies and tactics a business will use to promote and sell its products or services.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 2
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Communication
+  - is_instantiable:: true
+  - name:: Communication
+  - parentItem:: [[Solutions]]
+  - type:: category
+  - summary:: the exchange of_information and ideas between the company and its stakeholders.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 7
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Pitch
+  - is_instantiable:: true
+  - name:: Pitch
+  - parentItem:: [[Communication]]
+  - type:: text
+  - summary:: A pitch is a concise and compelling presentation of a business idea or model to potential investors or customers.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Brochure
+  - is_instantiable:: true
+  - name:: Brochure
+  - parentItem:: [[Products and services]]
+  - type:: text
+  - summary:: Basic piece of_information that should be provided to the end customer so that they know the advantages of using our product or service.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Web
+  - is_instantiable:: true
+  - name:: Web
+  - parentItem:: [[Communication]]
+  - type:: text
+  - summary:: the online platform or digital presence of a business model, which includes websites, social media, and other online channels.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 4
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Storytelling
+  - is_instantiable:: true
+  - name:: Storytelling
+  - parentItem:: [[Communication]]
+  - type:: text
+  - summary:: the use of narrative techniques to communicate the brand's purpose, values, and mission to customers.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Presentations
+  - is_instantiable:: true
+  - name:: Presentations
+  - parentItem:: [[Communication]]
+  - type:: text
+  - summary:: the way in which a business model is communicated or visually represented to stakeholders.
+  - weight:: 35
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Organization
+  - is_instantiable:: true
+  - name:: Organization
+  - type:: category
+  - weight:: 60
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Business idea
+  - is_instantiable:: true
+  - name:: Business idea
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: A business idea refers to a unique concept or proposition that forms the foundation of a business model.
+  - weight:: 60
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 7
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Inspiration
+  - is_instantiable:: true
+  - name:: Inspiration
+  - parentItem:: [[Business idea]]
+  - type:: weight
+  - summary:: Inspiration in the context of a business model refers to the creative spark that drives innovative ideas and solutions. It can refer to anything (aphenomenon, idea, competitor,,,) that serves as a foundation for an entrepreneur to create a new business.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Opportunity
+  - is_instantiable:: true
+  - name:: Opportunity
+  - parentItem:: [[Business idea]]
+  - type:: weight
+  - summary:: An opportunity is a potential area for a business to generate revenue or create value for customers within its business model.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Business status
+  - is_instantiable:: true
+  - name:: Business status
+  - parentItem:: [[Business idea]]
+  - type:: text
+  - summary:: The business status refers to the current condition or status of a business, including its operations, performance, and market position.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Challenges
+  - is_instantiable:: true
+  - name:: Challenges
+  - parentItem:: [[Business idea]]
+  - type:: weight
+  - summary:: Challenges refer to obstacles or difficulties that hinder the achievement of desired outcomes.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 4
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Business objectives
+  - is_instantiable:: true
+  - name:: Business objectives
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: Business objectives are the targets that a business model aims to achieve in order to create value for its stakeholders.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 🧠
+  - fields::
+  - relations::
+
+- ### Mission
+  - is_instantiable:: true
+  - name:: Mission
+  - parentItem:: [[Business objectives]]
+  - type:: text
+  - summary:: The purpose or reason for the existence of a business.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 🎯
+  - fields::
+  - relations::
+
+- ### Vision
+  - is_instantiable:: true
+  - name:: Vision
+  - parentItem:: [[Business objectives]]
+  - type:: text
+  - summary:: Vision is a statement that outlines the long-term aspirations and goals of a business model.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Organizational values
+  - is_instantiable:: true
+  - name:: Organizational values
+  - parentItem:: [[Business objectives]]
+  - type:: weight
+  - summary:: The principles, beliefs, and attitudes that guide the behavior and decision-making of a business and its stakeholders.
+  - weight:: 35
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: ⚙️
+  - fields::
+  - relations::
+
+- ### Organizational goals
+  - is_instantiable:: true
+  - name:: Organizational goals
+  - parentItem:: [[Business objectives]]
+  - type:: weight
+  - summary:: Organizational goals are the specific objectives that a business model aims to achieve (for example, in terms of revenue, growth, profitability, or market share)
+  - weight:: 60
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 👔
+  - fields::
+  - relations::
+
+- ### Operations
+  - is_instantiable:: true
+  - name:: Operations
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: The activities and processes involved in delivering a product or service to customers within a business model.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: ⭐
+  - fields::
+  - relations::
+
+- ### Activities
+  - is_instantiable:: true
+  - name:: Activities
+  - parentItem:: [[Operations]]
+  - type:: weight
+  - summary:: the tasks or processes that a business engages in to create, deliver, and capture value for its customers.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 👤
+  - fields::
+  - relations::
+
+- ### Functions
+  - is_instantiable:: true
+  - name:: Functions
+  - parentItem:: [[Operations]]
+  - type:: weight
+  - summary:: High-level specification of the set of tasks that are necessary to carry out a business activity towards the achievement of a business goal.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 4
+  - emoji:: 🎯
+  - fields::
+  - relations::
+
+- ### Resources
+  - is_instantiable:: true
+  - name:: Resources
+  - parentItem:: [[Operations]]
+  - type:: weight
+  - summary:: the assets, capabilities, and infrastructure a business uses to create and deliver value to its customers.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 4
+  - emoji:: 🔧
+  - fields::
+  - relations::
+
+- ### Team
+  - is_instantiable:: true
+  - name:: Team
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: A group of individuals working together towards a common goal within a business model.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: ➡️
+  - fields::
+  - relations::
+
+- ### Goals
+  - is_instantiable:: true
+  - name:: Goals
+  - parentItem:: [[Team]]
+  - type:: weight
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: ⬅️
+  - fields::
+  - relations::
+
+- ### Skills
+  - is_instantiable:: true
+  - name:: Skills
+  - parentItem:: [[Team]]
+  - type:: weight
+  - summary:: The unique identification and competencies of individuals within a team.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 🪪
+  - fields::
+  - relations::
+
+- ### Contributions
+  - is_instantiable:: true
+  - name:: Contributions
+  - parentItem:: [[Team]]
+  - type:: weight
+  - summary:: The multiple resources or inputs that an individual provides to the company, highlighting the variety and range of valuable assets they bring to the organization's operations and growth.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Compensations
+  - is_instantiable:: true
+  - name:: Compensations
+  - parentItem:: [[Team]]
+  - type:: weight
+  - summary:: The various forms of remuneration, benefits, and rewards that a company provides to an individual in exchange for their contributions. This can include salary, bonuses, stock options, health benefits, retirement plans, and other perks that constitute the total compensation package offered to employees or collaborators for their valuable inputs to the company.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 🗓️
+  - fields::
+  - relations::
+
+- ### Positions
+  - is_instantiable:: true
+  - name:: Positions
+  - parentItem:: [[Team]]
+  - type:: weight
+  - summary:: A position list refers to a strategic document outlining the roles, responsibilities, and hierarchy of positions within a business.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 🏁
+  - fields::
+  - relations::
+
+- ### Project plan
+  - is_instantiable:: true
+  - name:: Project plan
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: A project is a temporary endeavor with a specific goal or objective that contributes to the overall business model.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 7
+  - emoji:: 📐
+  - fields::
+  - relations::
+
+- ### Phases
+  - is_instantiable:: true
+  - name:: Phases
+  - parentItem:: [[Project plan]]
+  - type:: steps
+  - summary:: the distinct stages or steps involved in the development, implementation, and evolution of a business model.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 7
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Milestones
+  - is_instantiable:: true
+  - name:: Milestones
+  - parentItem:: [[Project plan]]
+  - type:: sequence
+  - summary:: Milestones are specific achievements or events that mark significant progress or success in a business model.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 💰
+  - fields::
+  - relations::
+
+- ### Metrics
+  - is_instantiable:: true
+  - name:: Metrics
+  - parentItem:: [[Organization]]
+  - type:: weight
+  - summary:: Metrics are quantifiable measures used to evaluate the performance and effectiveness of a business model.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 7
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Finance
+  - is_instantiable:: true
+  - name:: Finance
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: The management of financial resources and the allocation of funds within a business model.
+  - weight:: 70
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: blue
+  - aiFit:: 9
+  - emoji:: 💸
+  - fields::
+  - relations::
+
+- ### Revenue
+  - is_instantiable:: true
+  - name:: Revenue
+  - parentItem:: [[Finance]]
+  - type:: weight
+  - summary:: The various sources of income that a business model generates through its offerings
+  - weight:: 65
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Life Time Value
+  - is_instantiable:: true
+  - name:: Life Time Value
+  - parentItem:: [[Finance]]
+  - type:: text
+  - summary:: Lifetime value is the net present value of the total revenue a customer will generate over their relationship with a business.
+  - weight:: 35
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Costs
+  - is_instantiable:: true
+  - name:: Costs
+  - parentItem:: [[Finance]]
+  - type:: weight
+  - summary:: the expenses incurred in the production and delivery of a product or service within a business model.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 8
+  - emoji:: 💵
+  - fields::
+  - relations::
+
+- ### Customer Aquisition Cost
+  - is_instantiable:: true
+  - name:: Customer Aquisition Cost
+  - parentItem:: [[Finance]]
+  - type:: text
+  - summary:: The cost incurred by a business to attract and convert a new customer.
+  - weight:: 35
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 💼
+  - fields::
+  - relations::
+
+- ### Unit economics
+  - is_instantiable:: true
+  - name:: Unit economics
+  - parentItem:: [[Finance]]
+  - type:: text
+  - summary:: the financial analysis of the revenue and costs associated with a single unit of a product or service.
+  - weight:: 25
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Funding sources
+  - is_instantiable:: true
+  - name:: Funding sources
+  - parentItem:: [[Finance]]
+  - type:: weight
+  - summary:: the various ways a business model generates revenue or acquires capital to support its operations.
+  - weight:: 25
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Shareholders
+  - is_instantiable:: true
+  - name:: Shareholders
+  - parentItem:: [[Finance]]
+  - type:: weight
+  - summary:: the financial resources, assets, and investments that a business uses to generate income and support its operations.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Projections
+  - is_instantiable:: true
+  - name:: Projections
+  - parentItem:: [[Finance]]
+  - type:: weight
+  - summary:: Cashflow projections are estimates of the expected inflows and outflows of cash in a business model over a specific period.
+  - weight:: 20
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Legal
+  - is_instantiable:: true
+  - name:: Legal
+  - parentItem:: [[Organization]]
+  - type:: category
+  - summary:: the compliance of a business model with laws and regulations governing its operations and interactions with stakeholders.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 6
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Legal issues
+  - is_instantiable:: true
+  - name:: Legal issues
+  - parentItem:: [[Legal]]
+  - type:: weight
+  - summary:: the potential consequences or obligations that arise from the legal framework within which a business model operates.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: blue
+  - aiFit:: 5
+  - emoji:: 🔮
+  - fields::
+  - relations::
+
+- ### Contracts
+  - is_instantiable:: true
+  - name:: Contracts
+  - parentItem:: [[Legal]]
+  - type:: weight
+  - summary:: A contract list refers to a comprehensive inventory of all the agreements and legal obligations between a business and its stakeholders.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 2
+  - emoji:: 🚨
+  - fields::
+  - relations::
+
+- ### Matrices
+  - is_instantiable:: true
+  - name:: Matrices
+  - type:: weight
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Analysis
+  - is_instantiable:: true
+  - name:: Analysis
+  - type:: category
+  - summary:: The process of examining and evaluating the different components of the business model to identify their importance and coherence and determine the risks it entails.
+  - weight:: 80
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: red
+  - aiFit:: 8
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Assumptions
+  - is_instantiable:: true
+  - name:: Assumptions
+  - parentItem:: [[Analysis]]
+  - type:: weight
+  - summary:: Assumptions refer to the hypotheses or beliefs that underpin a business idea or model. These are the uncertain elements about customers, markets, or products that must be validated to ensure the viability and success of the business.
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: red
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Risks
+  - is_instantiable:: true
+  - name:: Risks
+  - parentItem:: [[Analysis]]
+  - type:: weight
+  - summary:: Potential negative outcomes or uncertainties that may affect the success and sustainability of a business model.
+  - weight:: 90
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: red
+  - aiFit:: 8
+  - emoji:: 🔑
+  - fields::
+  - relations::
+
+- ### Suggestions
+  - is_instantiable:: true
+  - name:: Suggestions
+  - parentItem:: [[Analysis]]
+  - type:: weight
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: red
+  - emoji:: 📂
+  - fields::
+  - relations::
+
+- ### Unfair advantage
+  - is_instantiable:: true
+  - name:: Unfair advantage
+  - parentItem:: [[Analysis]]
+  - type:: text
+  - summary:: Unfair advantage refers to a unique and difficult-to-replicate attribute or strategy that gives a business a competitive edge.
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: blue
+  - aiFit:: 3
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### SWOT
+  - is_instantiable:: true
+  - name:: SWOT
+  - parentItem:: [[Analysis]]
+  - type:: text
+  - summary:: The SWOT analysis provides a comprehensive overview of the company’s current strategic position by identifying its internal strengths and weaknesses, as well as external opportunities and threats.
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: red
+  - aiFit:: 3
+  - emoji:: 🧪
+  - fields::
+  - relations::
+
+- ### Keys
+  - is_instantiable:: true
+  - name:: Keys
+  - type:: weight
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: red
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Validation
+  - is_instantiable:: true
+  - name:: Validation
+  - type:: category
+  - summary:: The process of testing and verifying the assumptions and hypotheses underlying a business model.
+  - weight:: 90
+  - guide:: Complete the item
+  - mode:: basic
+  - color:: green
+  - aiFit:: 5
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Coherence
+  - is_instantiable:: true
+  - name:: Coherence
+  - parentItem:: [[Validation]]
+  - type:: weight
+  - weight:: 25
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: green
+  - emoji:: 📄
+  - fields::
+  - relations::
+
+- ### Experiments
+  - is_instantiable:: true
+  - name:: Experiments
+  - parentItem:: [[Validation]]
+  - type:: weight
+  - summary:: Experiments are tests or trials designed to validate assumptions and hypotheses about a business model's value proposition, customer segments, and revenue streams.
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - color:: green
+  - aiFit:: 5
+  - emoji:: ➕
+  - fields::
+  - relations::
+
+- ### Misc
+  - is_instantiable:: true
+  - name:: Misc
+  - type:: text
+  - summary:: Documents, articles, web sites, etc... referenced in this document
+  - weight:: 10
+  - guide:: Complete the item
+  - mode:: expert
+  - color:: grey
+  - aiFit:: 5
+  - emoji:: ✔️
+  - fields::
+  - relations::
+
+- ### Metamodel
+  - is_instantiable:: true
+  - name:: Metamodel
+  - type:: category
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - emoji:: ❓
+  - fields::
+  - relations::
+
+- ### Markers
+  - is_instantiable:: true
+  - name:: Markers
+  - parentItem:: [[Metamodel]]
+  - type:: weight
+  - weight:: 50
+  - guide:: Complete the item
+  - mode:: advanced
+  - emoji:: 🚩
+  - fields::
+  - relations::
+
+- ### weight
+  - is_instantiable:: true
+  - name:: weight
+  - parentItem:: [[Markers]]
+  - type:: marker
+  - content:: * How important is this block for the business model?
+* If it turns out not to be true, is my business model greatly affected?
+* Is this something that could easily change without affecting the business model?
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - emoji:: 🧭
+  - fields::
+  - relations::
+
+- ### completion
+  - is_instantiable:: true
+  - name:: completion
+  - parentItem:: [[Markers]]
+  - type:: marker
+  - content:: * Is the block completed?
+* Is it likely to change in the future?
+* Is this content fixed, or can it change based on my decisions?
+  - weight:: 30
+  - guide:: Complete the item
+  - mode:: expert
+  - emoji:: 🛠️
+  - fields::
+  - relations::
+
+- ### certainty
+  - is_instantiable:: true
+  - name:: certainty
+  - parentItem:: [[Markers]]
+  - type:: marker
+  - content:: * How sure am I that this is true? Do I have enough experience to assert this confidently?
+* Have I verified this in the real world, or are these just assumptions?
+* Is this a statement I can prove with objective facts and data?
+  - weight:: 60
+  - guide:: Complete the item
+  - mode:: advanced
+  - emoji:: 📦
+  - fields::
+  - relations::
+
+- ### priority
+  - is_instantiable:: true
+  - name:: priority
+  - parentItem:: [[Markers]]
+  - type:: marker
+  - content:: * Is this something I should prioritize?
+* Is this something urgent?
+* Is this something I should pay attention to?
+  - weight:: 40
+  - guide:: Complete the item
+  - mode:: advanced
+  - emoji:: 🧰
+  - fields::
+  - relations::
+
+- ### Guides
+  - is_instantiable:: true
+  - name:: Guides
+  - summary:: A high-level overview or instruction manual that explains the overall process or purpose.
+Example: “Guide to recording a meeting…”
+  - content:: A high-level overview or instruction manual that explains the overall process or purpose.
+Example: “Guide to recording a meeting…”
+  - emoji:: 💼
+  - fields::
+  - relations::
+
+- ### Work
+  - is_instantiable:: true
+  - name:: Work
+  - parentItem:: [[Guides]]
+  - summary:: A sequence of actions or steps designed to achieve a specific result.
+Example: “Record meeting notes” or “Summarize the meeting”.
+  - content:: A sequence of actions or steps designed to achieve a specific result.
+Example: “Record meeting notes” or “Summarize the meeting”.
+  - emoji:: 🏢
+  - fields::
+  - relations::
+
+- ### Objects
+  - is_instantiable:: true
+  - name:: Objects
+  - parentItem:: [[Guides]]
+  - summary:: Items, data or documents created, transformed, or used during the work.
+Example: Audio Recording, Transcript, Meeting Summary.
+  - content:: Items, data or documents created, transformed, or used during the work.
+Example: Audio Recording, Transcript, Meeting Summary.
+  - emoji:: 👤
+  - fields::
+  - relations::
+
+- ### Tools
+  - is_instantiable:: true
+  - name:: Tools
+  - parentItem:: [[Guides]]
+  - summary:: Software or devices used to carry out specific tasks within the procedure.
+Example: Mobile Recorder App, Whisper, ChatGPT.
+  - content:: Software or devices used to carry out specific tasks within the procedure.
+Example: Mobile Recorder App, Whisper, ChatGPT.
+  - emoji:: 👷‍♂️
+  - fields::
+  - relations::
+
+- ### Roles
+  - is_instantiable:: true
+  - name:: Roles
+  - parentItem:: [[Guides]]
+  - summary:: Defined responsibilities involved in the work.
+Example: Meeting Recorder, Transcriber, Summarizer.
+
+  - content:: Defined responsibilities involved in the work.
+Example: Meeting Recorder, Transcriber, Summarizer.
+
+  - emoji:: ᄀ‍✈️
+  - fields::
+  - relations::
+
+- ### Organization
+  - is_instantiable:: true
+  - name:: Organization
+  - summary:: The company, institution, or team within which the workflow is executed or governed.	
+  - content:: The company, institution, or team within which the workflow is executed or governed.	
+  - emoji:: ᄀ‍✈️
+  - fields::
+  - relations::
+
+- ### Positions
+  - is_instantiable:: true
+  - name:: Positions
+  - parentItem:: [[Organization]]
+  - summary:: Set of roles within an organization or workflow that group together specific responsibilities, tasks, and required competencies and represent a recurring function necessary to execute one or more parts of a process.
+  - content:: Set of roles within an organization or workflow that group together specific responsibilities, tasks, and required competencies and represent a recurring function necessary to execute one or more parts of a process.
+  - emoji:: ᄀ‍✈️
+  - fields::
+  - relations::
+
+- ### People
+  - is_instantiable:: true
+  - name:: People
+  - parentItem:: [[Organization]]
+  - summary:: Specific individuals or example users who perform one or more roles in the process.
+Example: “Lucas Cervera – Meeting Recorder and Minutes Writer”.
+  - content:: Specific individuals or example users who perform one or more roles in the process.
+Example: “Lucas Cervera – Meeting Recorder and Minutes Writer”.
+  - emoji:: ᄀ‍✈️
+  - fields::
+  - relations::
