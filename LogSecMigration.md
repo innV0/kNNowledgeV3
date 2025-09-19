@@ -1,5 +1,13 @@
 # kNNnowledgeV2 to Logseq Plugin Migration Guide
 
+## Conceptual Hierarchy: Metametamodel, Metamodel, Model
+
+This project introduces a three-tiered conceptual hierarchy for structured knowledge management:
+
+1.  **Metametamodel (kNN)**: Defines the structure and components of a Metamodel. In this project, the `kNN` concept itself serves as the Metametamodel, specifying what constitutes an Item Type, Field, and Relation within any Metamodel.
+2.  **Metamodel**: Defines the structure and rules for a specific domain Model (e.g., `metamodel_biz_knn` defines the structure for business models).
+3.  **Model**: Represents a specific instance of structured information, adhering to the rules defined by a Metamodel (e.g., `ghostbusters-model_biz_knn` is a Model conforming to the `metamodel_biz_knn`).
+
 This document provides a comprehensive overview of the considerations and mapping strategies required to migrate the kNNnowledgeV2 application's core functionalities into a Logseq plugin. It synthesizes information from the existing kNNnowledgeV2 documentation and Logseq's plugin conventions.
 
 ## 1. Core Conceptual Mapping
