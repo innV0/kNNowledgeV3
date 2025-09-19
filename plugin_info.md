@@ -77,7 +77,72 @@ When refactoring kNNnowledgeV2 for Logseq, consider the following:
 *   **Mapping kNNnowledgeV2 Items to Logseq Blocks/Pages:** The hierarchical `Item` structure in kNNnowledgeV2 will need to be mapped to Logseq's block/page hierarchy. Top-level items might become pages, while nested items become blocks.
 *   **Converting kNNnowledgeV2 Fields to Logseq Properties:** The `[[key]]:[[value]]` syntax of kNNnowledgeV2 fields can be directly translated to Logseq's `key:: value` property syntax.
 *   **Converting kNNnowledgeV2 Relations to Logseq References:** The `[[type]][[target]]` syntax of kNNnowledgeV2 relations will need to be converted to Logseq's page or block reference syntax. This might involve resolving `target` to a Logseq page name or a block UUID.
+*   **Slug Generation for Page Names:** The `slug` field in kNNnowledgeV2 Item Types should be used to generate URL-safe page names in Logseq. This ensures consistent naming conventions across the knowledge base.
 *   **Metamodel Validation:** The `MetamodelService` in kNNnowledgeV2 will need to be adapted to validate against Logseq's property and reference conventions, or to leverage Logseq's internal validation mechanisms if available.
 *   **Parsing and Serialization:** The `ParserService` and `SerializerService` will need to be rewritten or adapted to understand and generate Logseq-compatible Markdown, including its specific property and reference syntax.
+
+## 6. Slug Generation Guidelines
+
+This application uses **slugs** as unique, human-readable identifiers for entities across URLs, file systems, and JavaScript objects. In the context of Logseq, slugs are particularly useful for generating consistent page names and identifiers.
+
+### 🔧 Rules for Generating a Slug
+
+1. **Normalize Unicode**
+   - Convert to [NFD](https://unicode.org/reports/tr15/) form.
+   - Remove diacritical marks (accents, tildes, etc.).
+   - Example: `Cañón` → `Canon`.
+
+2. **Lowercase**
+   - Convert all letters to lowercase.
+   - Example: `Canon` → `canon`.
+
+3. **Remove Unwanted Characters**
+   - Keep only: `a-z`, `0-9`, spaces, and hyphens.
+   - Remove punctuation, symbols, and special characters.
+   - Example: `Canon 2025!` → `Canon 2025`.
+
+4. **Replace Spaces with Hyphens**
+   - Convert one or more spaces into a single `-`.
+   - Example: `Canon 2025` → `canon-2025`.
+
+5. **Collapse Repeated Hyphens**
+   - Avoid consecutive hyphens.
+   - Example: `canon--2025` → `canon-2025`.
+
+6. **Trim Hyphens**
+   - Remove leading or trailing hyphens.
+   - Example: `-canon-2025-` → `canon-2025`.
+
+### ✅ Examples
+
+| Input                          | Output Slug                   |
+|--------------------------------|------------------------------|
+| `Cañón de Ávila 2025`          | `canon-de-avila-2025`        |
+| `Proyecto Ñandú: Éxito Total!` | `proyecto-nandu-exito-total` |
+| `Hello World`                  | `hello-world`                |
+| `123 - Ready, Go!`             | `123-ready-go`               |
+
+### 📜 Standard Reference
+
+This convention follows:
+
+- [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) for safe URL segments
+- Common practice in CMSs like WordPress and Next.js
+- File-system-safe naming (avoids reserved characters)
+
+### 🧑‍💻 Recommended Implementation (JavaScript)
+
+```js
+function slugify(str) {
+  return str
+    .normalize("NFD")                 // split accents from letters
+    .replace(/[\u0300-\u036f]/g, "")  // remove accents/diacritics
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")     // remove invalid chars
+    .replace(/\s+/g, "-")             // spaces → hyphens
+    .replace(/-+/g, "-");             // collapse multiple hyphens
+}
+```
 
 This document serves as a foundational understanding for the refactoring effort. Further details will emerge during the plugin development process.

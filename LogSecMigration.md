@@ -39,6 +39,7 @@ This document provides a comprehensive overview of the considerations and mappin
 *   **Logseq Custom Property Syntax:** `key:: value`
 *   **Migration Strategy:** This is a direct syntactic translation. The `ParserService` and `SerializerService` will need to be updated to recognize and generate Logseq's `key:: value` format.
     *   **Key Naming:** kNNnowledgeV2 keys can be multi-word; Logseq prefers single words or hyphens. This might require a conversion strategy for existing multi-word keys (e.g., `[[due date]]` -> `due-date::`).
+    *   **Slug Field:** The new `slug` field in kNN Item Types should be used to generate consistent, URL-safe identifiers for Logseq pages and blocks.
     *   **Placement:** kNNnowledgeV2 fields can appear anywhere within an `Item`'s content. Logseq properties have specific placement rules (first block for page properties, any block for block properties). The plugin will need to adhere to these rules when writing properties.
 
 ### 2.3 Relations to References
