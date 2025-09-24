@@ -7,7 +7,7 @@
 ## Item Types
 
 - ### Business summary
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Business summary
   - type:: text
   - summary:: Brief description of your business, how it creates value for whom, and the logic behind how it generates revenue.
@@ -21,7 +21,7 @@
   - relations::
 
 - ### Market
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Market
   - type:: category
   - weight:: 90
@@ -33,7 +33,7 @@
   - relations::
 
 - ### Stakeholders
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Stakeholders
   - parentItem:: [[Market]]
   - type:: weight
@@ -53,7 +53,7 @@
   - relations::
 
 - ### Segments
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Segments
   - parentItem:: [[Market]]
   - type:: weight
@@ -68,7 +68,7 @@
   - relations::
 
 - ### Profiles
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Profiles
   - parentItem:: [[Segments]]
   - type:: weight
@@ -83,7 +83,7 @@
   - relations::
 
 - ### Segmentation
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Segmentation
   - parentItem:: [[Segments]]
   - type:: weight
@@ -98,7 +98,7 @@
   - relations::
 
 - ### Market trends
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Market trends
   - parentItem:: [[Segments]]
   - type:: weight
@@ -113,7 +113,7 @@
   - relations::
 
 - ### Market size
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Market size
   - parentItem:: [[Segments]]
   - type:: text
@@ -128,7 +128,7 @@
   - relations::
 
 - ### Competition
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Competition
   - parentItem:: [[Segments]]
   - type:: weight
@@ -143,7 +143,7 @@
   - relations::
 
 - ### Roles
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Roles
   - parentItem:: [[Segments]]
   - type:: weight
@@ -158,7 +158,7 @@
   - relations::
 
 - ### Persona
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Persona
   - parentItem:: [[Segments]]
   - type:: text
@@ -173,7 +173,7 @@
   - relations::
 
 - ### Problems
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Problems
   - parentItem:: [[Segments]]
   - type:: weight
@@ -188,7 +188,7 @@
   - relations::
 
 - ### Value propositions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Value propositions
   - parentItem:: [[Segments]]
   - type:: weight
@@ -203,7 +203,7 @@
   - relations::
 
 - ### Messages
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Messages
   - parentItem:: [[Segments]]
   - type:: weight
@@ -218,7 +218,7 @@
   - relations::
 
 - ### Channels
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Channels
   - parentItem:: [[Segments]]
   - type:: weight
@@ -233,7 +233,7 @@
   - relations::
 
 - ### Relationships
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Relationships
   - parentItem:: [[Segments]]
   - type:: text
@@ -248,7 +248,7 @@
   - relations::
 
 - ### Perceptions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Perceptions
   - parentItem:: [[Segments]]
   - type:: weight
@@ -263,7 +263,7 @@
   - relations::
 
 - ### Emotions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Emotions
   - parentItem:: [[Segments]]
   - type:: weight
@@ -278,7 +278,7 @@
   - relations::
 
 - ### Behaviors
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Behaviors
   - parentItem:: [[Segments]]
   - type:: weight
@@ -293,7 +293,7 @@
   - relations::
 
 - ### Journey
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Journey
   - parentItem:: [[Segments]]
   - type:: steps
@@ -308,7 +308,7 @@
   - relations::
 
 - ### Solutions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Solutions
   - type:: category
   - weight:: 90
@@ -320,7 +320,7 @@
   - relations::
 
 - ### Products and services
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Products and services
   - parentItem:: [[Solutions]]
   - type:: weight
@@ -335,7 +335,7 @@
   - relations::
 
 - ### Portfolio
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Portfolio
   - parentItem:: [[Products and services]]
   - type:: text
@@ -348,7 +348,7 @@
   - relations::
 
 - ### Components
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Components
   - parentItem:: [[Products and services]]
   - type:: weight
@@ -363,7 +363,7 @@
   - relations::
 
 - ### Features
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Features
   - parentItem:: [[Products and services]]
   - type:: weight
@@ -378,7 +378,7 @@
   - relations::
 
 - ### Roadmap
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Roadmap
   - parentItem:: [[Products and services]]
   - type:: steps
@@ -393,7 +393,7 @@
   - relations::
 
 - ### Pricing
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Pricing
   - parentItem:: [[Products and services]]
   - type:: text
@@ -408,7 +408,7 @@
   - relations::
 
 - ### Offerings
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Offerings
   - parentItem:: [[Products and services]]
   - type:: weight
@@ -423,7 +423,7 @@
   - relations::
 
 - ### Marketing
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Marketing
   - parentItem:: [[Solutions]]
   - type:: category
@@ -438,7 +438,7 @@
   - relations::
 
 - ### Naming
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Naming
   - parentItem:: [[Marketing]]
   - type:: text
@@ -453,7 +453,7 @@
   - relations::
 
 - ### Branding
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Branding
   - parentItem:: [[Marketing]]
   - type:: text
@@ -468,7 +468,7 @@
   - relations::
 
 - ### Visual identity
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Visual identity
   - parentItem:: [[Marketing]]
   - type:: text
@@ -483,7 +483,7 @@
   - relations::
 
 - ### Logo
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Logo
   - parentItem:: [[Marketing]]
   - type:: text
@@ -498,7 +498,7 @@
   - relations::
 
 - ### Media plan
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Media plan
   - parentItem:: [[Marketing]]
   - type:: text
@@ -513,7 +513,7 @@
   - relations::
 
 - ### Communication
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Communication
   - parentItem:: [[Solutions]]
   - type:: category
@@ -528,7 +528,7 @@
   - relations::
 
 - ### Pitch
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Pitch
   - parentItem:: [[Communication]]
   - type:: text
@@ -543,7 +543,7 @@
   - relations::
 
 - ### Brochure
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Brochure
   - parentItem:: [[Products and services]]
   - type:: text
@@ -558,7 +558,7 @@
   - relations::
 
 - ### Web
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Web
   - parentItem:: [[Communication]]
   - type:: text
@@ -573,7 +573,7 @@
   - relations::
 
 - ### Storytelling
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Storytelling
   - parentItem:: [[Communication]]
   - type:: text
@@ -588,7 +588,7 @@
   - relations::
 
 - ### Presentations
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Presentations
   - parentItem:: [[Communication]]
   - type:: text
@@ -603,7 +603,7 @@
   - relations::
 
 - ### Organization
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Organization
   - type:: category
   - weight:: 60
@@ -615,7 +615,7 @@
   - relations::
 
 - ### Business idea
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Business idea
   - parentItem:: [[Organization]]
   - type:: category
@@ -630,7 +630,7 @@
   - relations::
 
 - ### Inspiration
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Inspiration
   - parentItem:: [[Business idea]]
   - type:: weight
@@ -645,7 +645,7 @@
   - relations::
 
 - ### Opportunity
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Opportunity
   - parentItem:: [[Business idea]]
   - type:: weight
@@ -660,7 +660,7 @@
   - relations::
 
 - ### Business status
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Business status
   - parentItem:: [[Business idea]]
   - type:: text
@@ -675,7 +675,7 @@
   - relations::
 
 - ### Challenges
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Challenges
   - parentItem:: [[Business idea]]
   - type:: weight
@@ -690,7 +690,7 @@
   - relations::
 
 - ### Business objectives
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Business objectives
   - parentItem:: [[Organization]]
   - type:: category
@@ -705,7 +705,7 @@
   - relations::
 
 - ### Mission
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Mission
   - parentItem:: [[Business objectives]]
   - type:: text
@@ -720,7 +720,7 @@
   - relations::
 
 - ### Vision
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Vision
   - parentItem:: [[Business objectives]]
   - type:: text
@@ -735,7 +735,7 @@
   - relations::
 
 - ### Organizational values
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Organizational values
   - parentItem:: [[Business objectives]]
   - type:: weight
@@ -750,7 +750,7 @@
   - relations::
 
 - ### Organizational goals
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Organizational goals
   - parentItem:: [[Business objectives]]
   - type:: weight
@@ -765,7 +765,7 @@
   - relations::
 
 - ### Operations
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Operations
   - parentItem:: [[Organization]]
   - type:: category
@@ -780,7 +780,7 @@
   - relations::
 
 - ### Activities
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Activities
   - parentItem:: [[Operations]]
   - type:: weight
@@ -795,7 +795,7 @@
   - relations::
 
 - ### Functions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Functions
   - parentItem:: [[Operations]]
   - type:: weight
@@ -810,7 +810,7 @@
   - relations::
 
 - ### Resources
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Resources
   - parentItem:: [[Operations]]
   - type:: weight
@@ -825,7 +825,7 @@
   - relations::
 
 - ### Team
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Team
   - parentItem:: [[Organization]]
   - type:: category
@@ -840,7 +840,7 @@
   - relations::
 
 - ### Goals
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Goals
   - parentItem:: [[Team]]
   - type:: weight
@@ -854,7 +854,7 @@
   - relations::
 
 - ### Skills
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Skills
   - parentItem:: [[Team]]
   - type:: weight
@@ -869,7 +869,7 @@
   - relations::
 
 - ### Contributions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Contributions
   - parentItem:: [[Team]]
   - type:: weight
@@ -884,7 +884,7 @@
   - relations::
 
 - ### Compensations
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Compensations
   - parentItem:: [[Team]]
   - type:: weight
@@ -899,7 +899,7 @@
   - relations::
 
 - ### Positions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Positions
   - parentItem:: [[Team]]
   - type:: weight
@@ -914,7 +914,7 @@
   - relations::
 
 - ### Project plan
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Project plan
   - parentItem:: [[Organization]]
   - type:: category
@@ -929,7 +929,7 @@
   - relations::
 
 - ### Phases
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Phases
   - parentItem:: [[Project plan]]
   - type:: steps
@@ -944,7 +944,7 @@
   - relations::
 
 - ### Milestones
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Milestones
   - parentItem:: [[Project plan]]
   - type:: sequence
@@ -959,7 +959,7 @@
   - relations::
 
 - ### Metrics
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Metrics
   - parentItem:: [[Organization]]
   - type:: weight
@@ -974,7 +974,7 @@
   - relations::
 
 - ### Finance
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Finance
   - parentItem:: [[Organization]]
   - type:: category
@@ -989,7 +989,7 @@
   - relations::
 
 - ### Revenue
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Revenue
   - parentItem:: [[Finance]]
   - type:: weight
@@ -1004,7 +1004,7 @@
   - relations::
 
 - ### Life Time Value
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Life Time Value
   - parentItem:: [[Finance]]
   - type:: text
@@ -1019,7 +1019,7 @@
   - relations::
 
 - ### Costs
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Costs
   - parentItem:: [[Finance]]
   - type:: weight
@@ -1034,7 +1034,7 @@
   - relations::
 
 - ### Customer Aquisition Cost
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Customer Aquisition Cost
   - parentItem:: [[Finance]]
   - type:: text
@@ -1049,7 +1049,7 @@
   - relations::
 
 - ### Unit economics
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Unit economics
   - parentItem:: [[Finance]]
   - type:: text
@@ -1064,7 +1064,7 @@
   - relations::
 
 - ### Funding sources
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Funding sources
   - parentItem:: [[Finance]]
   - type:: weight
@@ -1079,7 +1079,7 @@
   - relations::
 
 - ### Shareholders
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Shareholders
   - parentItem:: [[Finance]]
   - type:: weight
@@ -1094,7 +1094,7 @@
   - relations::
 
 - ### Projections
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Projections
   - parentItem:: [[Finance]]
   - type:: weight
@@ -1109,7 +1109,7 @@
   - relations::
 
 - ### Legal
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Legal
   - parentItem:: [[Organization]]
   - type:: category
@@ -1124,7 +1124,7 @@
   - relations::
 
 - ### Legal issues
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Legal issues
   - parentItem:: [[Legal]]
   - type:: weight
@@ -1139,7 +1139,7 @@
   - relations::
 
 - ### Contracts
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Contracts
   - parentItem:: [[Legal]]
   - type:: weight
@@ -1154,7 +1154,7 @@
   - relations::
 
 - ### Matrices
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Matrices
   - type:: weight
   - weight:: 40
@@ -1165,7 +1165,7 @@
   - relations::
 
 - ### Analysis
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Analysis
   - type:: category
   - summary:: The process of examining and evaluating the different components of the business model to identify their importance and coherence and determine the risks it entails.
@@ -1179,7 +1179,7 @@
   - relations::
 
 - ### Assumptions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Assumptions
   - parentItem:: [[Analysis]]
   - type:: weight
@@ -1194,7 +1194,7 @@
   - relations::
 
 - ### Risks
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Risks
   - parentItem:: [[Analysis]]
   - type:: weight
@@ -1209,7 +1209,7 @@
   - relations::
 
 - ### Suggestions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Suggestions
   - parentItem:: [[Analysis]]
   - type:: weight
@@ -1222,7 +1222,7 @@
   - relations::
 
 - ### Unfair advantage
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Unfair advantage
   - parentItem:: [[Analysis]]
   - type:: text
@@ -1237,7 +1237,7 @@
   - relations::
 
 - ### SWOT
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: SWOT
   - parentItem:: [[Analysis]]
   - type:: text
@@ -1252,7 +1252,7 @@
   - relations::
 
 - ### Keys
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Keys
   - type:: weight
   - weight:: 50
@@ -1264,7 +1264,7 @@
   - relations::
 
 - ### Validation
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Validation
   - type:: category
   - summary:: The process of testing and verifying the assumptions and hypotheses underlying a business model.
@@ -1278,7 +1278,7 @@
   - relations::
 
 - ### Coherence
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Coherence
   - parentItem:: [[Validation]]
   - type:: weight
@@ -1291,7 +1291,7 @@
   - relations::
 
 - ### Experiments
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Experiments
   - parentItem:: [[Validation]]
   - type:: weight
@@ -1306,7 +1306,7 @@
   - relations::
 
 - ### Misc
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Misc
   - type:: text
   - summary:: Documents, articles, web sites, etc... referenced in this document
@@ -1320,7 +1320,7 @@
   - relations::
 
 - ### Metamodel
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Metamodel
   - type:: category
   - weight:: 50
@@ -1331,7 +1331,7 @@
   - relations::
 
 - ### Markers
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Markers
   - parentItem:: [[Metamodel]]
   - type:: weight
@@ -1343,7 +1343,7 @@
   - relations::
 
 - ### weight
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: weight
   - parentItem:: [[Markers]]
   - type:: marker
@@ -1358,7 +1358,7 @@
   - relations::
 
 - ### completion
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: completion
   - parentItem:: [[Markers]]
   - type:: marker
@@ -1373,7 +1373,7 @@
   - relations::
 
 - ### certainty
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: certainty
   - parentItem:: [[Markers]]
   - type:: marker
@@ -1388,7 +1388,7 @@
   - relations::
 
 - ### priority
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: priority
   - parentItem:: [[Markers]]
   - type:: marker
@@ -1403,7 +1403,7 @@
   - relations::
 
 - ### Guides
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Guides
   - summary:: A high-level overview or instruction manual that explains the overall process or purpose.
 Example: “Guide to recording a meeting…”
@@ -1414,7 +1414,7 @@ Example: “Guide to recording a meeting…”
   - relations::
 
 - ### Work
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Work
   - parentItem:: [[Guides]]
   - summary:: A sequence of actions or steps designed to achieve a specific result.
@@ -1426,7 +1426,7 @@ Example: “Record meeting notes” or “Summarize the meeting”.
   - relations::
 
 - ### Objects
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Objects
   - parentItem:: [[Guides]]
   - summary:: Items, data or documents created, transformed, or used during the work.
@@ -1438,7 +1438,7 @@ Example: Audio Recording, Transcript, Meeting Summary.
   - relations::
 
 - ### Tools
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Tools
   - parentItem:: [[Guides]]
   - summary:: Software or devices used to carry out specific tasks within the procedure.
@@ -1450,7 +1450,7 @@ Example: Mobile Recorder App, Whisper, ChatGPT.
   - relations::
 
 - ### Roles
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Roles
   - parentItem:: [[Guides]]
   - summary:: Defined responsibilities involved in the work.
@@ -1464,7 +1464,7 @@ Example: Meeting Recorder, Transcriber, Summarizer.
   - relations::
 
 - ### Organization
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Organization
   - summary:: The company, institution, or team within which the workflow is executed or governed.	
   - content:: The company, institution, or team within which the workflow is executed or governed.	
@@ -1473,7 +1473,7 @@ Example: Meeting Recorder, Transcriber, Summarizer.
   - relations::
 
 - ### Positions
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: Positions
   - parentItem:: [[Organization]]
   - summary:: Set of roles within an organization or workflow that group together specific responsibilities, tasks, and required competencies and represent a recurring function necessary to execute one or more parts of a process.
@@ -1483,7 +1483,7 @@ Example: Meeting Recorder, Transcriber, Summarizer.
   - relations::
 
 - ### People
-  - is_instantiable:: true
+  - instantiable:: true
   - name:: People
   - parentItem:: [[Organization]]
   - summary:: Specific individuals or example users who perform one or more roles in the process.

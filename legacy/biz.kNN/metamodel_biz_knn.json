@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "item_types": [
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Business summary",
       "type": "text",
       "summary": "Brief description of your business, how it creates value for whom, and the logic behind how it generates revenue.",
@@ -18,7 +18,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Market",
       "type": "category",
       "weight": 90,
@@ -30,7 +30,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Stakeholders",
       "parentItem": "Market",
       "type": "weight",
@@ -45,7 +45,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Segments",
       "parentItem": "Market",
       "type": "weight",
@@ -60,7 +60,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Profiles",
       "parentItem": "Segments",
       "type": "weight",
@@ -75,7 +75,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Segmentation",
       "parentItem": "Segments",
       "type": "weight",
@@ -90,7 +90,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Market trends",
       "parentItem": "Segments",
       "type": "weight",
@@ -105,7 +105,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Market size",
       "parentItem": "Segments",
       "type": "text",
@@ -120,7 +120,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Competition",
       "parentItem": "Segments",
       "type": "weight",
@@ -135,7 +135,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Roles",
       "parentItem": "Segments",
       "type": "weight",
@@ -150,7 +150,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Persona",
       "parentItem": "Segments",
       "type": "text",
@@ -165,7 +165,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Problems",
       "parentItem": "Segments",
       "type": "weight",
@@ -180,7 +180,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Value propositions",
       "parentItem": "Segments",
       "type": "weight",
@@ -195,7 +195,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Messages",
       "parentItem": "Segments",
       "type": "weight",
@@ -210,7 +210,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Channels",
       "parentItem": "Segments",
       "type": "weight",
@@ -225,7 +225,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Relationships",
       "parentItem": "Segments",
       "type": "text",
@@ -240,7 +240,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Perceptions",
       "parentItem": "Segments",
       "type": "weight",
@@ -255,7 +255,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Emotions",
       "parentItem": "Segments",
       "type": "weight",
@@ -270,7 +270,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Behaviors",
       "parentItem": "Segments",
       "type": "weight",
@@ -285,7 +285,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Journey",
       "parentItem": "Segments",
       "type": "steps",
@@ -300,7 +300,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Solutions",
       "type": "category",
       "weight": 90,
@@ -312,7 +312,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Products and services",
       "parentItem": "Solutions",
       "type": "weight",
@@ -327,7 +327,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Portfolio",
       "parentItem": "Products and services",
       "type": "text",
@@ -340,7 +340,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Components",
       "parentItem": "Products and services",
       "type": "weight",
@@ -355,7 +355,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Features",
       "parentItem": "Products and services",
       "type": "weight",
@@ -370,7 +370,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Roadmap",
       "parentItem": "Products and services",
       "type": "steps",
@@ -385,7 +385,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Pricing",
       "parentItem": "Products and services",
       "type": "text",
@@ -400,7 +400,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Offerings",
       "parentItem": "Products and services",
       "type": "weight",
@@ -415,7 +415,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Marketing",
       "parentItem": "Solutions",
       "type": "category",
@@ -430,7 +430,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Naming",
       "parentItem": "Marketing",
       "type": "text",
@@ -445,7 +445,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Branding",
       "parentItem": "Marketing",
       "type": "text",
@@ -460,7 +460,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Visual identity",
       "parentItem": "Marketing",
       "type": "text",
@@ -475,7 +475,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Logo",
       "parentItem": "Marketing",
       "type": "text",
@@ -490,7 +490,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Media plan",
       "parentItem": "Marketing",
       "type": "text",
@@ -505,7 +505,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Communication",
       "parentItem": "Solutions",
       "type": "category",
@@ -520,7 +520,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Pitch",
       "parentItem": "Communication",
       "type": "text",
@@ -535,7 +535,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Brochure",
       "parentItem": "Products and services",
       "type": "text",
@@ -550,7 +550,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Web",
       "parentItem": "Communication",
       "type": "text",
@@ -565,7 +565,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Storytelling",
       "parentItem": "Communication",
       "type": "text",
@@ -580,7 +580,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Presentations",
       "parentItem": "Communication",
       "type": "text",
@@ -595,7 +595,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Organization",
       "type": "category",
       "weight": 60,
@@ -607,7 +607,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Business idea",
       "parentItem": "Organization",
       "type": "category",
@@ -622,7 +622,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Inspiration",
       "parentItem": "Business idea",
       "type": "weight",
@@ -637,7 +637,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Opportunity",
       "parentItem": "Business idea",
       "type": "weight",
@@ -652,7 +652,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Business status",
       "parentItem": "Business idea",
       "type": "text",
@@ -667,7 +667,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Challenges",
       "parentItem": "Business idea",
       "type": "weight",
@@ -682,7 +682,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Business objectives",
       "parentItem": "Organization",
       "type": "category",
@@ -697,7 +697,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Mission",
       "parentItem": "Business objectives",
       "type": "text",
@@ -712,7 +712,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Vision",
       "parentItem": "Business objectives",
       "type": "text",
@@ -727,7 +727,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Organizational values",
       "parentItem": "Business objectives",
       "type": "weight",
@@ -742,7 +742,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Organizational goals",
       "parentItem": "Business objectives",
       "type": "weight",
@@ -757,7 +757,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Operations",
       "parentItem": "Organization",
       "type": "category",
@@ -772,7 +772,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Activities",
       "parentItem": "Operations",
       "type": "weight",
@@ -787,7 +787,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Functions",
       "parentItem": "Operations",
       "type": "weight",
@@ -802,7 +802,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Resources",
       "parentItem": "Operations",
       "type": "weight",
@@ -817,7 +817,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Team",
       "parentItem": "Organization",
       "type": "category",
@@ -832,7 +832,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Goals",
       "parentItem": "Team",
       "type": "weight",
@@ -846,7 +846,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Skills",
       "parentItem": "Team",
       "type": "weight",
@@ -861,7 +861,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Contributions",
       "parentItem": "Team",
       "type": "weight",
@@ -876,7 +876,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Compensations",
       "parentItem": "Team",
       "type": "weight",
@@ -891,7 +891,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Positions",
       "parentItem": "Team",
       "type": "weight",
@@ -906,7 +906,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Project plan",
       "parentItem": "Organization",
       "type": "category",
@@ -921,7 +921,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Phases",
       "parentItem": "Project plan",
       "type": "steps",
@@ -936,7 +936,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Milestones",
       "parentItem": "Project plan",
       "type": "sequence",
@@ -951,7 +951,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Metrics",
       "parentItem": "Organization",
       "type": "weight",
@@ -966,7 +966,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Finance",
       "parentItem": "Organization",
       "type": "category",
@@ -981,7 +981,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Revenue",
       "parentItem": "Finance",
       "type": "weight",
@@ -996,7 +996,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Life Time Value",
       "parentItem": "Finance",
       "type": "text",
@@ -1011,7 +1011,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Costs",
       "parentItem": "Finance",
       "type": "weight",
@@ -1026,7 +1026,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Customer Aquisition Cost",
       "parentItem": "Finance",
       "type": "text",
@@ -1041,7 +1041,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Unit economics",
       "parentItem": "Finance",
       "type": "text",
@@ -1056,7 +1056,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Funding sources",
       "parentItem": "Finance",
       "type": "weight",
@@ -1071,7 +1071,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Shareholders",
       "parentItem": "Finance",
       "type": "weight",
@@ -1086,7 +1086,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Projections",
       "parentItem": "Finance",
       "type": "weight",
@@ -1101,7 +1101,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Legal",
       "parentItem": "Organization",
       "type": "category",
@@ -1116,7 +1116,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Legal issues",
       "parentItem": "Legal",
       "type": "weight",
@@ -1131,7 +1131,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Contracts",
       "parentItem": "Legal",
       "type": "weight",
@@ -1146,7 +1146,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Matrices",
       "type": "weight",
       "weight": 40,
@@ -1157,7 +1157,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Analysis",
       "type": "category",
       "summary": "The process of examining and evaluating the different components of the business model to identify their importance and coherence and determine the risks it entails.",
@@ -1171,7 +1171,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Assumptions",
       "parentItem": "Analysis",
       "type": "weight",
@@ -1186,7 +1186,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Risks",
       "parentItem": "Analysis",
       "type": "weight",
@@ -1201,7 +1201,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Suggestions",
       "parentItem": "Analysis",
       "type": "weight",
@@ -1214,7 +1214,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Unfair advantage",
       "parentItem": "Analysis",
       "type": "text",
@@ -1229,7 +1229,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "SWOT",
       "parentItem": "Analysis",
       "type": "text",
@@ -1244,7 +1244,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Keys",
       "type": "weight",
       "weight": 50,
@@ -1256,7 +1256,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Validation",
       "type": "category",
       "summary": "The process of testing and verifying the assumptions and hypotheses underlying a business model.",
@@ -1270,7 +1270,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Coherence",
       "parentItem": "Validation",
       "type": "weight",
@@ -1283,7 +1283,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Experiments",
       "parentItem": "Validation",
       "type": "weight",
@@ -1298,7 +1298,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Misc",
       "type": "text",
       "summary": "Documents, articles, web sites, etc... referenced in this document",
@@ -1312,7 +1312,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Metamodel",
       "type": "category",
       "weight": 50,
@@ -1323,7 +1323,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Markers",
       "parentItem": "Metamodel",
       "type": "weight",
@@ -1335,7 +1335,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "weight",
       "parentItem": "Markers",
       "type": "marker",
@@ -1348,7 +1348,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "completion",
       "parentItem": "Markers",
       "type": "marker",
@@ -1361,7 +1361,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "certainty",
       "parentItem": "Markers",
       "type": "marker",
@@ -1374,7 +1374,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "priority",
       "parentItem": "Markers",
       "type": "marker",
@@ -1387,7 +1387,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Guides",
       "summary": "A high-level overview or instruction manual that explains the overall process or purpose.\nExample: “Guide to recording a meeting…”",
       "content": "A high-level overview or instruction manual that explains the overall process or purpose.\nExample: “Guide to recording a meeting…”",
@@ -1396,7 +1396,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Work",
       "parentItem": "Guides",
       "summary": "A sequence of actions or steps designed to achieve a specific result.\nExample: “Record meeting notes” or “Summarize the meeting”.",
@@ -1406,7 +1406,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Objects",
       "parentItem": "Guides",
       "summary": "Items, data or documents created, transformed, or used during the work.\nExample: Audio Recording, Transcript, Meeting Summary.",
@@ -1416,7 +1416,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Tools",
       "parentItem": "Guides",
       "summary": "Software or devices used to carry out specific tasks within the procedure.\nExample: Mobile Recorder App, Whisper, ChatGPT.",
@@ -1426,7 +1426,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Roles",
       "parentItem": "Guides",
       "summary": "Defined responsibilities involved in the work.\nExample: Meeting Recorder, Transcriber, Summarizer.\n\n",
@@ -1436,7 +1436,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Organization",
       "summary": "The company, institution, or team within which the workflow is executed or governed.\t",
       "content": "The company, institution, or team within which the workflow is executed or governed.\t",
@@ -1445,7 +1445,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "Positions",
       "parentItem": "Organization",
       "summary": "Set of roles within an organization or workflow that group together specific responsibilities, tasks, and required competencies and represent a recurring function necessary to execute one or more parts of a process.",
@@ -1455,7 +1455,7 @@
       "relations": []
     },
     {
-      "is_instantiable": true,
+      "instantiable": true,
       "name": "People",
       "parentItem": "Organization",
       "summary": "Specific individuals or example users who perform one or more roles in the process.\nExample: “Lucas Cervera – Meeting Recorder and Minutes Writer”.",
