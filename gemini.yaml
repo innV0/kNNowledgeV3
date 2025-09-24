@@ -1,0 +1,6 @@
+name: kNNowledgeV3
+version: 0.1.0
+
+specify:
+  enabled: true
+  path: ./.specify
