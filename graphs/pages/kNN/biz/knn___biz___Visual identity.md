@@ -1,0 +1,1 @@
+alias:: Visual identity

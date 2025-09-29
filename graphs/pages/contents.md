@@ -1,0 +1,12 @@
+# [[kNN]]
+	- ## MetaModels
+		- ### [[biz_knn]]
+			- [[biz_kNN schema]]
+			- #### Models
+				- [[ghostbusters_biz_knn]]
+				- [[biz_kNN canvas]]
+				- [[biz_kNN schema]]
+				- [[test_model]]
+- [[Namespace/test]]
+- [[kNN guide]]
+- [[kNN config]]
