@@ -1,0 +1,187 @@
+{
+  "metrics": [
+    {
+      "id": "currentCustomers",
+      "name": "👥 Current Customers",
+      "description": "Number of customers at the start of the projection period",
+      "unit": "customers",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 100,
+      "growths": [
+        { "phaseId": 1, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 2, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 3, "growthType": "additive", "growthRate": 0 }
+      ]
+    },
+    {
+      "id": "newCustomers",
+      "name": "➕ New Customers per Month",
+      "description": "Monthly acquisition of new customers",
+      "unit": "customers",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 10,
+      "growths": [
+        { "phaseId": 1, "growthType": "multiplicative", "growthRate": 1.05 },
+        { "phaseId": 2, "growthType": "multiplicative", "growthRate": 1.05 },
+        { "phaseId": 3, "growthType": "multiplicative", "growthRate": 1.05 }
+      ]
+    },
+    {
+      "id": "totalCustomers",
+      "name": "📊 Total Customers",
+      "description": "Running total of all customers over time",
+      "unit": "customers",
+      "color": "#e3f2fd",
+      "type": "calculated",
+      "formula": "Previous total + New customers per month"
+    },
+    {
+      "id": "unitsPerCustomer",
+      "name": "📦 Units per Customer/Month",
+      "description": "Average products purchased per customer monthly",
+      "unit": "units",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 5,
+      "growths": [
+        { "phaseId": 1, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 2, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 3, "growthType": "additive", "growthRate": 0 }
+      ]
+    },
+    {
+      "id": "totalUnits",
+      "name": "📈 Total Units Sold/Month",
+      "description": "Monthly product sales volume",
+      "unit": "units",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "Total customers × Units per customer per month"
+    },
+    {
+      "id": "pricePerUnit",
+      "name": "💰 Price per Unit",
+      "description": "Revenue per product unit sold",
+      "unit": "€",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 50,
+      "growths": [
+        { "phaseId": 1, "growthType": "multiplicative", "growthRate": 1.02 },
+        { "phaseId": 2, "growthType": "multiplicative", "growthRate": 1.02 },
+        { "phaseId": 3, "growthType": "multiplicative", "growthRate": 1.02 }
+      ]
+    },
+    {
+      "id": "salesRevenue",
+      "name": "💵 Sales Revenue/Month",
+      "description": "Monthly income from product sales",
+      "unit": "€",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "Total units sold × Price per unit"
+    },
+    {
+      "id": "otherInflows",
+      "name": "💸 Other Inflows/Month",
+      "description": "Additional monthly cash receipts",
+      "unit": "€",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 0,
+      "growths": [
+        { "phaseId": 1, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 2, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 3, "growthType": "additive", "growthRate": 0 }
+      ]
+    },
+    {
+      "id": "totalInflow",
+      "name": "📥 Total Inflow/Month",
+      "description": "Combined monthly cash inflows",
+      "unit": "€",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "Sales revenue + Other inflows per month"
+    },
+    {
+      "id": "cogsPerUnit",
+      "name": "🏭 COGS per Unit",
+      "description": "Direct cost per product unit",
+      "unit": "€",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 20,
+      "growths": [
+        { "phaseId": 1, "growthType": "multiplicative", "growthRate": 1.01 },
+        { "phaseId": 2, "growthType": "multiplicative", "growthRate": 1.01 },
+        { "phaseId": 3, "growthType": "multiplicative", "growthRate": 1.01 }
+      ]
+    },
+    {
+      "id": "totalCogs",
+      "name": "📉 Total COGS/Month",
+      "description": "Monthly cost of goods sold",
+      "unit": "€",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "Total units sold × COGS per unit"
+    },
+    {
+      "id": "fixedCosts",
+      "name": "🏢 Fixed Costs/Month",
+      "description": "Recurring operational expenses",
+      "unit": "€",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 5000,
+      "growths": [
+        { "phaseId": 1, "growthType": "multiplicative", "growthRate": 1.03 },
+        { "phaseId": 2, "growthType": "multiplicative", "growthRate": 1.03 },
+        { "phaseId": 3, "growthType": "multiplicative", "growthRate": 1.03 }
+      ]
+    },
+    {
+      "id": "otherOutflows",
+      "name": "💳 Other Outflows/Month",
+      "description": "Additional monthly cash expenses",
+      "unit": "€",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "initial": 1000,
+      "growths": [
+        { "phaseId": 1, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 2, "growthType": "additive", "growthRate": 0 },
+        { "phaseId": 3, "growthType": "additive", "growthRate": 0 }
+      ]
+    },
+    {
+      "id": "totalOutflow",
+      "name": "📤 Total Outflow/Month",
+      "description": "Combined monthly cash outflows",
+      "unit": "€",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "Total COGS + Fixed costs + Other outflows per month"
+    },
+    {
+      "id": "cashBalance",
+      "name": "💰 Cash Balance",
+      "description": "Running cash position over time",
+      "unit": "€",
+      "color": "#fff3e0",
+      "type": "calculated",
+      "formula": "Previous balance + Total inflow - Total outflow"
+    }
+  ],
+  "phases": [
+    { "id": 1, "name": "P1", "startMonth": 1, "endMonth": 6 },
+    { "id": 2, "name": "P2", "startMonth": 7, "endMonth": 24 },
+    { "id": 3, "name": "P3", "startMonth": 25, "endMonth": 60 }
+  ],
+  "selectedMetricId": "currentCustomers",
+  "viewMode": "monthly",
+  "chartMetrics": ["currentCustomers"]
+}

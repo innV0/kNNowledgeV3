@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Financial Projections</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const initialPhases = [
+            { id: 1, name: 'Phase 1', startMonth: 1, endMonth: 6 },
+            { id: 2, name: 'Phase 2', startMonth: 7, endMonth: 24 },
+            { id: 3, name: 'Phase 3', startMonth: 25, endMonth: 60 }
+        ];
+
+        const initialMetrics = [
+            { id: 'currentCustomers', name: 'Current Customers', type: 'variable', initial: 100, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'additive', growthRate: 0})) },
+            { id: 'newCustomers', name: 'New Customers per Month', type: 'variable', initial: 10, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'multiplicative', growthRate: 1.05})) },
+            { id: 'totalCustomers', name: 'Total Customers', type: 'calculated', formula: 'Cumulative: prev + new_customers' },
+            { id: 'unitsPerCustomer', name: 'Units Sold per Customer per Month', type: 'variable', initial: 5, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'additive', growthRate: 0})) },
+            { id: 'totalUnits', name: 'Total Units Sold per Month', type: 'calculated', formula: 'total_customers * units_per_customer' },
+            { id: 'pricePerUnit', name: 'Average Price per Unit', type: 'variable', initial: 50, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'multiplicative', growthRate: 1.02})) },
+            { id: 'salesRevenue', name: 'Sales Revenue per Month', type: 'calculated', formula: 'total_units * price_per_unit' },
+            { id: 'otherInflows', name: 'Other Cash Inflows per Month', type: 'variable', initial: 0, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'additive', growthRate: 0})) },
+            { id: 'totalInflow', name: 'Total Cash Inflow per Month', type: 'calculated', formula: 'sales_revenue + other_inflows' },
+            { id: 'cogsPerUnit', name: 'Cost of Goods Sold per Unit', type: 'variable', initial: 20, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'multiplicative', growthRate: 1.01})) },
+            { id: 'totalCogs', name: 'Total COGS per Month', type: 'calculated', formula: 'total_units * cogs_per_unit' },
+            { id: 'fixedCosts', name: 'Fixed Costs per Month', type: 'variable', initial: 5000, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'multiplicative', growthRate: 1.03})) },
+            { id: 'otherOutflows', name: 'Other Cash Outflows per Month', type: 'variable', initial: 1000, growths: initialPhases.map(p => ({phaseId: p.id, growthType: 'additive', growthRate: 0})) },
+            { id: 'totalOutflow', name: 'Total Cash Outflow per Month', type: 'calculated', formula: 'total_cogs + fixed_costs + other_outflows' },
+            { id: 'cashBalance', name: 'Cash Balance', type: 'calculated', formula: 'Cumulative: prev + inflow - outflow' }
+        ];
+
+        function calculateProjections(metrics, phases) {
+            const months = 61;
+            const data = {};
+            metrics.forEach(m => {
+                data[m.id] = new Array(months).fill(0);
+            });
+
+            // Set initials
+            metrics.forEach(m => {
+                if (m.type === 'variable') {
+                    data[m.id][0] = m.initial;
+                }
+            });
+            data.totalCustomers[0] = data.currentCustomers[0];
+            data.cashBalance[0] = 0;
+
+            // Calculate for each month
+            for (let month = 1; month < months; month++) {
+                // Grow variables
+                metrics.forEach(m => {
+                    if (m.type === 'variable') {
+                        const prev = data[m.id][month - 1];
+                        const phase = phases.find(p => p.startMonth <= month && p.endMonth >= month);
+                        if (phase) {
+                            const growth = m.growths.find(g => g.phaseId === phase.id);
+                            if (growth) {
+                                if (growth.growthType === 'additive') {
+                                    data[m.id][month] = prev + growth.growthRate;
+                                } else {
+                                    data[m.id][month] = prev * growth.growthRate;
+                                }
+                            } else {
+                                data[m.id][month] = prev;
+                            }
+                        } else {
+                            data[m.id][month] = prev;
+                        }
+                    }
+                });
+
+                // Calculate derived
+                data.totalCustomers[month] = data.totalCustomers[month - 1] + data.newCustomers[month];
+                data.totalUnits[month] = data.totalCustomers[month] * data.unitsPerCustomer[month];
+                data.salesRevenue[month] = data.totalUnits[month] * data.pricePerUnit[month];
+                data.totalInflow[month] = data.salesRevenue[month] + data.otherInflows[month];
+                data.totalCogs[month] = data.totalUnits[month] * data.cogsPerUnit[month];
+                data.totalOutflow[month] = data.totalCogs[month] + data.fixedCosts[month] + data.otherOutflows[month];
+                data.cashBalance[month] = data.cashBalance[month - 1] + data.totalInflow[month] - data.totalOutflow[month];
+            }
+
+            // Prepare result
+            return metrics.map(m => {
+                const isCurrency = ['salesRevenue', 'otherInflows', 'totalInflow', 'totalCogs', 'fixedCosts', 'otherOutflows', 'totalOutflow', 'cashBalance'].includes(m.id);
+                return {
+                    name: m.name,
+                    values: data[m.id],
+                    isCurrency
+                };
+            });
+        }
+
+        function formatValue(val, isCurrency) {
+            if (isCurrency) {
+                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+            }
+            return val.toFixed(2);
+        }
+
+        function App() {
+            const [metrics, setMetrics] = useState(initialMetrics);
+            const [phases, setPhases] = useState(initialPhases);
+            const [selectedMetricId, setSelectedMetricId] = useState(initialMetrics.find(m => m.type === 'variable')?.id || initialMetrics[0].id);
+            const [viewMode, setViewMode] = useState('monthly');
+            const [selectedMetricsForChart, setSelectedMetricsForChart] = useState(new Set([initialMetrics[0].id]));
+
+            const updateMetric = (id, field, ...args) => {
+                if (field === 'growths') {
+                    const [phaseId, subfield, value] = args;
+                    setMetrics(prev => prev.map(m => m.id === id ? { ...m, growths: m.growths.map(g => g.phaseId === phaseId ? { ...g, [subfield]: value } : g) } : m));
+                } else {
+                    setMetrics(prev => prev.map(m => m.id === id ? { ...m, [field]: value } : m));
+                }
+            };
+
+            const updatePhase = (id, field, value) => {
+                setPhases(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+            };
+
+            const projections = calculateProjections(metrics, phases);
+
+            return (
+                <div className="flex h-screen">
+                    <ProjectionsTable projections={projections} metrics={metrics} updateMetric={updateMetric} selectedMetricId={selectedMetricId} setSelectedMetricId={setSelectedMetricId} viewMode={viewMode} setViewMode={setViewMode} selectedMetricsForChart={selectedMetricsForChart} phases={phases} />
+                    <MetricDetail metrics={metrics} updateMetric={updateMetric} selectedMetricId={selectedMetricId} selectedMetricsForChart={selectedMetricsForChart} setSelectedMetricsForChart={setSelectedMetricsForChart} phases={phases} updatePhase={updatePhase} setPhases={setPhases} setMetrics={setMetrics} />
+                </div>
+            );
+        }
+
+        function MetricDetail({ metrics, updateMetric, selectedMetricId, selectedMetricsForChart, setSelectedMetricsForChart, phases, updatePhase, setPhases, setMetrics }) {
+            const selectedMetric = metrics.find(m => m.id === selectedMetricId);
+            return (
+                <div className="w-1/3 p-4 bg-gray-100 overflow-y-auto">
+                    <h2 className="text-xl font-bold mb-4">Selected Metric Details</h2>
+                    {selectedMetric && <MetricItem metric={selectedMetric} updateMetric={updateMetric} selectedMetricsForChart={selectedMetricsForChart} setSelectedMetricsForChart={setSelectedMetricsForChart} phases={phases} />}
+                    <h3 className="text-lg font-semibold mt-4">Phases</h3>
+                    {phases.map(phase => (
+                        <div key={phase.id} className="mb-2 p-2 bg-gray-200 rounded">
+                            <input value={phase.name} onChange={e => updatePhase(phase.id, 'name', e.target.value)} className="mr-2 w-20" />
+                            Start: <input type="number" value={phase.startMonth} onChange={e => updatePhase(phase.id, 'startMonth', parseInt(e.target.value))} className="mr-2 w-16" />
+                            End: <input type="number" value={phase.endMonth} onChange={e => updatePhase(phase.id, 'endMonth', parseInt(e.target.value))} className="mr-2 w-16" />
+                            <button onClick={() => { setPhases(prev => prev.filter(p => p.id !== phase.id)); setMetrics(prev => prev.map(m => m.type === 'variable' ? { ...m, growths: m.growths.filter(g => g.phaseId !== phase.id) } : m)) }} className="bg-red-500 text-white px-2 py-1 rounded">Remove</button>
+                        </div>
+                    ))}
+                    <button onClick={() => { const newId = Date.now(); const newPhase = { id: newId, name: 'New Phase', startMonth: phases.length > 0 ? phases[phases.length - 1].endMonth + 1 : 1, endMonth: 60 }; setPhases(prev => [...prev, newPhase]); setMetrics(prev => prev.map(m => m.type === 'variable' ? { ...m, growths: [...m.growths, {phaseId: newId, growthType: 'additive', growthRate: 0}] } : m)) }} className="bg-green-500 text-white px-4 py-2 rounded mt-2">Add Phase</button>
+                </div>
+            );
+        }
+
+        function MetricItem({ metric, updateMetric, selectedMetricsForChart, setSelectedMetricsForChart, phases }) {
+            if (metric.type === 'variable') {
+                return (
+                    <div className="mb-4 p-4 bg-white rounded shadow">
+                        <h3 className="font-semibold">{metric.name}</h3>
+                        <div className="mt-2">
+                            <label className="block text-sm">Initial Value:
+                                <input
+                                    type="number"
+                                    value={metric.initial}
+                                    onChange={e => updateMetric(metric.id, 'initial', parseFloat(e.target.value) || 0)}
+                                    className="mt-1 block w-full border border-gray-300 rounded p-2"
+                                />
+                            </label>
+                        </div>
+                        <div className="mt-2">
+                            <label className="block text-sm">Growth Type:
+                                <select
+                                    value={metric.growthType}
+                                    onChange={e => updateMetric(metric.id, 'growthType', e.target.value)}
+                                    className="mt-1 block w-full border border-gray-300 rounded p-2"
+                                >
+                                    <option value="additive">Additive (+)</option>
+                                    <option value="multiplicative">Multiplicative (×)</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div className="mt-2">
+                            <label className="block text-sm">Growth Rate:
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    value={metric.growthRate}
+                                    onChange={e => updateMetric(metric.id, 'growthRate', parseFloat(e.target.value) || 0)}
+                                    className="mt-1 block w-full border border-gray-300 rounded p-2"
+                                />
+                            </label>
+                        </div>
+                        <div className="mt-2">
+                            <label className="block text-sm">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedMetricsForChart.has(metric.id)}
+                                    onChange={e => {
+                                        const newSet = new Set(selectedMetricsForChart);
+                                        if (e.target.checked) {
+                                            newSet.add(metric.id);
+                                        } else {
+                                            newSet.delete(metric.id);
+                                        }
+                                        setSelectedMetricsForChart(newSet);
+                                    }}
+                                    className="mr-2"
+                                />
+                                Show in chart
+                            </label>
+                        </div>
+                        {phases.map(phase => {
+                            const growth = metric.growths.find(g => g.phaseId === phase.id);
+                            return (
+                                <div key={phase.id} className="mt-2">
+                                    <label className="block text-sm">{phase.name} Growth Type:
+                                        <select
+                                            value={growth ? growth.growthType : 'additive'}
+                                            onChange={e => updateMetric(metric.id, 'growths', phase.id, 'growthType', e.target.value)}
+                                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                                        >
+                                            <option value="additive">Additive (+)</option>
+                                            <option value="multiplicative">Multiplicative (×)</option>
+                                        </select>
+                                    </label>
+                                    <label className="block text-sm">Growth Rate:
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={growth ? growth.growthRate : 0}
+                                            onChange={e => updateMetric(metric.id, 'growths', phase.id, 'growthRate', parseFloat(e.target.value) || 0)}
+                                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                                        />
+                                    </label>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="mb-4 p-4 bg-white rounded shadow">
+                        <h3 className="font-semibold">{metric.name}</h3>
+                        <p className="text-sm text-gray-600 mt-2">{metric.formula}</p>
+                    </div>
+                );
+            }
+        }
+
+        function ProjectionsTable({ projections, metrics, updateMetric, selectedMetricId, setSelectedMetricId, viewMode, setViewMode, selectedMetricsForChart, phases }) {
+            const months = Array.from({ length: 61 }, (_, i) => i);
+            const periods = viewMode === 'monthly' ? months : Array.from({ length: 5 }, (_, i) => i + 1);
+            const periodLabel = viewMode === 'monthly' ? 'Month' : 'Year';
+
+            useEffect(() => {
+                const ctx = document.getElementById('chart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: periods.map(p => `${periodLabel} ${p}`),
+                        datasets: projections.filter((_, idx) => selectedMetricsForChart.has(metrics[idx].id)).map((row, idx) => ({
+                            label: row.name,
+                            data: viewMode === 'monthly' ? row.values : row.values.filter((_, i) => i % 12 === 0 && i > 0),
+                            borderColor: `hsl(${idx * 60}, 70%, 50%)`,
+                            fill: false
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                return () => chart.destroy();
+            }, [projections, selectedMetricsForChart, metrics, periods, viewMode, periodLabel]);
+
+            return (
+                <div className="w-2/3 p-4 overflow-x-auto overflow-y-auto">
+                    <div className="mb-4">
+                        <canvas id="chart" width="800" height="300"></canvas>
+                    </div>
+                    <div className="mb-4">
+                        <button onClick={() => setViewMode(viewMode === 'monthly' ? 'yearly' : 'monthly')} className="px-4 py-2 bg-blue-500 text-white rounded">Toggle to {viewMode === 'monthly' ? 'Yearly' : 'Monthly'} View</button>
+                    </div>
+                    <h2 className="text-xl font-bold mb-4">5-Year Projections ({viewMode === 'monthly' ? 'Months 0-60' : 'Years 1-5'})</h2>
+                    <table className="min-w-full table-auto border-collapse border border-gray-300">
+                        <thead className="bg-gray-200">
+                            <tr>
+                                <th className="border border-gray-300 p-2 sticky left-0 bg-gray-200">Metric</th>
+                                <th className="border border-gray-300 p-2 min-w-24">Initial Value</th>
+                                <th className="border border-gray-300 p-2 min-w-24">Growth Type</th>
+                                <th className="border border-gray-300 p-2 min-w-24">Growth Rate</th>
+                                {periods.map(p => (
+                                    <th key={p} className="border border-gray-300 p-2 min-w-20">{periodLabel} {p}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {projections.map((row, idx) => {
+                                const metric = metrics[idx];
+                                const isSelected = selectedMetricId === metric.id;
+                                if (metric.type === 'variable') {
+                                    return (
+                                        <tr key={idx} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} cursor-pointer ${isSelected ? 'bg-blue-100' : ''}`} onClick={() => setSelectedMetricId(metric.id)}>
+                                            <td className="border border-gray-300 p-2 font-semibold sticky left-0 bg-inherit">{row.name}</td>
+                                            <td className="border border-gray-300 p-2">
+                                                <input
+                                                    type="number"
+                                                    value={metric.initial}
+                                                    onChange={e => updateMetric(metric.id, 'initial', parseFloat(e.target.value) || 0)}
+                                                    className="w-full border border-gray-300 rounded p-1 text-sm"
+                                                />
+                                            </td>
+                                            <td className="border border-gray-300 p-2">
+                                                {(() => {
+                                                    const growth0 = metric.growths.find(g => g.phaseId === phases[0].id);
+                                                    return (
+                                                        <select
+                                                            value={growth0 ? growth0.growthType : 'additive'}
+                                                            onChange={e => updateMetric(metric.id, 'growths', phases[0].id, 'growthType', e.target.value)}
+                                                            className="w-full border border-gray-300 rounded p-1 text-sm"
+                                                        >
+                                                            <option value="additive">Additive (+)</option>
+                                                            <option value="multiplicative">Multiplicative (×)</option>
+                                                        </select>
+                                                    );
+                                                })()}
+                                            </td>
+                                            <td className="border border-gray-300 p-2">
+                                                {(() => {
+                                                    const growth0 = metric.growths.find(g => g.phaseId === phases[0].id);
+                                                    return (
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={growth0 ? growth0.growthRate : 0}
+                                                            onChange={e => updateMetric(metric.id, 'growths', phases[0].id, 'growthRate', parseFloat(e.target.value) || 0)}
+                                                            className="w-full border border-gray-300 rounded p-1 text-sm"
+                                                        />
+                                                    );
+                                                })()}
+                                            </td>
+                                            {periods.map((p, i) => (
+                                                <td key={p} className="border border-gray-300 p-2 text-right">{formatValue(viewMode === 'monthly' ? row.values[p] : row.values[p * 12], row.isCurrency)}</td>
+                                            ))}
+                                        </tr>
+                                    );
+                                } else {
+                                    return (
+                                        <tr key={idx} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} cursor-pointer ${isSelected ? 'bg-blue-100' : ''}`} onClick={() => setSelectedMetricId(metric.id)}>
+                                            <td colSpan="4" className="border border-gray-300 p-2 font-semibold sticky left-0 bg-inherit">{row.name}</td>
+                                            {row.values.map((val, i) => (
+                                                <td key={i} className="border border-gray-300 p-2 text-right">{formatValue(val, row.isCurrency)}</td>
+                                            ))}
+                                        </tr>
+                                    );
+                                }
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
