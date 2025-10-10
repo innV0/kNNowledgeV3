@@ -1,0 +1,23 @@
+# Model: My Test Project
+- metamodel:: [[test_metamodel]]
+- ## [[Project]] My First Project
+- status:: In Progress
+- priority:: 1
+- start_date:: 2025-09-01
+- has_task:: [[Task 1: Setup Environment]]
+- has_task:: [[Task 2: Implement Feature]]
+- ### [[Task]] Setup Environment
+- completed:: true
+- due_date:: 2025-09-10
+- assigned_to:: [[Alice Developer]]
+- ### [[Task]] Implement Feature
+- completed:: false
+- due_date:: 2025-09-30
+- assigned_to:: [[Bob Manager]]
+- depends_on:: [[Task 1: Setup Environment]]
+- ## [[Person]] Alice Developer
+- email:: alice@example.com
+- role:: Developer
+- ## [[Person]] Bob Manager
+- email:: bob@example.com
+- role:: Manager

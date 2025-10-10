@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Financial Projections - Vue Version</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .main-panel {
+            flex: 2;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar {
+            flex: 1;
+            background: white;
+            padding: 10px;
+            border-left: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #chart {
+            height: 125px;
+            width: 100%;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        .table-fixed {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 2;
+            background: white;
+            width: 200px;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        .table-fixed th, .table-fixed td {
+            border-right: 2px solid #e0e0e0;
+            height: 40px;
+            vertical-align: middle;
+        }
+        .table-scroll {
+            margin-left: 200px;
+            overflow-x: auto;
+        }
+        .table-scroll th, .table-scroll td {
+            min-width: 60px;
+            height: 40px;
+            vertical-align: middle;
+        }
+        .table-fixed table, .table-scroll table {
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            height: 40px;
+            vertical-align: middle;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .selected-row {
+            box-shadow: inset 0 0 0 3px #007bff !important;
+            background: inherit !important;
+        }
+        .variable-metric {
+            color: #007bff;
+        }
+        .clickable-row {
+            cursor: pointer;
+        }
+        .clickable-row:hover {
+            background: #f8f9fa;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .phase-item {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .growth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .growth-phase {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .growth-phase h6 {
+            margin: 0 0 4px 0;
+            font-size: 11px;
+            color: #666;
+        }
+        .growth-phase .form-group {
+            margin-bottom: 6px;
+        }
+        .growth-phase label {
+            font-size: 10px;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .growth-phase input, .growth-phase select {
+            font-size: 11px;
+            padding: 4px;
+        }
+        .phase-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .phase-controls input {
+            flex: 1;
+        }
+        .phases-section .phase-item {
+            font-size: 12px;
+        }
+        .phases-section input {
+            font-size: 11px;
+            padding: 4px;
+        }
+        .phases-section button {
+            font-size: 12px;
+            padding: 2px 6px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .variable-controls {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .variable-controls .form-group {
+            flex: 1;
+        }
+        .metric-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .metric-item h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .currency::after {
+            content: '$';
+        }
+        .description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .formula {
+            color: #888;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .unit {
+            color: #666;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .metric-header h3 {
+            margin: 0;
+            flex: 1;
+        }
+        .metric-name-input {
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .metric-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .action-btn {
+            background: none;
+            border: 1px solid #ddd;
+            color: #666;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .action-btn:hover:not(:disabled) {
+            background: #f0f0f0;
+        }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .delete-btn {
+            color: #dc3545;
+        }
+        .delete-btn:hover:not(:disabled) {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        .edit-btn {
+            background: none;
+            border: 1px solid #007bff;
+            color: #007bff;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .edit-btn:hover {
+            background: #e3f2fd;
+        }
+        .formula-builder {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .formula-builder select {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .modal-close:hover {
+            background: #f0f0f0;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="main-panel">
+
+                <div class="controls">
+                    <button @click="viewMode = viewMode === 'monthly' ? 'yearly' : 'monthly'">
+                        Switch to {{ viewMode === 'monthly' ? 'Yearly' : 'Monthly' }} View
+                    </button>
+                    <button @click="showPhasesModal = true">Manage Phases</button>
+                    <input type="file" @change="importData" accept=".json" style="display: none" ref="fileInput">
+                    <button @click="$refs.fileInput.click()">Import Data</button>
+                    <button @click="exportData" v-if="metrics.length > 0">Export Data</button>
+                </div>
+
+                <div v-if="metrics.length === 0" class="chart-container">
+                    <h2>Welcome to Financial Projections Tool</h2>
+                    <p>Import a JSON data file to load your business metrics and start analyzing projections.</p>
+                </div>
+
+                <div v-if="metrics.length > 0" class="chart-container">
+                     <canvas id="chart"></canvas>
+                 </div>
+
+                <div v-if="metrics.length > 0" class="table-container">
+                    <div class="table-wrapper">
+                        <!-- Fixed left table for metric names -->
+                        <table class="table-fixed">
+                            <thead>
+                                <tr>
+                                    <th style="width: 200px;">Metric</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(projection, index) in projections"
+                                    :key="'fixed-' + projection.name"
+                                    :class="{ 'selected-row': selectedMetricId === metrics[index].id, 'clickable-row': true, 'variable-metric': metrics[index].type === 'variable' }"
+                                    :style="{ backgroundColor: metrics[index].color }"
+                                    @click="selectMetric(metrics[index].id)">
+                                    <td>{{ projection.name }} <span v-if="metrics[index].unit" class="unit">({{ metrics[index].unit }})</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Scrollable right table for data -->
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Initial</th>
+                                        <th>P1</th>
+                                        <th>P2</th>
+                                        <th>P3</th>
+                                        <th v-for="period in periods" :key="period">
+                                            {{ viewMode === 'monthly' ? 'Month' : 'Year' }} {{ period }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(projection, index) in projections"
+                                        :key="'scroll-' + projection.name"
+                                        :class="{ 'selected-row': selectedMetricId === metrics[index].id, 'variable-metric': metrics[index].type === 'variable' }"
+                                        :style="{ backgroundColor: metrics[index].color }"
+                                        @click="selectMetric(metrics[index].id)"
+                                        style="cursor: pointer;">
+                                        <td class="text-right">{{ getInitialValue(metrics[index]) }}</td>
+                                        <td class="text-center">{{ getPhaseGrowth(metrics[index], 0) }}</td>
+                                        <td class="text-center">{{ getPhaseGrowth(metrics[index], 1) }}</td>
+                                        <td class="text-center">{{ getPhaseGrowth(metrics[index], 2) }}</td>
+                                        <td v-for="period in periods" :key="period" class="text-right">
+                                            <span :class="{ currency: projection.isCurrency }">
+                                                {{ formatValue(getValue(projection, period), projection.isCurrency) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h2>Metric Details</h2>
+                <button @click="addMetric" style="margin-bottom: 15px; width: 100%;">Add Metric</button>
+                <div v-if="selectedMetric">
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <h3 v-if="!editMode">{{ selectedMetric.name }}</h3>
+                            <input v-if="editMode" v-model="selectedMetric.name" @input="recalculate" class="metric-name-input">
+                            <div class="metric-actions">
+                                <button @click="moveMetricUp" :disabled="getMetricIndex(selectedMetricId) === 0" class="action-btn" title="Move Up">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <button @click="moveMetricDown" :disabled="getMetricIndex(selectedMetricId) === metrics.length - 1" class="action-btn" title="Move Down">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                                <button @click="deleteMetric" class="action-btn delete-btn" title="Delete Metric">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button @click="editMode = !editMode" class="edit-btn">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div v-if="editMode">
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select :value="selectedMetric.type" @change="updateType">
+                                    <option value="variable">Variable</option>
+                                    <option value="calculated">Calculated</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea v-model="selectedMetric.description" @input="recalculate" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Unit</label>
+                                <select v-model="selectedMetric.unit" @change="recalculate">
+                                    <option value="">No unit</option>
+                                    <option value="units">units</option>
+                                    <option value="€">€</option>
+                                    <option value="$">$</option>
+                                    <option value="%">%</option>
+                                    <option value="customers">customers</option>
+                                    <option value="custom">Custom...</option>
+                                </select>
+                                <input v-if="selectedMetric.unit === 'custom'" v-model="selectedMetric.unit" @input="recalculate" placeholder="Enter custom unit">
+                            </div>
+                        </div>
+                        <div v-else>
+                            <p v-if="selectedMetric.description" class="description">{{ selectedMetric.description }}</p>
+                        </div>
+
+                        <div v-if="editMode && currentType === 'calculated'" :key="'calculated-' + (selectedMetric ? selectedMetric.id : 'null')">
+                            <div class="form-group">
+                                <label>Formula Builder</label>
+                                <div class="formula-builder">
+                                    <select v-model="formulaMetric1" @change="updateFormula">
+                                        <option value="">Select metric...</option>
+                                        <option v-for="m in [...metrics].filter(m => m)" :value="m.slug" :key="m.id">{{ m.name }}</option>
+                                    </select>
+                                    <select v-model="formulaOperation" @change="updateFormula">
+                                        <option value="+">+</option>
+                                        <option value="*">×</option>
+                                    </select>
+                                    <select v-model="formulaMetric2" @change="updateFormula">
+                                        <option value="">Select metric...</option>
+                                        <option v-for="m in [...metrics].filter(m => m)" :value="m.slug" :key="m.id">{{ m.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else-if="selectedMetric && selectedMetric.formula" :key="'formula-' + (selectedMetric ? selectedMetric.id : 'null')">
+                            <p class="formula">Formula: {{ getDetailedFormula(selectedMetric) }}</p>
+                        </div>
+
+                        <div v-if="editMode && currentType === 'variable'" :key="'variable-' + (selectedMetric ? selectedMetric.id : 'null')">
+                            <div class="variable-controls">
+                                <div class="form-group">
+                                    <label>Initial Value</label>
+                                    <input type="number" v-model.number="selectedMetric.initial" @input="recalculate">
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" :id="'chart-' + selectedMetric.id" v-model="chartMetrics" :value="selectedMetric.id">
+                                    <label :for="'chart-' + selectedMetric.id">Show in Chart</label>
+                                </div>
+                            </div>
+
+                            <h4>Growth by Phase</h4>
+                            <div class="growth-grid">
+                                <div v-for="phase in phases" :key="phase.id" class="growth-phase">
+                                    <h6>{{ phase.name }}</h6>
+                                    <div class="form-group">
+                                        <label>Type</label>
+                                        <select v-model="getGrowth(selectedMetric, phase).growthType" @change="recalculate">
+                                            <option value="additive">+</option>
+                                            <option value="multiplicative">×</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Rate</label>
+                                        <input type="number" step="0.01" v-model.number="getGrowth(selectedMetric, phase).growthRate" @input="recalculate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select v-model="selectedMetric.color" @change="recalculate">
+                                <option value="#ffffff">White</option>
+                                <option value="#fafafa">Off White</option>
+                                <option value="#f8f9fa">Light Gray</option>
+                                <option value="#e9ecef">Gray 100</option>
+                                <option value="#dee2e6">Gray 200</option>
+                                <option value="#ced4da">Gray 300</option>
+                                <option value="#adb5bd">Gray 400</option>
+                                <option value="#6c757d">Gray 500</option>
+                                <option value="#495057">Gray 600</option>
+                                <option value="#343a40">Gray 700</option>
+                                <option value="#212529">Gray 800</option>
+                                <option value="#e3f2fd">Light Blue</option>
+                                <option value="#bbdefb">Blue 100</option>
+                                <option value="#90caf9">Blue 200</option>
+                                <option value="#64b5f6">Blue 300</option>
+                                <option value="#42a5f5">Blue 400</option>
+                                <option value="#2196f3">Blue 500</option>
+                                <option value="#1e88e5">Blue 600</option>
+                                <option value="#1976d2">Blue 700</option>
+                                <option value="#1565c0">Blue 800</option>
+                                <option value="#0d47a1">Blue 900</option>
+                                <option value="#e8f5e8">Light Green</option>
+                                <option value="#c8e6c9">Green 100</option>
+                                <option value="#a5d6a7">Green 200</option>
+                                <option value="#81c784">Green 300</option>
+                                <option value="#66bb6a">Green 400</option>
+                                <option value="#4caf50">Green 500</option>
+                                <option value="#43a047">Green 600</option>
+                                <option value="#388e3c">Green 700</option>
+                                <option value="#2e7d32">Green 800</option>
+                                <option value="#1b5e20">Green 900</option>
+                                <option value="#fff3e0">Light Orange</option>
+                                <option value="#ffe0b2">Orange 100</option>
+                                <option value="#ffcc80">Orange 200</option>
+                                <option value="#ffb74d">Orange 300</option>
+                                <option value="#ffa726">Orange 400</option>
+                                <option value="#ff9800">Orange 500</option>
+                                <option value="#fb8c00">Orange 600</option>
+                                <option value="#f57c00">Orange 700</option>
+                                <option value="#ef6c00">Orange 800</option>
+                                <option value="#e65100">Orange 900</option>
+                                <option value="#ffebee">Light Red</option>
+                                <option value="#ffcdd2">Red 100</option>
+                                <option value="#ef9a9a">Red 200</option>
+                                <option value="#e57373">Red 300</option>
+                                <option value="#ef5350">Red 400</option>
+                                <option value="#f44336">Red 500</option>
+                                <option value="#e53935">Red 600</option>
+                                <option value="#d32f2f">Red 700</option>
+                                <option value="#c62828">Red 800</option>
+                                <option value="#b71c1c">Red 900</option>
+                                <option value="#f3e5f5">Light Purple</option>
+                                <option value="#e1bee7">Purple 100</option>
+                                <option value="#ce93d8">Purple 200</option>
+                                <option value="#ba68c8">Purple 300</option>
+                                <option value="#ab47bc">Purple 400</option>
+                                <option value="#9c27b0">Purple 500</option>
+                                <option value="#8e24aa">Purple 600</option>
+                                <option value="#7b1fa2">Purple 700</option>
+                                <option value="#6a1b9a">Purple 800</option>
+                                <option value="#4a148c">Purple 900</option>
+                                <option value="#e0f2f1">Light Teal</option>
+                                <option value="#b2dfdb">Teal 100</option>
+                                <option value="#80cbc4">Teal 200</option>
+                                <option value="#4db6ac">Teal 300</option>
+                                <option value="#26a69a">Teal 400</option>
+                                <option value="#009688">Teal 500</option>
+                                <option value="#00897b">Teal 600</option>
+                                <option value="#00796b">Teal 700</option>
+                                <option value="#00695c">Teal 800</option>
+                                <option value="#004d40">Teal 900</option>
+                                <option value="#fff8e1">Light Yellow</option>
+                                <option value="#ffecb3">Yellow 100</option>
+                                <option value="#ffe082">Yellow 200</option>
+                                <option value="#ffd54f">Yellow 300</option>
+                                <option value="#ffca28">Yellow 400</option>
+                                <option value="#ffc107">Yellow 500</option>
+                                <option value="#ffb300">Yellow 600</option>
+                                <option value="#ffa000">Yellow 700</option>
+                                <option value="#ff8f00">Yellow 800</option>
+                                <option value="#ff6f00">Yellow 900</option>
+                                <option value="#fce4ec">Light Pink</option>
+                                <option value="#f8bbd9">Pink 100</option>
+                                <option value="#f48fb1">Pink 200</option>
+                                <option value="#f06292">Pink 300</option>
+                                <option value="#ec407a">Pink 400</option>
+                                <option value="#e91e63">Pink 500</option>
+                                <option value="#d81b60">Pink 600</option>
+                                <option value="#c2185b">Pink 700</option>
+                                <option value="#ad1457">Pink 800</option>
+                                <option value="#880e4f">Pink 900</option>
+                                <option value="#f1f8e9">Light Lime</option>
+                                <option value="#dcedc8">Lime 100</option>
+                                <option value="#c5e1a5">Lime 200</option>
+                                <option value="#aed581">Lime 300</option>
+                                <option value="#9ccc65">Lime 400</option>
+                                <option value="#8bc34a">Lime 500</option>
+                                <option value="#7cb342">Lime 600</option>
+                                <option value="#689f38">Lime 700</option>
+                                <option value="#558b2f">Lime 800</option>
+                                <option value="#33691e">Lime 900</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Phases Modal -->
+        <div v-if="showPhasesModal" class="modal-overlay" @click="showPhasesModal = false">
+            <div class="modal-content" @click.stop>
+                <div class="modal-header">
+                    <h3>Manage Business Phases</h3>
+                    <button class="modal-close" @click="showPhasesModal = false">×</button>
+                </div>
+                <div class="modal-body">
+                    <div v-for="phase in phases" :key="phase.id" class="phase-item">
+                        <div class="phase-controls">
+                            <input v-model="phase.name" @input="recalculate" placeholder="Phase name">
+                            <input type="number" v-model.number="phase.startMonth" @input="recalculate" placeholder="Start">
+                            <input type="number" v-model.number="phase.endMonth" @input="recalculate" placeholder="End">
+                            <button @click="removePhase(phase.id)">×</button>
+                        </div>
+                    </div>
+                    <button @click="addPhase">Add Phase</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
+
+        const sanitizeForSlug = (str) => {
+            return str.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+        };
+
+        const generateUniqueSlug = (baseName, metrics, excludeId = null) => {
+            let slug = sanitizeForSlug(baseName);
+            if (!slug) slug = 'metric';
+            let counter = 1;
+            let uniqueSlug = slug;
+            while (metrics.some(m => m.slug === uniqueSlug && m.id !== excludeId)) {
+                uniqueSlug = `${slug}_${counter}`;
+                counter++;
+            }
+            return uniqueSlug;
+        };
+
+        createApp({
+            setup() {
+                const metrics = ref([]);
+
+                const phases = ref([]);
+
+                const selectedMetricId = ref(null);
+                const viewMode = ref('monthly');
+                const chartMetrics = ref([]);
+                const editMode = ref(false);
+                const showPhasesModal = ref(false);
+                const formulaMetric1 = ref('');
+                const formulaOperation = ref('+');
+                const formulaMetric2 = ref('');
+
+                const selectedMetric = computed(() => {
+                    if (!selectedMetricId.value || metrics.value.length === 0) return null;
+                    return metrics.value.find(m => m.id === selectedMetricId.value);
+                });
+
+                const currentType = ref('');
+
+                const periods = computed(() => {
+                    return viewMode.value === 'monthly'
+                        ? Array.from({ length: 61 }, (_, i) => i)
+                        : Array.from({ length: 5 }, (_, i) => i + 1);
+                });
+
+                const projections = computed(() => {
+                    return calculateProjections(metrics.value, phases.value);
+                });
+
+                const selectMetric = (id) => {
+                    selectedMetricId.value = id;
+                    editMode.value = false; // Reset edit mode when selecting new metric
+                    if (selectedMetric.value) {
+                        currentType.value = selectedMetric.value.type;
+                        if (selectedMetric.value.type === 'calculated' && selectedMetric.value.formula) {
+                            parseFormulaForBuilder(selectedMetric.value.formula);
+                        } else {
+                            formulaMetric1.value = '';
+                            formulaOperation.value = '+';
+                            formulaMetric2.value = '';
+                        }
+                    }
+                };
+
+                const getMetricIndex = (id) => {
+                    return metrics.value.findIndex(m => m.id === id);
+                };
+
+                const moveMetricUp = () => {
+                    const index = getMetricIndex(selectedMetricId.value);
+                    if (index > 0) {
+                        [metrics.value[index], metrics.value[index - 1]] = [metrics.value[index - 1], metrics.value[index]];
+                        recalculate();
+                    }
+                };
+
+                const moveMetricDown = () => {
+                    const index = getMetricIndex(selectedMetricId.value);
+                    if (index < metrics.value.length - 1) {
+                        [metrics.value[index], metrics.value[index + 1]] = [metrics.value[index + 1], metrics.value[index]];
+                        recalculate();
+                    }
+                };
+
+                const deleteMetric = () => {
+                    if (confirm(`Are you sure you want to delete "${selectedMetric.value.name}"?`)) {
+                        const index = getMetricIndex(selectedMetricId.value);
+                        if (index > -1) {
+                            metrics.value.splice(index, 1);
+                            // Select the next metric or the last one
+                            if (metrics.value.length > 0) {
+                                const newIndex = Math.min(index, metrics.value.length - 1);
+                                selectedMetricId.value = metrics.value[newIndex].id;
+                            } else {
+                                selectedMetricId.value = null;
+                            }
+                            recalculate();
+                        }
+                    }
+                };
+
+                const updateType = (event) => {
+                    selectedMetric.value.type = event.target.value;
+                    console.log('Type updated to', selectedMetric.value.type);
+                    onTypeChange();
+                };
+
+                const onTypeChange = () => {
+                    console.log('onTypeChange called for type', selectedMetric.value.type);
+                    // Preserve data when changing type
+                    if (selectedMetric.value.type === 'calculated') {
+                        // Keep initial value and growths as backup, just reset formula
+                        selectedMetric.value.formula = '';
+                        // Reset formula builder
+                        formulaMetric1.value = '';
+                        formulaOperation.value = '+';
+                        formulaMetric2.value = '';
+                        recalculate();
+                    } else if (selectedMetric.value.type === 'variable') {
+                        selectedMetric.value.formula = undefined;
+                        // Keep existing growths if they exist, otherwise create defaults
+                        if (!selectedMetric.value.growths || selectedMetric.value.growths.length === 0) {
+                            selectedMetric.value.growths = phases.value.map(p => ({
+                                phaseId: p.id,
+                                growthType: 'additive',
+                                growthRate: 0
+                            }));
+                        }
+                        // Reset formula builder
+                        formulaMetric1.value = '';
+                        formulaOperation.value = '+';
+                        formulaMetric2.value = '';
+                        recalculate();
+                        // After recalculate, set initial to current calculated value
+                        nextTick(() => {
+                            const metricIndex = metrics.value.findIndex(m => m.id === selectedMetric.value.id);
+                            selectedMetric.value.initial = projections.value[metricIndex]?.values[0] || 0;
+                        });
+                    }
+                };
+
+                const parseDependencies = (formula) => {
+                    const deps = [];
+                    const parts = formula.split(' ');
+                    if (parts.length === 3) {
+                        const [slug1, , slug2] = parts;
+                        const m1 = metrics.value.find(m => m.slug === slug1);
+                        const m2 = metrics.value.find(m => m.slug === slug2);
+                        if (m1) deps.push(m1.id);
+                        if (m2) deps.push(m2.id);
+                    }
+                    return deps;
+                };
+
+                const hasCycle = (startMetricId, newDeps) => {
+                    const graph = {};
+                    metrics.value.forEach(m => {
+                        if (m.type === 'calculated' && m.formula && m.id !== startMetricId) {
+                            graph[m.id] = parseDependencies(m.formula);
+                        } else {
+                            graph[m.id] = [];
+                        }
+                    });
+                    graph[startMetricId] = newDeps;
+
+                    const visited = new Set();
+                    const recStack = new Set();
+
+                    const dfs = (node) => {
+                        if (recStack.has(node)) return true;
+                        if (visited.has(node)) return false;
+                        visited.add(node);
+                        recStack.add(node);
+                        for (const dep of graph[node] || []) {
+                            if (dfs(dep)) return true;
+                        }
+                        recStack.delete(node);
+                        return false;
+                    };
+
+                    return dfs(startMetricId);
+                };
+
+                const updateFormula = () => {
+                    if (formulaMetric1.value && formulaMetric2.value) {
+                        const newFormula = `${formulaMetric1.value} ${formulaOperation.value} ${formulaMetric2.value}`;
+                        const newDeps = parseDependencies(newFormula);
+
+                        if (hasCycle(selectedMetric.value.id, newDeps)) {
+                            alert('This formula would create a circular dependency. Please choose different metrics.');
+                            return;
+                        }
+
+                        selectedMetric.value.formula = newFormula;
+                        recalculate();
+                    }
+                };
+
+                const getGrowth = (metric, phase) => {
+                    if (!metric) return { growthType: 'additive', growthRate: 0 };
+                    let growth = metric.growths.find(g => g.phaseId === phase.id);
+                    if (!growth) {
+                        growth = { phaseId: phase.id, growthType: 'additive', growthRate: 0 };
+                        metric.growths.push(growth);
+                    }
+                    return growth;
+                };
+
+                const addPhase = () => {
+                    const newId = Date.now();
+                    const lastPhase = phases.value[phases.value.length - 1];
+                    const startMonth = lastPhase ? lastPhase.endMonth + 1 : 1;
+                    phases.value.push({
+                        id: newId,
+                        name: 'New Phase',
+                        startMonth,
+                        endMonth: 60
+                    });
+                    // Add growth settings for all metrics
+                    metrics.value.forEach(metric => {
+                        if (metric.type === 'variable') {
+                            metric.growths.push({
+                                phaseId: newId,
+                                growthType: 'additive',
+                                growthRate: 0
+                            });
+                        }
+                    });
+                    recalculate();
+                };
+
+                const removePhase = (id) => {
+                    const index = phases.value.findIndex(p => p.id === id);
+                    if (index > -1) {
+                        phases.value.splice(index, 1);
+                        // Remove growth settings
+                        metrics.value.forEach(metric => {
+                            if (metric.type === 'variable') {
+                                metric.growths = metric.growths.filter(g => g.phaseId !== id);
+                            }
+                        });
+                        recalculate();
+                    }
+                };
+
+                const addMetric = () => {
+                    const newId = 'custom_' + Date.now();
+                    const baseName = 'New Metric';
+                    const slug = generateUniqueSlug(baseName, metrics.value);
+                    const newMetric = {
+                        id: newId,
+                        name: baseName,
+                        slug: slug,
+                        description: 'Custom metric description',
+                        color: '#f8f9fa',
+                        type: 'variable',
+                        initial: 0,
+                        growths: phases.value.map(p => ({
+                            phaseId: p.id,
+                            growthType: 'additive',
+                            growthRate: 0
+                        }))
+                    };
+                    metrics.value.push(newMetric);
+                    selectedMetricId.value = newId; // Select the new metric
+                    editMode.value = true; // Enter edit mode
+                    recalculate();
+                };
+
+                const recalculate = () => {
+                    // Trigger reactivity
+                    projections.value;
+                };
+
+                const formatValue = (val, isCurrency) => {
+                    if (typeof val !== 'number' || isNaN(val)) {
+                        return '0';
+                    }
+                    if (isCurrency) {
+                        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+                    }
+
+                    // Smart decimal formatting based on magnitude
+                    const absVal = Math.abs(val);
+                    if (absVal >= 100) {
+                        // 3+ digits: no decimals
+                        return Math.round(val).toString();
+                    } else if (absVal >= 10) {
+                        // 2 digits: 1 decimal
+                        return val.toFixed(1);
+                    } else {
+                        // < 10: 2 decimals, but remove trailing zeros
+                        const fixed = val.toFixed(2);
+                        return fixed.replace(/\.?0+$/, '');
+                    }
+                };
+
+                const getValue = (projection, period) => {
+                    if (viewMode.value === 'monthly') {
+                        return projection.values[period];
+                    } else {
+                        return projection.values[period * 12] || 0;
+                    }
+                };
+
+                const getDetailedFormula = (metric) => {
+                    if (!metric || metric.type !== 'calculated') return '';
+
+                    const metricNames = {
+                        currentCustomers: '👥 Current Customers',
+                        newCustomers: '➕ New Customers per Month',
+                        totalCustomers: '📊 Total Customers',
+                        unitsPerCustomer: '📦 Units per Customer/Month',
+                        totalUnits: '📈 Total Units Sold/Month',
+                        pricePerUnit: '💰 Price per Unit',
+                        salesRevenue: '💵 Sales Revenue/Month',
+                        otherInflows: '💸 Other Inflows/Month',
+                        totalInflow: '📥 Total Inflow/Month',
+                        cogsPerUnit: '🏭 COGS per Unit',
+                        totalCogs: '📉 Total COGS/Month',
+                        fixedCosts: '🏢 Fixed Costs/Month',
+                        otherOutflows: '💳 Other Outflows/Month',
+                        totalOutflow: '📤 Total Outflow/Month',
+                        cashBalance: '💰 Cash Balance'
+                    };
+
+                    if (metric.id === 'totalCustomers') {
+                        return 'Previous total + New customers per month';
+                    } else if (metric.id === 'totalUnits') {
+                        return 'Total customers × Units per customer per month';
+                    } else if (metric.id === 'salesRevenue') {
+                        return 'Total units sold × Price per unit';
+                    } else if (metric.id === 'totalInflow') {
+                        return 'Sales revenue + Other inflows per month';
+                    } else if (metric.id === 'totalCogs') {
+                        return 'Total units sold × COGS per unit';
+                    } else if (metric.id === 'totalOutflow') {
+                        return 'Total COGS + Fixed costs + Other outflows per month';
+                    } else if (metric.id === 'cashBalance') {
+                        return 'Previous balance + Total inflow - Total outflow';
+                    }
+
+                    // For custom formulas, convert slugs to names
+                    const parts = metric.formula.split(' ');
+                    if (parts.length === 3) {
+                        const [slug1, op, slug2] = parts;
+                        const m1 = metrics.value.find(m => m.slug === slug1);
+                        const m2 = metrics.value.find(m => m.slug === slug2);
+                        if (m1 && m2) {
+                            return `${m1.name} ${op} ${m2.name}`;
+                        }
+                    }
+                    return metric.formula;
+                };
+
+                const getInitialValue = (metric) => {
+                    if (!metric) return '';
+                    return metric.type === 'variable' ? metric.initial : '';
+                };
+
+                const getPhaseGrowth = (metric, phaseIndex) => {
+                    if (!metric || metric.type !== 'variable') return '';
+                    const phase = phases.value[phaseIndex];
+                    if (!phase) return '';
+                    const growth = metric.growths.find(g => g.phaseId === phase.id);
+                    if (!growth) return '';
+                    const symbol = growth.growthType === 'additive' ? '+' : '×';
+                    return `${symbol}${growth.growthRate}`;
+                };
+
+                const exportData = () => {
+                    const data = {
+                        metrics: metrics.value,
+                        phases: phases.value,
+                        selectedMetricId: selectedMetricId.value,
+                        viewMode: viewMode.value,
+                        chartMetrics: chartMetrics.value
+                    };
+                    const now = new Date();
+                    const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                    const filename = `projections-data-${timestamp}.json`;
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+
+                const importData = (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const data = JSON.parse(e.target.result);
+                                const newMetrics = (data.metrics || []).map(m => {
+                                    const metric = { ...m, color: m.color || '#f8f9fa', unit: m.unit || '' };
+                                    if (!metric.slug) {
+                                        metric.slug = generateUniqueSlug(metric.name, metrics.value);
+                                    }
+                                    return metric;
+                                });
+                                metrics.value.splice(0, metrics.value.length, ...newMetrics);
+                                phases.value = data.phases || [];
+                                selectedMetricId.value = data.selectedMetricId || null;
+                                viewMode.value = data.viewMode || 'monthly';
+                                chartMetrics.value = data.chartMetrics || [];
+                                if (!selectedMetricId.value && metrics.value.length > 0) {
+                                    selectedMetricId.value = metrics.value.find(m => m.type === 'variable')?.id || metrics.value[0].id;
+                                }
+                                // If selected metric is not calculated, select the first calculated one to show formula builder
+                                if (selectedMetric.value && selectedMetric.value.type !== 'calculated') {
+                                    const firstCalculated = metrics.value.find(m => m.type === 'calculated' && m.formula);
+                                    if (firstCalculated) {
+                                        selectedMetricId.value = firstCalculated.id;
+                                    }
+                                }
+                                // Populate formula builder after reactive update
+                                nextTick(() => {
+                                    if (selectedMetric.value && selectedMetric.value.type === 'calculated' && selectedMetric.value.formula) {
+                                        parseFormulaForBuilder(selectedMetric.value.formula);
+                                    }
+                                });
+                                recalculate();
+                            } catch (error) {
+                                alert('Error loading file: ' + error.message);
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+
+                const evaluateFormula = (formula, month, data) => {
+                    // Parse "slug1 + slug2" or "slug1 * slug2"
+                    const parts = formula.split(' ');
+                    if (parts.length === 3) {
+                        const [slug1, op, slug2] = parts;
+                        const m1 = metrics.value.find(m => m.slug === slug1);
+                        const m2 = metrics.value.find(m => m.slug === slug2);
+                        if (m1 && m2 && data[m1.id] && data[m2.id]) {
+                            const v1 = data[m1.id][month] || 0;
+                            const v2 = data[m2.id][month] || 0;
+                            if (op === '+') return v1 + v2;
+                            if (op === '*') return v1 * v2;
+                        }
+                    }
+                    return 0;
+                };
+
+                const calculateProjections = (metrics, phases) => {
+                    if (metrics.length === 0) return [];
+                    const months = 61;
+                    const data = {};
+                    const hardcodedIds = ['totalCustomers', 'totalUnits', 'salesRevenue', 'totalInflow', 'totalCogs', 'totalOutflow', 'cashBalance'];
+                    metrics.forEach(m => {
+                        data[m.id] = new Array(months).fill(0);
+                    });
+
+                    // Set initials
+                    metrics.forEach(m => {
+                        if (m.type === 'variable') {
+                            data[m.id][0] = m.initial;
+                        }
+                    });
+                    if (data.totalCustomers && data.currentCustomers) {
+                        data.totalCustomers[0] = data.currentCustomers[0];
+                    }
+                    if (data.cashBalance) {
+                        data.cashBalance[0] = 0;
+                    }
+
+                    // Calculate custom calculated metrics at month 0
+                    metrics.forEach(m => {
+                        if (m.type === 'calculated' && m.formula && !hardcodedIds.includes(m.id)) {
+                            data[m.id][0] = evaluateFormula(m.formula, 0, data);
+                        }
+                    });
+
+                    // Calculate for each month
+                    for (let month = 1; month < months; month++) {
+                        const currentPhase = phases.find(p => month >= p.startMonth && month <= p.endMonth);
+
+                        // Grow variables
+                        metrics.forEach(m => {
+                            if (m.type === 'variable') {
+                                const prev = data[m.id][month - 1];
+                                if (currentPhase) {
+                                    const growth = m.growths.find(g => g.phaseId === currentPhase.id);
+                                    if (growth) {
+                                        if (growth.growthType === 'additive') {
+                                            data[m.id][month] = prev + growth.growthRate;
+                                        } else {
+                                            data[m.id][month] = prev * growth.growthRate;
+                                        }
+                                    } else {
+                                        data[m.id][month] = prev;
+                                    }
+                                } else {
+                                    data[m.id][month] = prev;
+                                }
+                            }
+                        });
+
+                        // Calculate derived
+                        if (data.totalCustomers && data.newCustomers) {
+                            data.totalCustomers[month] = data.totalCustomers[month - 1] + data.newCustomers[month];
+                        }
+                        if (data.totalUnits && data.totalCustomers && data.unitsPerCustomer) {
+                            data.totalUnits[month] = data.totalCustomers[month] * data.unitsPerCustomer[month];
+                        }
+                        if (data.salesRevenue && data.totalUnits && data.pricePerUnit) {
+                            data.salesRevenue[month] = data.totalUnits[month] * data.pricePerUnit[month];
+                        }
+                        if (data.totalInflow && data.salesRevenue && data.otherInflows) {
+                            data.totalInflow[month] = data.salesRevenue[month] + data.otherInflows[month];
+                        }
+                        if (data.totalCogs && data.totalUnits && data.cogsPerUnit) {
+                            data.totalCogs[month] = data.totalUnits[month] * data.cogsPerUnit[month];
+                        }
+                        if (data.totalOutflow && data.totalCogs && data.fixedCosts && data.otherOutflows) {
+                            data.totalOutflow[month] = data.totalCogs[month] + data.fixedCosts[month] + data.otherOutflows[month];
+                        }
+                        if (data.cashBalance && data.totalInflow && data.totalOutflow) {
+                            data.cashBalance[month] = data.cashBalance[month - 1] + data.totalInflow[month] - data.totalOutflow[month];
+                        }
+
+                        // Calculate custom calculated metrics
+                        metrics.forEach(m => {
+                            if (m.type === 'calculated' && m.formula && !hardcodedIds.includes(m.id)) {
+                                data[m.id][month] = evaluateFormula(m.formula, month, data);
+                            }
+                        });
+                    }
+
+                    // Prepare result
+                    return metrics.map(m => {
+                        const isCurrency = ['salesRevenue', 'otherInflows', 'totalInflow', 'totalCogs', 'fixedCosts', 'otherOutflows', 'totalOutflow', 'cashBalance'].includes(m.id);
+                        return {
+                            name: m.name,
+                            values: data[m.id],
+                            isCurrency
+                        };
+                    });
+                };
+
+                let chart = null;
+                const updateChart = () => {
+                    const canvas = document.getElementById('chart');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const datasets = projections.value
+                        .filter((_, idx) => chartMetrics.value.includes(metrics.value[idx].id))
+                        .map((row, idx) => ({
+                            label: row.name,
+                            data: viewMode.value === 'monthly' ? row.values : row.values.filter((_, i) => i % 12 === 0 && i > 0),
+                            borderColor: `hsl(${idx * 60}, 70%, 50%)`,
+                            fill: false
+                        }));
+
+                    if (chart) {
+                        chart.destroy();
+                    }
+
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: periods.value.map(p => `${viewMode.value === 'monthly' ? 'Month' : 'Year'} ${p}`),
+                            datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                };
+
+                onMounted(() => {
+                    updateChart();
+                });
+
+                watch(projections, () => {
+                    updateChart();
+                });
+
+                watch([chartMetrics, viewMode], () => {
+                    updateChart();
+                });
+
+                const parseFormulaForBuilder = (formula) => {
+                    const parts = formula.split(' ');
+                    if (parts.length === 3) {
+                        const [slug1, op, slug2] = parts;
+                        formulaMetric1.value = slug1;
+                        formulaOperation.value = op;
+                        formulaMetric2.value = slug2;
+                        return;
+                    }
+                    // If not parsed, reset
+                    formulaMetric1.value = '';
+                    formulaOperation.value = '+';
+                    formulaMetric2.value = '';
+                };
+
+
+                watch(() => selectedMetric.value?.name, (newName) => {
+                    if (newName && selectedMetric.value) {
+                        selectedMetric.value.slug = generateUniqueSlug(newName, metrics.value, selectedMetric.value.id);
+                    }
+                });
+
+                watch(() => selectedMetric.value?.type, (newType, oldType) => {
+                    console.log('Type changed from', oldType, 'to', newType);
+                    currentType.value = newType;
+                    if (newType && newType !== oldType) {
+                        onTypeChange();
+                    }
+                });
+
+                return {
+                    metrics,
+                    phases,
+                    selectedMetricId,
+                    selectedMetric,
+                    currentType,
+                    viewMode,
+                    periods,
+                    projections,
+                    chartMetrics,
+                    editMode,
+                    showPhasesModal,
+                    formulaMetric1,
+                    formulaOperation,
+                    formulaMetric2,
+                    selectMetric,
+                    getMetricIndex,
+                    moveMetricUp,
+                    moveMetricDown,
+                    deleteMetric,
+                    updateType,
+                    onTypeChange,
+                    getGrowth,
+                    addPhase,
+                    removePhase,
+                    addMetric,
+                    updateFormula,
+                    recalculate,
+                    formatValue,
+                    getValue,
+                    getInitialValue,
+                    getPhaseGrowth,
+                    getDetailedFormula,
+                    exportData,
+                    importData
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

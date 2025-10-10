@@ -1,0 +1,102 @@
+- [[Stakeholders]]
+	- stakeholder n
+		- Segments
+			- segment n
+				- Profiles
+					- profile n
+						- role
+						- Segmentation
+						  collapsed:: true
+							- segmentation n
+						- Personas
+						  collapsed:: true
+							- persona n
+								- Segmentation
+									- segmentation n
+			- [[Problems]]
+				- problem n
+				  severity:: 1-9
+				  urgency:: 1-9
+				  conciousness:: 1-9
+			- Propositions
+				- proposition n
+					- Messages
+						- message n
+			- Channels
+				- channel n
+			- Perceptions
+				- perception n
+			- Emotions
+				- emotion n
+			- Behaviors
+				- behavior n
+			- Journey
+				- journey_step n
+			- Relationship
+	- Competition
+		- competitor n
+	- Market size
+- Solutions
+	- solution n
+		- Components
+			- component n
+		- Features
+			- feature n
+	- Roadmap
+	- Pricing
+	- Offerings
+		- offering n
+- Marketing
+	- Naming
+	- Branding
+	- Visual identity
+	- Logo
+	- Media plan
+- Communication
+	- Pitch
+	- Brochure
+	- Web
+	- Storytelling
+	- Presentations
+- Organization
+	- Business idea
+	- Inspiration
+	- Opportunity
+	- Business status
+	- Challenges
+	- Business objectives
+		- Mission
+		- Vision
+		- Organizational values
+		- Organizational goals
+- Operations
+- Activities
+- Functions
+- Resources
+- Team
+	- Team members
+		- person n
+			- Goals
+			- Skills
+			- Contributions
+			- Compensations
+	- Positions
+		- position n
+			- Goals
+			- Skills
+- Project plan
+	- Phases
+	- Milestones
+- Metrics
+- Finance
+	- Revenue
+	- Life Time Value
+	- Costs
+		- Customer Aquisition Cost
+	- Unit economics
+	- Funding sources
+	- Shareholders
+	- Projections
+- Legal
+	- Legal issues
+	- Contracts

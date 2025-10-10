@@ -1,0 +1,1 @@
+alias:: Organizational goals, Organizational goal

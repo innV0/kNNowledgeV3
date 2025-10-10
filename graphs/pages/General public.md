@@ -1,0 +1,1 @@
+- interested in supernatural manifestations
