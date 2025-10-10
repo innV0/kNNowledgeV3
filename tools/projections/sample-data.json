@@ -3,6 +3,7 @@
     {
       "id": "currentCustomers",
       "name": "👥 Current Customers",
+      "slug": "current_customers",
       "description": "Number of customers at the start of the projection period",
       "unit": "customers",
       "color": "#f8f9fa",
@@ -17,6 +18,7 @@
     {
       "id": "newCustomers",
       "name": "➕ New Customers per Month",
+      "slug": "new_customers_per_month",
       "description": "Monthly acquisition of new customers",
       "unit": "customers",
       "color": "#f8f9fa",
@@ -31,6 +33,7 @@
     {
       "id": "totalCustomers",
       "name": "📊 Total Customers",
+      "slug": "total_customers",
       "description": "Running total of all customers over time",
       "unit": "customers",
       "color": "#e3f2fd",
@@ -40,6 +43,7 @@
     {
       "id": "unitsPerCustomer",
       "name": "📦 Units per Customer/Month",
+      "slug": "units_per_customer_month",
       "description": "Average products purchased per customer monthly",
       "unit": "units",
       "color": "#f8f9fa",
@@ -54,6 +58,7 @@
     {
       "id": "totalUnits",
       "name": "📈 Total Units Sold/Month",
+      "slug": "total_units_sold_month",
       "description": "Monthly product sales volume",
       "unit": "units",
       "color": "#e8f5e8",
@@ -63,6 +68,7 @@
     {
       "id": "pricePerUnit",
       "name": "💰 Price per Unit",
+      "slug": "price_per_unit",
       "description": "Revenue per product unit sold",
       "unit": "€",
       "color": "#f8f9fa",
@@ -77,6 +83,7 @@
     {
       "id": "salesRevenue",
       "name": "💵 Sales Revenue/Month",
+      "slug": "sales_revenue_month",
       "description": "Monthly income from product sales",
       "unit": "€",
       "color": "#e8f5e8",
@@ -86,6 +93,7 @@
     {
       "id": "otherInflows",
       "name": "💸 Other Inflows/Month",
+      "slug": "other_inflows_month",
       "description": "Additional monthly cash receipts",
       "unit": "€",
       "color": "#f8f9fa",
@@ -100,6 +108,7 @@
     {
       "id": "totalInflow",
       "name": "📥 Total Inflow/Month",
+      "slug": "total_inflow_month",
       "description": "Combined monthly cash inflows",
       "unit": "€",
       "color": "#e8f5e8",
@@ -109,6 +118,7 @@
     {
       "id": "cogsPerUnit",
       "name": "🏭 COGS per Unit",
+      "slug": "cogs_per_unit",
       "description": "Direct cost per product unit",
       "unit": "€",
       "color": "#f8f9fa",
@@ -123,6 +133,7 @@
     {
       "id": "totalCogs",
       "name": "📉 Total COGS/Month",
+      "slug": "total_cogs_month",
       "description": "Monthly cost of goods sold",
       "unit": "€",
       "color": "#ffebee",
@@ -132,6 +143,7 @@
     {
       "id": "fixedCosts",
       "name": "🏢 Fixed Costs/Month",
+      "slug": "fixed_costs_month",
       "description": "Recurring operational expenses",
       "unit": "€",
       "color": "#f8f9fa",
@@ -146,6 +158,7 @@
     {
       "id": "otherOutflows",
       "name": "💳 Other Outflows/Month",
+      "slug": "other_outflows_month",
       "description": "Additional monthly cash expenses",
       "unit": "€",
       "color": "#f8f9fa",
@@ -160,6 +173,7 @@
     {
       "id": "totalOutflow",
       "name": "📤 Total Outflow/Month",
+      "slug": "total_outflow_month",
       "description": "Combined monthly cash outflows",
       "unit": "€",
       "color": "#ffebee",
@@ -169,6 +183,7 @@
     {
       "id": "cashBalance",
       "name": "💰 Cash Balance",
+      "slug": "cash_balance",
       "description": "Running cash position over time",
       "unit": "€",
       "color": "#fff3e0",
