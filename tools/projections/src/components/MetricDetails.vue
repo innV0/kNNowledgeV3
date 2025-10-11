@@ -59,7 +59,7 @@
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Unit</label>
-          <select v-model="selectedMetric.unit" @change="$emit('recalculate')"
+          <select v-model="unitSelection" @change="onUnitChange"
                   class="w-full px-3 py-2 border border-gray-300 rounded">
             <option value="">No unit</option>
             <option value="units">units</option>
@@ -69,8 +69,8 @@
             <option value="customers">customers</option>
             <option value="custom">Custom...</option>
           </select>
-          <input v-if="selectedMetric.unit === 'custom'" v-model="selectedMetric.unit"
-                 @input="$emit('recalculate')" placeholder="Enter custom unit"
+          <input v-if="unitSelection === 'custom'" v-model="customUnitInput"
+                 @input="updateCustomUnit" placeholder="Enter custom unit"
                  class="w-full mt-1 px-3 py-2 border border-gray-300 rounded">
         </div>
       </div>
@@ -167,6 +167,7 @@
           <label class="block text-sm font-medium mb-1">Interpolation Method</label>
           <select v-model="selectedMetric.interpolation" @change="$emit('recalculate')"
                   class="px-3 py-2 border border-gray-300 rounded">
+            <option value="none">No Interpolation (Individual Values)</option>
             <option value="linear">Linear Interpolation</option>
             <option value="curve">Curve Interpolation (Spline)</option>
           </select>
@@ -201,12 +202,209 @@
           <!-- Add more color options as needed -->
         </select>
       </div>
+
+      <!-- Tags -->
+      <div v-if="selectedMetric">
+        <label class="block text-sm font-medium mb-1">Tags</label>
+        <div v-if="editMode" class="space-y-2">
+          <input
+            v-model="newTag"
+            @keydown.enter="addTag"
+            @keydown="handleTagInput"
+            placeholder="Add a tag and press Enter"
+            class="w-full px-3 py-2 border border-gray-300 rounded"
+          >
+          <div class="flex flex-wrap gap-1">
+            <span
+              v-for="tag in selectedMetric.tags"
+              :key="tag"
+              class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
+            >
+              {{ tag }}
+              <button
+                @click="removeTag(tag)"
+                class="ml-1 text-blue-600 hover:text-blue-800"
+              >
+                ×
+              </button>
+            </span>
+          </div>
+        </div>
+        <div v-else class="flex flex-wrap gap-1">
+          <span
+            v-for="tag in selectedMetric.tags"
+            :key="tag"
+            class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800"
+          >
+            {{ tag }}
+          </span>
+          <span v-if="selectedMetric.tags.length === 0" class="text-gray-500 text-sm">No tags</span>
+          </div>
+        </div>
+  
+        <!-- Value Formatting -->
+        <div v-if="selectedMetric">
+          <label class="block text-sm font-medium mb-2">Value Formatting</label>
+          <div v-if="editMode" class="space-y-4 p-4 border border-gray-200 rounded">
+            <!-- Format Presets -->
+            <div>
+              <label class="block text-sm font-medium mb-1">Quick Presets</label>
+              <div class="flex flex-wrap gap-2">
+                <button @click="applyFormatPreset('default')" class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded">Default</button>
+                <button @click="applyFormatPreset('currency')" class="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 rounded">Currency</button>
+                <button @click="applyFormatPreset('percentage')" class="px-3 py-1 text-xs bg-green-100 hover:bg-green-200 rounded">Percentage</button>
+                <button @click="applyFormatPreset('compact')" class="px-3 py-1 text-xs bg-purple-100 hover:bg-purple-200 rounded">Compact</button>
+                <button @click="applyFormatPreset('scientific')" class="px-3 py-1 text-xs bg-orange-100 hover:bg-orange-200 rounded">Scientific</button>
+              </div>
+            </div>
+  
+            <!-- Decimal Places -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Decimal Places</label>
+                <select v-model="selectedMetric.format.decimals" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option :value="0">0 decimals</option>
+                  <option :value="1">1 decimal</option>
+                  <option :value="2">2 decimals</option>
+                  <option :value="3">3 decimals</option>
+                </select>
+              </div>
+  
+              <!-- Rounding Method -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Rounding</label>
+                <select v-model="selectedMetric.format.rounding" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option value="round">Round</option>
+                  <option value="floor">Floor</option>
+                  <option value="ceil">Ceil</option>
+                  <option value="trunc">Truncate</option>
+                </select>
+              </div>
+            </div>
+  
+            <!-- Display Options -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Currency Symbol -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Currency Symbol</label>
+                <select v-model="selectedMetric.format.currency" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option value="">None</option>
+                  <option value="$">$ (USD)</option>
+                  <option value="€">€ (EUR)</option>
+                  <option value="£">£ (GBP)</option>
+                  <option value="¥">¥ (JPY)</option>
+                  <option value="custom">Custom...</option>
+                </select>
+                <input v-if="selectedMetric.format.currency === 'custom'" v-model="customCurrencySymbol"
+                       @input="updateCustomCurrency" placeholder="Enter symbol"
+                       class="w-full mt-1 px-3 py-2 border border-gray-300 rounded">
+              </div>
+  
+              <!-- Compact Notation -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Compact Notation</label>
+                <select v-model="selectedMetric.format.compact" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option :value="false">Disabled</option>
+                  <option :value="true">Enabled (K/M/B/T)</option>
+                </select>
+              </div>
+            </div>
+  
+            <!-- Special Formats -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Percentage -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Percentage</label>
+                <select v-model="selectedMetric.format.percentage" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option :value="false">No</option>
+                  <option :value="true">Yes (add %)</option>
+                </select>
+              </div>
+  
+              <!-- Scientific Notation -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Scientific Notation</label>
+                <select v-model="selectedMetric.format.scientific" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option :value="false">No</option>
+                  <option :value="true">Yes</option>
+                </select>
+              </div>
+            </div>
+  
+            <!-- Advanced Options -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Color Coding -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Color Coding</label>
+                <select v-model="selectedMetric.format.colorize" @change="$emit('recalculate')" class="w-full px-3 py-2 border border-gray-300 rounded">
+                  <option :value="false">No colors</option>
+                  <option :value="true">Green/Red for +/-</option>
+                </select>
+              </div>
+  
+              <!-- Minimum Threshold -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Min Threshold</label>
+                <input v-model.number="selectedMetric.format.minThreshold" @input="$emit('recalculate')"
+                       type="number" step="0.01" min="0" placeholder="0.01"
+                       class="w-full px-3 py-2 border border-gray-300 rounded">
+                <p class="text-xs text-gray-500 mt-1">Show "< value" for smaller numbers</p>
+              </div>
+            </div>
+  
+            <!-- Custom Suffix -->
+            <div>
+              <label class="block text-sm font-medium mb-1">Custom Suffix</label>
+              <input v-model="selectedMetric.format.suffix" @input="$emit('recalculate')"
+                     placeholder="e.g., per month, total, etc."
+                     class="w-full px-3 py-2 border border-gray-300 rounded">
+            </div>
+  
+            <!-- Format Preview -->
+            <div class="mt-4 p-3 bg-gray-50 rounded">
+              <label class="block text-sm font-medium mb-2">Preview</label>
+              <div class="grid grid-cols-3 gap-2 text-sm">
+                <div>Positive: <span class="font-mono">{{ formatPreview(1234.567) }}</span></div>
+                <div>Negative: <span class="font-mono">{{ formatPreview(-1234.567) }}</span></div>
+                <div>Small: <span class="font-mono">{{ formatPreview(0.00123) }}</span></div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Read-only format display -->
+          <div v-else class="text-sm text-gray-600">
+            <div class="flex flex-wrap gap-1">
+              <span v-if="selectedMetric.format.currency" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                Currency: {{ selectedMetric.format.currency === 'custom' ? customCurrencySymbol : selectedMetric.format.currency }}
+              </span>
+              <span v-if="selectedMetric.format.percentage" class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
+                Percentage
+              </span>
+              <span v-if="selectedMetric.format.compact" class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
+                Compact
+              </span>
+              <span v-if="selectedMetric.format.scientific" class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">
+                Scientific
+              </span>
+              <span v-if="selectedMetric.format.colorize" class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">
+                Color Coding
+              </span>
+              <span v-if="selectedMetric.format.decimals !== 2" class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">
+                {{ selectedMetric.format.decimals }} decimals
+              </span>
+              <span v-if="selectedMetric.format.suffix" class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
+                "{{ selectedMetric.format.suffix }}"
+              </span>
+            </div>
+            <p v-if="!hasActiveFormats" class="text-gray-500">Default formatting</p>
+          </div>
+        </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   selectedMetric: Object,
@@ -223,6 +421,28 @@ const props = defineProps({
   getMetricValue: Function,
   setMetricValue: Function
 })
+
+const newTag = ref('')
+const customUnitInput = ref('')
+const unitSelection = ref('')
+const customCurrencySymbol = ref('')
+
+// Watch for selectedMetric changes to sync unit selection and custom unit input
+watch(() => props.selectedMetric, (newMetric) => {
+  if (newMetric) {
+    if (!newMetric.unit) {
+      unitSelection.value = ''
+      customUnitInput.value = ''
+    } else if (['', 'units', '€', '$', '%', 'customers'].includes(newMetric.unit)) {
+      unitSelection.value = newMetric.unit
+      customUnitInput.value = ''
+    } else {
+      // Custom unit
+      unitSelection.value = 'custom'
+      customUnitInput.value = newMetric.unit
+    }
+  }
+}, { immediate: true })
 
 const emit = defineEmits([
   'toggle-edit',
@@ -372,4 +592,166 @@ const updateFormulaMetric2 = (event) => {
 const updateFormulaOffset2 = (event) => {
   emit('update-formula-offset2', parseInt(event.target.value))
 }
+
+// Unit management functions
+const onUnitChange = () => {
+  if (unitSelection.value === 'custom') {
+    // When switching to custom, initialize the input with current unit if it's a custom unit
+    if (props.selectedMetric.unit && !['', 'units', '€', '$', '%', 'customers'].includes(props.selectedMetric.unit)) {
+      customUnitInput.value = props.selectedMetric.unit
+    } else {
+      customUnitInput.value = ''
+    }
+  } else {
+    // For non-custom units, update the metric unit directly
+    props.selectedMetric.unit = unitSelection.value
+    customUnitInput.value = ''
+    emit('recalculate')
+  }
+}
+
+const updateCustomUnit = () => {
+  // Update the selectedMetric.unit with the custom input value
+  props.selectedMetric.unit = customUnitInput.value || ''
+  emit('recalculate')
+}
+
+// Tag management functions
+const addTag = () => {
+  const tag = newTag.value.trim().toLowerCase()
+  if (tag && props.selectedMetric && !props.selectedMetric.tags.includes(tag)) {
+    props.selectedMetric.tags.push(tag)
+    newTag.value = ''
+    emit('recalculate')
+  }
+}
+
+const removeTag = (tagToRemove) => {
+  if (props.selectedMetric) {
+    const index = props.selectedMetric.tags.indexOf(tagToRemove)
+    if (index > -1) {
+      props.selectedMetric.tags.splice(index, 1)
+      emit('recalculate')
+    }
+  }
+}
+
+const handleTagInput = (event) => {
+  if (event.key === ',' || event.key === ';') {
+    event.preventDefault()
+    addTag()
+  }
+}
+
+// Format management functions
+const applyFormatPreset = (preset) => {
+  if (!props.selectedMetric) return
+
+  const format = props.selectedMetric.format
+  switch (preset) {
+    case 'default':
+      Object.assign(format, {
+        decimals: 2,
+        compact: false,
+        currency: '',
+        percentage: false,
+        scientific: false,
+        suffix: '',
+        rounding: 'round',
+        colorize: false,
+        minThreshold: 0.01
+      })
+      break
+    case 'currency':
+      Object.assign(format, {
+        decimals: 2,
+        compact: false,
+        currency: '$',
+        percentage: false,
+        scientific: false,
+        suffix: '',
+        rounding: 'round',
+        colorize: true,
+        minThreshold: 0.01
+      })
+      break
+    case 'percentage':
+      Object.assign(format, {
+        decimals: 1,
+        compact: false,
+        currency: '',
+        percentage: true,
+        scientific: false,
+        suffix: '',
+        rounding: 'round',
+        colorize: false,
+        minThreshold: 0.01
+      })
+      break
+    case 'compact':
+      Object.assign(format, {
+        decimals: 1,
+        compact: true,
+        currency: '$',
+        percentage: false,
+        scientific: false,
+        suffix: '',
+        rounding: 'round',
+        colorize: true,
+        minThreshold: 0.01
+      })
+      break
+    case 'scientific':
+      Object.assign(format, {
+        decimals: 2,
+        compact: false,
+        currency: '',
+        percentage: false,
+        scientific: true,
+        suffix: '',
+        rounding: 'round',
+        colorize: false,
+        minThreshold: 0.0001
+      })
+      break
+  }
+  emit('recalculate')
+}
+
+const updateCustomCurrency = () => {
+  if (props.selectedMetric) {
+    props.selectedMetric.format.currency = customCurrencySymbol.value || ''
+    emit('recalculate')
+  }
+}
+
+const formatPreview = (value) => {
+  if (!props.selectedMetric) return value.toString()
+  // Simple preview formatting
+  const format = props.selectedMetric.format
+  let result = value
+
+  if (format.compact) {
+    const absVal = Math.abs(value)
+    if (absVal >= 1e9) result = (value / 1e9).toFixed(1) + 'B'
+    else if (absVal >= 1e6) result = (value / 1e6).toFixed(1) + 'M'
+    else if (absVal >= 1e3) result = (value / 1e3).toFixed(1) + 'K'
+    else result = value.toFixed(format.decimals)
+  } else {
+    result = value.toFixed(format.decimals)
+  }
+
+  if (format.currency && format.currency !== 'custom') result = format.currency + result
+  if (format.percentage) result += '%'
+  if (format.suffix) result += ' ' + format.suffix
+
+  return result
+}
+
+const hasActiveFormats = computed(() => {
+  if (!props.selectedMetric) return false
+  const format = props.selectedMetric.format
+  return format.currency || format.percentage || format.compact || format.scientific ||
+         format.colorize || format.decimals !== 2 || format.suffix
+})
 </script>

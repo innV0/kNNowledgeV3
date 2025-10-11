@@ -11,7 +11,8 @@
       "values": {
         "1-1": 100
       },
-      "interpolation": "linear"
+      "interpolation": "linear",
+      "tags": ["customers", "acquisition"]
     },
     {
       "id": "newCustomers",
@@ -87,7 +88,19 @@
       "unit": "$",
       "color": "#e8f5e8",
       "type": "calculated",
-      "formula": "total_units_sold_month:0 * price_per_unit:0"
+      "formula": "total_units_sold_month:0 * price_per_unit:0",
+      "tags": ["revenue", "sales"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
     },
     {
       "id": "otherInflows",
@@ -135,7 +148,8 @@
       "unit": "$",
       "color": "#ffebee",
       "type": "calculated",
-      "formula": "total_units_sold_month:0 * cogs_per_unit:0"
+      "formula": "total_units_sold_month:0 * cogs_per_unit:0",
+      "tags": ["costs", "production"]
     },
     {
       "id": "fixedCosts",
@@ -183,7 +197,19 @@
       "unit": "$",
       "color": "#fff3e0",
       "type": "calculated",
-      "formula": "cash_balance:-1 + total_inflow_month:0 - total_outflow_month:0"
+      "formula": "cash_balance:-1 + total_inflow_month:0 - total_outflow_month:0",
+      "tags": ["cash", "financial"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
     }
   ],
   "selectedMetricId": "currentCustomers",

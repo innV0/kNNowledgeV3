@@ -1,3 +1,5 @@
+import { interpolateValues } from './useMetrics'
+
 export function useProjections() {
   const calculateProjections = (metrics) => {
     if (metrics.length === 0) return []
@@ -74,60 +76,6 @@ export function useProjections() {
     })
   }
 
-  const interpolateValues = (metric) => {
-    if (!metric || metric.type !== 'variable' || !metric.values) return new Array(60).fill(0)
-
-    const result = new Array(60).fill(0)
-    const knownPoints = []
-
-    // Collect known values
-    Object.entries(metric.values).forEach(([key, value]) => {
-      const [year, month] = key.split('-').map(Number)
-      const monthIndex = (year - 1) * 12 + (month - 1)
-      if (monthIndex >= 0 && monthIndex < 60) {
-        knownPoints.push({ index: monthIndex, value: Number(value) })
-      }
-    })
-
-    // Sort by index
-    knownPoints.sort((a, b) => a.index - b.index)
-
-    if (knownPoints.length === 0) return result
-    if (knownPoints.length === 1) {
-      // Single value, fill all with this value
-      return result.fill(knownPoints[0].value)
-    }
-
-    // Linear interpolation between known points
-    for (let i = 0; i < knownPoints.length - 1; i++) {
-      const start = knownPoints[i]
-      const end = knownPoints[i + 1]
-
-      result[start.index] = start.value
-      result[end.index] = end.value
-
-      // Interpolate between points
-      const steps = end.index - start.index
-      const stepValue = (end.value - start.value) / steps
-
-      for (let j = 1; j < steps; j++) {
-        result[start.index + j] = start.value + (stepValue * j)
-      }
-    }
-
-    // Fill remaining gaps with nearest known value
-    for (let i = 0; i < 60; i++) {
-      if (result[i] === 0 && knownPoints.length > 0) {
-        // Find nearest known point
-        const nearest = knownPoints.reduce((prev, curr) =>
-          Math.abs(curr.index - i) < Math.abs(prev.index - i) ? curr : prev
-        )
-        result[i] = nearest.value
-      }
-    }
-
-    return result
-  }
 
   const evaluateFormula = (formula, month, data, metrics) => {
     const tokens = formula.split(' ')
