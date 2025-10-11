@@ -1,5 +1,125 @@
 import { ref, computed } from 'vue'
 
+// Interpolation functions exported for use in other modules
+export const interpolateValues = (metric) => {
+  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(60).fill(0)
+
+  const result = new Array(60).fill(0)
+  const knownPoints = []
+
+  // Collect known values
+  Object.entries(metric.values).forEach(([key, value]) => {
+    const [year, month] = key.split('-').map(Number)
+    const monthIndex = (year - 1) * 12 + (month - 1)
+    if (monthIndex >= 0 && monthIndex < 60) {
+      knownPoints.push({ index: monthIndex, value: Number(value) })
+    }
+  })
+
+  // Sort by index
+  knownPoints.sort((a, b) => a.index - b.index)
+
+  if (knownPoints.length === 0) return result
+
+  if (metric.interpolation === 'none') {
+    // No interpolation - only use explicitly entered values
+    return interpolateNone(knownPoints, result)
+  } else if (metric.interpolation === 'curve') {
+    // Curve interpolation using cubic Bezier for smoother, more pronounced curves
+    return interpolateCurve(knownPoints, result)
+  } else {
+    // Linear interpolation (default)
+    return interpolateLinear(knownPoints, result)
+  }
+}
+
+const interpolateNone = (knownPoints, result) => {
+  // No interpolation - only set explicitly entered values, leave others as 0
+  knownPoints.forEach(point => {
+    result[point.index] = point.value
+  })
+  return result
+}
+
+const interpolateLinear = (knownPoints, result) => {
+  // Linear interpolation between known points
+  for (let i = 0; i < knownPoints.length - 1; i++) {
+    const start = knownPoints[i]
+    const end = knownPoints[i + 1]
+
+    result[start.index] = start.value
+    result[end.index] = end.value
+
+    // Interpolate between points
+    const steps = end.index - start.index
+    const stepValue = (end.value - start.value) / steps
+
+    for (let j = 1; j < steps; j++) {
+      result[start.index + j] = start.value + (stepValue * j)
+    }
+  }
+
+  // Fill remaining gaps with nearest known value
+  for (let i = 0; i < 60; i++) {
+    if (result[i] === 0 && knownPoints.length > 0) {
+      // Find nearest known point
+      const nearest = knownPoints.reduce((prev, curr) =>
+        Math.abs(curr.index - i) < Math.abs(prev.index - i) ? curr : prev
+      )
+      result[i] = nearest.value
+    }
+  }
+
+  return result
+}
+
+const interpolateCurve = (knownPoints, result) => {
+  // Enhanced curve interpolation using cubic Hermite spline for more pronounced curves
+  // This creates smooth, natural-looking curves that anticipate trends
+
+  // Set known points
+  knownPoints.forEach(point => {
+    result[point.index] = point.value
+  })
+
+  // For each segment between known points, apply cubic interpolation
+  for (let i = 0; i < knownPoints.length - 1; i++) {
+    const p0 = knownPoints[Math.max(0, i - 1)]     // Previous point (or current if first)
+    const p1 = knownPoints[i]                        // Current point
+    const p2 = knownPoints[i + 1]                    // Next point
+    const p3 = knownPoints[Math.min(knownPoints.length - 1, i + 2)] // Next next point (or last if last)
+
+    const steps = p2.index - p1.index
+    if (steps <= 1) continue
+
+    // Calculate tangents using Catmull-Rom spline approach
+    const dt1 = p2.index - p0.index
+    const dt2 = p3.index - p1.index
+
+    // Tangents (derivatives) - scaled for more pronounced curves
+    const m1 = dt1 > 0 ? (p2.value - p0.value) / dt1 * 0.5 : 0
+    const m2 = dt2 > 0 ? (p3.value - p1.value) / dt2 * 0.5 : 0
+
+    // Apply cubic Hermite interpolation
+    for (let j = 1; j < steps; j++) {
+      const t = j / steps
+
+      // Hermite basis functions
+      const h00 = 2*t*t*t - 3*t*t + 1    // (1 + 2t)(1 - t)^2
+      const h10 = t*t*t - 2*t*t + t      // t(1 - t)^2
+      const h01 = -2*t*t*t + 3*t*t       // t^2(3 - 2t)
+      const h11 = t*t*t - t*t            // t^2(t - 1)
+
+      result[p1.index + j] = h00 * p1.value +
+                            h10 * m1 * (p2.index - p1.index) +
+                            h01 * p2.value +
+                            h11 * m2 * (p2.index - p1.index)
+    }
+  }
+
+  return result
+}
+
 export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, formulaOffset1, formulaOperation, formulaMetric2, formulaOffset2) {
   const chartMetrics = ref([])
   const currentType = ref('')
@@ -198,60 +318,6 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     return selectedMetric.value.values[key] !== undefined ? selectedMetric.value.values[key] : ''
   }
 
-  const interpolateValues = (metric) => {
-    if (!metric || metric.type !== 'variable' || !metric.values) return new Array(60).fill(0)
-
-    const result = new Array(60).fill(0)
-    const knownPoints = []
-
-    // Collect known values
-    Object.entries(metric.values).forEach(([key, value]) => {
-      const [year, month] = key.split('-').map(Number)
-      const monthIndex = (year - 1) * 12 + (month - 1)
-      if (monthIndex >= 0 && monthIndex < 60) {
-        knownPoints.push({ index: monthIndex, value: Number(value) })
-      }
-    })
-
-    // Sort by index
-    knownPoints.sort((a, b) => a.index - b.index)
-
-    if (knownPoints.length === 0) return result
-    if (knownPoints.length === 1) {
-      // Single value, fill all with this value
-      return result.fill(knownPoints[0].value)
-    }
-
-    // Linear interpolation between known points
-    for (let i = 0; i < knownPoints.length - 1; i++) {
-      const start = knownPoints[i]
-      const end = knownPoints[i + 1]
-
-      result[start.index] = start.value
-      result[end.index] = end.value
-
-      // Interpolate between points
-      const steps = end.index - start.index
-      const stepValue = (end.value - start.value) / steps
-
-      for (let j = 1; j < steps; j++) {
-        result[start.index + j] = start.value + (stepValue * j)
-      }
-    }
-
-    // Fill remaining gaps with nearest known value
-    for (let i = 0; i < 60; i++) {
-      if (result[i] === 0 && knownPoints.length > 0) {
-        // Find nearest known point
-        const nearest = knownPoints.reduce((prev, curr) =>
-          Math.abs(curr.index - i) < Math.abs(prev.index - i) ? curr : prev
-        )
-        result[i] = nearest.value
-      }
-    }
-
-    return result
-  }
 
   const addMetric = () => {
     const newId = 'custom_' + Date.now()
@@ -265,7 +331,19 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
       color: '#f8f9fa',
       type: 'variable',
       values: {},
-      interpolation: 'linear'
+      interpolation: 'linear',
+      tags: [],
+      format: {
+        decimals: 2,
+        compact: false,
+        currency: '',
+        percentage: false,
+        scientific: false,
+        suffix: '',
+        rounding: 'round',
+        colorize: false,
+        minThreshold: 0.01
+      }
     }
     metrics.value.push(newMetric)
     selectedMetricId.value = newId
@@ -277,7 +355,105 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     // Trigger reactivity
   }
 
-  const formatValue = (val, isCurrency) => {
+  const formatValue = (val, format) => {
+    if (typeof val !== 'number' || isNaN(val)) {
+      return '0'
+    }
+
+    // Handle minimum threshold
+    if (format.minThreshold && Math.abs(val) < format.minThreshold && val !== 0) {
+      return val > 0 ? `< ${format.minThreshold}` : `> -${format.minThreshold}`
+    }
+
+    let formattedValue = val
+
+    // Apply rounding
+    switch (format.rounding) {
+      case 'floor':
+        formattedValue = Math.floor(formattedValue)
+        break
+      case 'ceil':
+        formattedValue = Math.ceil(formattedValue)
+        break
+      case 'trunc':
+        formattedValue = Math.trunc(formattedValue)
+        break
+      case 'round':
+      default:
+        formattedValue = Math.round(formattedValue)
+        break
+    }
+
+    // Handle compact notation
+    if (format.compact) {
+      const absVal = Math.abs(formattedValue)
+      if (absVal >= 1e12) {
+        formattedValue = formattedValue / 1e12
+        return formatNumber(formattedValue, format, 'T')
+      } else if (absVal >= 1e9) {
+        formattedValue = formattedValue / 1e9
+        return formatNumber(formattedValue, format, 'B')
+      } else if (absVal >= 1e6) {
+        formattedValue = formattedValue / 1e6
+        return formatNumber(formattedValue, format, 'M')
+      } else if (absVal >= 1e3) {
+        formattedValue = formattedValue / 1e3
+        return formatNumber(formattedValue, format, 'K')
+      }
+    }
+
+    // Handle scientific notation
+    if (format.scientific) {
+      return formattedValue.toExponential(format.decimals)
+    }
+
+    return formatNumber(formattedValue, format)
+  }
+
+  const formatNumber = (val, format, compactSuffix = '') => {
+    let result = ''
+
+    // Apply decimal precision
+    const absVal = Math.abs(val)
+    let decimals = format.decimals
+
+    // Smart decimal adjustment for small numbers
+    if (!format.scientific && decimals > 0 && absVal > 0) {
+      if (absVal >= 100) decimals = Math.min(decimals, 0)
+      else if (absVal >= 10) decimals = Math.min(decimals, 1)
+    }
+
+    if (decimals === 0) {
+      result = Math.round(val).toString()
+    } else {
+      result = val.toFixed(decimals)
+      // Remove trailing zeros
+      result = result.replace(/\.?0+$/, '')
+    }
+
+    // Add compact suffix
+    result += compactSuffix
+
+    // Add currency symbol
+    if (format.currency) {
+      result = format.currency + result
+    }
+
+    // Add percentage symbol
+    if (format.percentage) {
+      result += '%'
+    }
+
+    // Add custom suffix
+    if (format.suffix) {
+      result += ' ' + format.suffix
+    }
+
+    return result
+  }
+
+  // Legacy formatValue for backward compatibility
+  const legacyFormatValue = (val, isCurrency) => {
     if (typeof val !== 'number' || isNaN(val)) {
       return '0'
     }
@@ -368,7 +544,19 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
               color: m.color || '#f8f9fa',
               unit: m.unit || '',
               values: m.values || {},
-              interpolation: m.interpolation || 'linear'
+              interpolation: m.interpolation || 'linear',
+              tags: m.tags || [],
+              format: m.format || {
+                decimals: 2,
+                compact: false,
+                currency: '',
+                percentage: false,
+                scientific: false,
+                suffix: '',
+                rounding: 'round',
+                colorize: false,
+                minThreshold: 0.01
+              }
             }
             if (!metric.slug) {
               metric.slug = generateUniqueSlug(metric.name, metrics.value)

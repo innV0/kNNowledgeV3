@@ -40,6 +40,7 @@
         :periods="periods"
         :view-mode="viewMode"
         :selected-metric-id="selectedMetricId"
+        :format-value="formatValue"
         @select-metric="selectMetric"
       />
     </div>
@@ -115,6 +116,7 @@ const {
   getMetricValue,
   addMetric,
   recalculate,
+  formatValue,
   getDetailedFormula,
   exportData,
   importData
@@ -137,20 +139,35 @@ const projections = computed(() => {
 
 // Chart setup
 let chart = null
+let hiddenDatasets = new Set() // Track which datasets are hidden via legend clicks
+
 const updateChart = () => {
   const canvas = document.getElementById('chart')
   if (!canvas) return
   const ctx = canvas.getContext('2d')
-  const datasets = projections.value
+
+  // Get filtered metrics that should be in the chart
+  const activeMetrics = projections.value
     .filter((_, idx) => chartMetrics.value.includes(metrics.value[idx].id))
+
+  const datasets = activeMetrics
     .map((row, idx) => ({
       label: row.name,
       data: viewMode.value === 'monthly' ? row.values : row.values.filter((_, i) => i % 12 === 0 && i > 0),
       borderColor: `hsl(${idx * 60}, 70%, 50%)`,
-      fill: false
+      fill: false,
+      hidden: hiddenDatasets.has(row.name) // Restore hidden state
     }))
 
   if (chart) {
+    // Preserve hidden state before destroying
+    chart.data.datasets.forEach((dataset, idx) => {
+      if (dataset.hidden) {
+        hiddenDatasets.add(dataset.label)
+      } else {
+        hiddenDatasets.delete(dataset.label)
+      }
+    })
     chart.destroy()
   }
 
@@ -171,7 +188,19 @@ const updateChart = () => {
       plugins: {
         legend: {
           display: true,
-          position: 'top'
+          position: 'top',
+          onClick: (event, legendItem, legend) => {
+            // Track when user clicks legend to hide/show datasets
+            const datasetIndex = legendItem.datasetIndex
+            const dataset = legend.chart.data.datasets[datasetIndex]
+            if (dataset.hidden) {
+              hiddenDatasets.delete(dataset.label)
+            } else {
+              hiddenDatasets.add(dataset.label)
+            }
+            // Use default Chart.js legend click behavior
+            ChartJS.defaults.plugins.legend.onClick(event, legendItem, legend)
+          }
         }
       }
     }
@@ -187,6 +216,15 @@ watch(projections, () => {
 })
 
 watch([chartMetrics, viewMode], () => {
+  // Clear hidden datasets that are no longer in chartMetrics
+  const activeMetricNames = projections.value
+    .filter((_, idx) => chartMetrics.value.includes(metrics.value[idx].id))
+    .map(row => row.name)
+  hiddenDatasets.forEach(datasetName => {
+    if (!activeMetricNames.includes(datasetName)) {
+      hiddenDatasets.delete(datasetName)
+    }
+  })
   updateChart()
 }, { deep: true })
 
