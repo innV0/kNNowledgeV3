@@ -3,7 +3,7 @@ export function useProjections() {
     if (metrics.length === 0) return []
     const months = 61
     const data = {}
-    const hardcodedIds = ['totalCustomers', 'totalUnits', 'salesRevenue', 'totalInflow', 'totalCogs', 'totalOutflow', 'cashBalance']
+    const hardcodedIds = ['totalUnits', 'salesRevenue', 'totalInflow', 'totalCogs', 'totalOutflow', 'cashBalance']
 
     metrics.forEach(m => {
       data[m.id] = new Array(months).fill(0)
@@ -18,9 +18,6 @@ export function useProjections() {
     })
 
     // Set initial values for hardcoded calculations
-    if (data.totalCustomers && data.currentCustomers) {
-      data.totalCustomers[0] = data.currentCustomers[0]
-    }
     if (data.cashBalance) {
       data.cashBalance[0] = 0
     }
@@ -36,9 +33,6 @@ export function useProjections() {
     for (let month = 1; month < months; month++) {
 
       // Calculate derived
-      if (data.totalCustomers && data.newCustomers) {
-        data.totalCustomers[month] = data.totalCustomers[month - 1] + data.newCustomers[month]
-      }
       if (data.totalUnits && data.totalCustomers && data.unitsPerCustomer) {
         data.totalUnits[month] = data.totalCustomers[month] * data.unitsPerCustomer[month]
       }
@@ -69,10 +63,12 @@ export function useProjections() {
     // Prepare result
     return metrics.map(m => {
       const isCurrency = m.unit === '$'
+      const isPercentage = m.unit === '%'
       return {
         name: m.name,
         values: data[m.id],
         isCurrency,
+        isPercentage,
         yearlyAggregation: m.yearlyAggregation || 'last'
       }
     })
@@ -134,23 +130,36 @@ export function useProjections() {
   }
 
   const evaluateFormula = (formula, month, data, metrics) => {
-    const parts = formula.split(' ')
-    if (parts.length === 3) {
-      const [slugOffset1, op, slugOffset2] = parts
-      const [slug1, offset1Str] = slugOffset1.split(':')
-      const [slug2, offset2Str] = slugOffset2.split(':')
-      const offset1 = parseInt(offset1Str) || 0
-      const offset2 = parseInt(offset2Str) || 0
-      const m1 = metrics.find(m => m.slug === slug1)
-      const m2 = metrics.find(m => m.slug === slug2)
-      if (m1 && m2 && data[m1.id] && data[m2.id]) {
-        const idx1 = month + offset1
-        const idx2 = month + offset2
-        const v1 = (idx1 >= 0 && idx1 < data[m1.id].length) ? data[m1.id][idx1] : 0
-        const v2 = (idx2 >= 0 && idx2 < data[m2.id].length) ? data[m2.id][idx2] : 0
-        if (op === '+') return v1 + v2
-        if (op === '*') return v1 * v2
+    const tokens = formula.split(' ')
+    if (tokens.length < 3 || tokens.length % 2 === 0) return 0 // Must be odd number: val op val op val...
+
+    let result = getValue(tokens[0], month, data, metrics)
+
+    for (let i = 1; i < tokens.length; i += 2) {
+      const op = tokens[i]
+      const nextVal = getValue(tokens[i + 1], month, data, metrics)
+      if (op === '+') result += nextVal
+      else if (op === '*') result *= nextVal
+      else if (op === '/') result /= nextVal
+      else if (op === '-') result -= nextVal
+    }
+
+    return result
+  }
+
+  const getValue = (token, month, data, metrics) => {
+    if (token.includes(':')) {
+      // It's a metric reference: slug:offset
+      const [slug, offsetStr] = token.split(':')
+      const offset = parseInt(offsetStr) || 0
+      const metric = metrics.find(m => m.slug === slug)
+      if (metric && data[metric.id]) {
+        const idx = month + offset
+        return (idx >= 0 && idx < data[metric.id].length) ? data[metric.id][idx] : 0
       }
+    } else {
+      // It's a constant number
+      return parseFloat(token) || 0
     }
     return 0
   }

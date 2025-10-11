@@ -39,7 +39,10 @@
               :key="period"
               class="px-2 py-1 text-right border-b border-gray-200 h-8 align-middle"
             >
-              <span :class="{ 'after:content-[\'$\']': projections[index]?.isCurrency }">
+              <span :class="{
+                'after:content-[\'$\']': projections[index]?.isCurrency,
+                'percentage': projections[index]?.isPercentage
+              }">
                 {{ formatValue(getValue(projections[index], period), projections[index]?.isCurrency) }}
               </span>
             </td>
@@ -73,6 +76,11 @@ tr.ring-blue-500 td.sticky {
 /* Ensure table layout is correct */
 table {
   table-layout: auto;
+}
+
+/* Percentage formatting */
+.percentage::after {
+  content: '%';
 }
 </style>
 

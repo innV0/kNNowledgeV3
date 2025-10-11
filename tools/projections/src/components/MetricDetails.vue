@@ -124,6 +124,11 @@
       <!-- Values Section -->
       <h4 class="font-semibold mb-2">Values</h4>
 
+      <!-- Calculated Values Display -->
+      <div v-if="currentType === 'calculated' && selectedMetric" class="mb-6">
+        <p class="text-sm text-gray-600">This metric is calculated automatically based on the formula above. Values are shown in the table.</p>
+      </div>
+
       <!-- Variable Values Table -->
       <div v-if="editMode && currentType === 'variable' && selectedMetric" class="mb-6">
         <h5 class="font-semibold mb-3">Values by Year and Month</h5>
@@ -276,9 +281,7 @@ const getGrowth = (metric, phase) => {
 const getDetailedFormula = (metric) => {
   if (!metric || metric.type !== 'calculated') return ''
 
-  if (metric.id === 'totalCustomers') {
-    return 'Previous total + New customers per month'
-  } else if (metric.id === 'totalUnits') {
+  if (metric.id === 'totalUnits') {
     return 'Total customers × Units per customer per month'
   } else if (metric.id === 'salesRevenue') {
     return 'Total units sold × Price per unit'
@@ -293,7 +296,36 @@ const getDetailedFormula = (metric) => {
   }
 
   const parts = metric.formula?.split(' ') || []
-  if (parts.length === 3) {
+  if (parts.length >= 3 && parts.length % 2 === 1) {
+    // Complex formula: val op val op val...
+    let description = ''
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 0) {
+        // Value
+        const token = parts[i]
+        if (token.includes(':')) {
+          const [slug, offsetStr] = token.split(':')
+          const offset = parseInt(offsetStr) || 0
+          const m = props.metrics.find(m => m.slug === slug)
+          if (m) {
+            const offsetDesc = offset === 0 ? '' : offset < 0 ? ` (${Math.abs(offset)} months ago)` : ` (${offset} months ahead)`
+            description += `${m.name}${offsetDesc}`
+          } else {
+            description += token
+          }
+        } else {
+          description += token
+        }
+      } else {
+        // Operator
+        const op = parts[i]
+        const opSymbol = op === '*' ? '×' : op === '/' ? '÷' : op
+        description += ` ${opSymbol} `
+      }
+    }
+    return description
+  } else if (parts.length === 3) {
+    // Simple 3-part formula
     const [slugOffset1, op, slugOffset2] = parts
     const [slug1, offset1Str] = slugOffset1.split(':')
     const [slug2, offset2Str] = slugOffset2.split(':')
@@ -302,9 +334,10 @@ const getDetailedFormula = (metric) => {
     const m1 = props.metrics.find(m => m.slug === slug1)
     const m2 = props.metrics.find(m => m.slug === slug2)
     if (m1 && m2) {
-      const offsetDesc1 = offset1 === 0 ? '' : offset1 < 0 ? ` (${Math.abs(offset1)} mes${Math.abs(offset1) > 1 ? 'es' : ''} atrás)` : ` (${offset1} mes${offset1 > 1 ? 'es' : ''} adelante)`
-      const offsetDesc2 = offset2 === 0 ? '' : offset2 < 0 ? ` (${Math.abs(offset2)} mes${Math.abs(offset2) > 1 ? 'es' : ''} atrás)` : ` (${offset2} mes${offset2 > 1 ? 'es' : ''} adelante)`
-      return `${m1.name}${offsetDesc1} ${op} ${m2.name}${offsetDesc2}`
+      const offsetDesc1 = offset1 === 0 ? '' : offset1 < 0 ? ` (${Math.abs(offset1)} months ago)` : ` (${offset1} months ahead)`
+      const offsetDesc2 = offset2 === 0 ? '' : offset2 < 0 ? ` (${Math.abs(offset2)} months ago)` : ` (${offset2} months ahead)`
+      const opSymbol = op === '*' ? '×' : op === '/' ? '÷' : op
+      return `${m1.name}${offsetDesc1} ${opSymbol} ${m2.name}${offsetDesc2}`
     }
   }
   return metric.formula || ''

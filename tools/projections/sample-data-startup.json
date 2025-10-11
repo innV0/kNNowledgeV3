@@ -1,0 +1,279 @@
+{
+  "metrics": [
+    {
+      "id": "websiteVisitors",
+      "name": "🌐 Website Visitors/Month",
+      "slug": "website_visitors_month",
+      "description": "Monthly website traffic",
+      "unit": "visitors",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 10000,
+        "1-3": 12000,
+        "1-6": 15000,
+        "2-1": 18000
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "conversionToLeads",
+      "name": "📝 Lead Conversion Rate",
+      "slug": "conversion_to_leads",
+      "description": "Percentage of visitors who become leads",
+      "unit": "%",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 2.5,
+        "1-6": 3.0,
+        "2-1": 3.5
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "leadsGenerated",
+      "name": "👥 Leads Generated/Month",
+      "slug": "leads_generated_month",
+      "description": "Monthly lead generation",
+      "unit": "leads",
+      "color": "#e3f2fd",
+      "type": "calculated",
+      "formula": "website_visitors_month:0 * conversion_to_leads:0 / 100"
+    },
+    {
+      "id": "leadToCustomerConversion",
+      "name": "💰 Lead to Customer Conversion",
+      "slug": "lead_to_customer_conversion",
+      "description": "Percentage of leads who become customers",
+      "unit": "%",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 5.0,
+        "1-6": 6.0,
+        "2-1": 7.0
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "newCustomers",
+      "name": "➕ New Customers/Month",
+      "slug": "new_customers_month",
+      "description": "Monthly customer acquisition",
+      "unit": "customers",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "leads_generated_month:0 * lead_to_customer_conversion:0 / 100"
+    },
+    {
+      "id": "totalCustomers",
+      "name": "📊 Total Customers",
+      "slug": "total_customers",
+      "description": "Running total of all customers",
+      "unit": "customers",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "total_customers:-1 + new_customers_month:0"
+    },
+    {
+      "id": "averageRevenuePerCustomer",
+      "name": "💵 ARPC/Month",
+      "slug": "average_revenue_per_customer_month",
+      "description": "Average monthly revenue per customer",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 99,
+        "1-6": 109,
+        "2-1": 119
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "monthlyRecurringRevenue",
+      "name": "💰 MRR",
+      "slug": "monthly_recurring_revenue",
+      "description": "Monthly recurring revenue",
+      "unit": "$",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "total_customers:0 * average_revenue_per_customer_month:0"
+    },
+    {
+      "id": "churnRate",
+      "name": "📉 Monthly Churn Rate",
+      "slug": "monthly_churn_rate",
+      "description": "Percentage of customers lost monthly",
+      "unit": "%",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 5.0,
+        "1-12": 4.0,
+        "2-1": 3.5
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "customersLost",
+      "name": "👋 Customers Lost/Month",
+      "slug": "customers_lost_month",
+      "description": "Monthly customer churn",
+      "unit": "customers",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "total_customers:-1 * churn_rate:0 / 100"
+    },
+    {
+      "id": "netNewCustomers",
+      "name": "📈 Net New Customers/Month",
+      "slug": "net_new_customers_month",
+      "description": "New customers minus churn",
+      "unit": "customers",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "new_customers_month:0 - customers_lost_month:0"
+    },
+    {
+      "id": "customerLifetime",
+      "name": "⏰ Customer Lifetime",
+      "slug": "customer_lifetime",
+      "description": "Average customer lifetime in months",
+      "unit": "months",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 24,
+        "1-12": 28,
+        "2-1": 32
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "customerLifetimeValue",
+      "name": "💎 Customer LTV",
+      "slug": "customer_lifetime_value",
+      "description": "Total lifetime value per customer",
+      "unit": "$",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "average_revenue_per_customer_month:0 * customer_lifetime:0"
+    },
+    {
+      "id": "marketingSpend",
+      "name": "📢 Marketing Spend/Month",
+      "slug": "marketing_spend_month",
+      "description": "Monthly marketing budget",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 15000,
+        "1-3": 18000,
+        "1-6": 22000,
+        "2-1": 25000
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "customerAcquisitionCost",
+      "name": "🎯 CAC",
+      "slug": "customer_acquisition_cost",
+      "description": "Cost to acquire one customer",
+      "unit": "$",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "marketing_spend_month:0 / new_customers_month:0"
+    },
+    {
+      "id": "ltvToCacRatio",
+      "name": "📊 LTV/CAC Ratio",
+      "slug": "ltv_to_cac_ratio",
+      "description": "Lifetime value to acquisition cost ratio",
+      "unit": "ratio",
+      "color": "#fff3e0",
+      "type": "calculated",
+      "formula": "customer_lifetime_value:0 / customer_acquisition_cost:0"
+    },
+    {
+      "id": "otherOperatingExpenses",
+      "name": "🏢 Operating Expenses/Month",
+      "slug": "operating_expenses_month",
+      "description": "Other monthly operational costs",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 25000,
+        "1-6": 28000,
+        "2-1": 32000
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "totalExpenses",
+      "name": "📤 Total Expenses/Month",
+      "slug": "total_expenses_month",
+      "description": "Combined monthly expenses",
+      "unit": "$",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "marketing_spend_month:0 + operating_expenses_month:0"
+    },
+    {
+      "id": "grossMargin",
+      "name": "💰 Gross Margin",
+      "slug": "gross_margin",
+      "description": "Revenue minus direct costs",
+      "unit": "$",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "monthly_recurring_revenue:0 - (monthly_recurring_revenue:0 * 0.3)"
+    },
+    {
+      "id": "netIncome",
+      "name": "💵 Net Income/Month",
+      "slug": "net_income_month",
+      "description": "Monthly profit/loss",
+      "unit": "$",
+      "color": "#fff3e0",
+      "type": "calculated",
+      "formula": "gross_margin:0 - total_expenses_month:0"
+    },
+    {
+      "id": "cashBalance",
+      "name": "💰 Cash Balance",
+      "slug": "cash_balance",
+      "description": "Running cash position",
+      "unit": "$",
+      "color": "#fff3e0",
+      "type": "calculated",
+      "formula": "cash_balance:-1 + net_income_month:0"
+    },
+    {
+      "id": "monthlyBurnRate",
+      "name": "🔥 Monthly Burn Rate",
+      "slug": "monthly_burn_rate",
+      "description": "Monthly cash burn",
+      "unit": "$",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "total_expenses_month:0 - monthly_recurring_revenue:0"
+    },
+    {
+      "id": "runwayMonths",
+      "name": "⏱️ Runway (Months)",
+      "slug": "runway_months",
+      "description": "Months of runway remaining",
+      "unit": "months",
+      "color": "#fff3e0",
+      "type": "calculated",
+      "formula": "cash_balance:0 / monthly_burn_rate:0"
+    }
+  ],
+  "selectedMetricId": "websiteVisitors",
+  "viewMode": "monthly",
+  "chartMetrics": ["totalCustomers", "monthlyRecurringRevenue", "cashBalance"]
+}
