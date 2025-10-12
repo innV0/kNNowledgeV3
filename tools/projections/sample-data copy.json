@@ -1,0 +1,218 @@
+{
+  "metrics": [
+    {
+      "id": "currentCustomers",
+      "name": "👥 Current Customers",
+      "slug": "current_customers",
+      "description": "Number of customers at the start of the projection period",
+      "unit": "customers",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 100
+      },
+      "interpolation": "linear",
+      "tags": ["customers", "acquisition"]
+    },
+    {
+      "id": "newCustomers",
+      "name": "➕ New Customers per Month",
+      "slug": "new_customers_per_month",
+      "description": "Monthly acquisition of new customers",
+      "unit": "customers",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 10,
+        "1-2": 12,
+        "1-3": 15,
+        "2-1": 18,
+        "2-2": 20,
+        "2-3": 22
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "totalCustomers",
+      "name": "📊 Total Customers",
+      "slug": "total_customers",
+      "description": "Running total of all customers over time",
+      "unit": "customers",
+      "color": "#e3f2fd",
+      "type": "calculated",
+      "formula": "total_customers:-1 + new_customers_per_month:0"
+    },
+    {
+      "id": "unitsPerCustomer",
+      "name": "📦 Units per Customer/Month",
+      "slug": "units_per_customer_month",
+      "description": "Average products purchased per customer monthly",
+      "unit": "units",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 5
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "totalUnits",
+      "name": "📈 Total Units Sold/Month",
+      "slug": "total_units_sold_month",
+      "description": "Monthly product sales volume",
+      "unit": "units",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "total_customers:0 * units_per_customer_month:0"
+    },
+    {
+      "id": "pricePerUnit",
+      "name": "💰 Price per Unit",
+      "slug": "price_per_unit",
+      "description": "Revenue per product unit sold",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 50,
+        "1-6": 52,
+        "2-1": 54
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "salesRevenue",
+      "name": "💵 Sales Revenue/Month",
+      "slug": "sales_revenue_month",
+      "description": "Monthly income from product sales",
+      "unit": "$",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "total_units_sold_month:0 * price_per_unit:0",
+      "tags": ["revenue", "sales"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "otherInflows",
+      "name": "💸 Other Inflows/Month",
+      "slug": "other_inflows_month",
+      "description": "Additional monthly cash receipts",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 0
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "totalInflow",
+      "name": "📥 Total Inflow/Month",
+      "slug": "total_inflow_month",
+      "description": "Combined monthly cash inflows",
+      "unit": "$",
+      "color": "#e8f5e8",
+      "type": "calculated",
+      "formula": "sales_revenue_month:0 + other_inflows_month:0"
+    },
+    {
+      "id": "cogsPerUnit",
+      "name": "🏭 COGS per Unit",
+      "slug": "cogs_per_unit",
+      "description": "Direct cost per product unit",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 20,
+        "1-6": 20.2,
+        "2-1": 20.4
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "totalCogs",
+      "name": "📉 Total COGS/Month",
+      "slug": "total_cogs_month",
+      "description": "Monthly cost of goods sold",
+      "unit": "$",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "total_units_sold_month:0 * cogs_per_unit:0",
+      "tags": ["costs", "production"]
+    },
+    {
+      "id": "fixedCosts",
+      "name": "🏢 Fixed Costs/Month",
+      "slug": "fixed_costs_month",
+      "description": "Recurring operational expenses",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 5000,
+        "1-6": 5150,
+        "2-1": 5300
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "otherOutflows",
+      "name": "💳 Other Outflows/Month",
+      "slug": "other_outflows_month",
+      "description": "Additional monthly cash expenses",
+      "unit": "$",
+      "color": "#f8f9fa",
+      "type": "variable",
+      "values": {
+        "1-1": 1000
+      },
+      "interpolation": "linear"
+    },
+    {
+      "id": "totalOutflow",
+      "name": "📤 Total Outflow/Month",
+      "slug": "total_outflow_month",
+      "description": "Combined monthly cash outflows",
+      "unit": "$",
+      "color": "#ffebee",
+      "type": "calculated",
+      "formula": "total_cogs_month:0 + fixed_costs_month:0 + other_outflows_month:0"
+    },
+    {
+      "id": "cashBalance",
+      "name": "💰 Cash Balance",
+      "slug": "cash_balance",
+      "description": "Running cash position over time",
+      "unit": "$",
+      "color": "#fff3e0",
+      "type": "calculated",
+      "formula": "cash_balance:-1 + total_inflow_month:0 - total_outflow_month:0",
+      "tags": ["cash", "financial"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
+    }
+  ],
+  "selectedMetricId": "currentCustomers",
+  "viewMode": "monthly",
+  "chartMetrics": ["totalCustomers", "salesRevenue", "cashBalance"]
+}
