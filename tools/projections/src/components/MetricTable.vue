@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-lg overflow-hidden shadow">
     <!-- Tag Filter Controls -->
-    <div class="p-4 border-b border-gray-200 bg-gray-50">
+    <div v-if="isFilterExpanded" class="p-4 border-b border-gray-200 bg-gray-50">
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2">
           <label class="text-sm font-medium text-gray-700">Filter by tags:</label>
@@ -137,10 +137,11 @@ const props = defineProps({
   periods: Array,
   viewMode: String,
   selectedMetricId: String,
-  formatValue: Function
+  formatValue: Function,
+  isFilterExpanded: Boolean
 })
 
-const emit = defineEmits(['select-metric'])
+const emit = defineEmits(['select-metric', 'toggle-filter'])
 
 const selectedFilterTags = ref([])
 
@@ -180,6 +181,10 @@ const updateFilteredMetrics = () => {
 
 const clearTagFilters = () => {
   selectedFilterTags.value = []
+}
+
+const toggleFilter = () => {
+  emit('toggle-filter', !props.isFilterExpanded)
 }
 
 

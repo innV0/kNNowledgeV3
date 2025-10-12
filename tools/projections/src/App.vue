@@ -11,6 +11,11 @@
                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
           Add Metric
         </button>
+        <button @click="toggleTableFilter"
+                :class="{ 'px-4 py-2 rounded': true, 'bg-gray-600 text-white hover:bg-gray-700': !isFilterExpanded, 'bg-gray-800 text-white': isFilterExpanded }">
+          <i class="fas fa-filter mr-1"></i>
+          Filters
+        </button>
         <input type="file" @change="importData" accept=".json"
                class="hidden" ref="fileInput">
         <button @click="$refs.fileInput.click()"
@@ -41,7 +46,9 @@
         :view-mode="viewMode"
         :selected-metric-id="selectedMetricId"
         :format-value="formatValue"
+        :is-filter-expanded="isFilterExpanded"
         @select-metric="selectMetric"
+        @toggle-filter="handleFilterToggle"
       />
     </div>
 
@@ -98,6 +105,7 @@ const formulaOperation = ref('+')
 const formulaMetric2 = ref('')
 const formulaOffset2 = ref(0)
 const offsetOptions = Array.from({ length: 121 }, (_, i) => i - 60)
+const isFilterExpanded = ref(false)
 
 // Composables
 const { calculateProjections } = useProjections()
@@ -244,6 +252,14 @@ const moveMetricDown = (metricId) => {
     metrics.value[index] = metrics.value[index + 1]
     metrics.value[index + 1] = temp
   }
+}
+
+const toggleTableFilter = () => {
+  isFilterExpanded.value = !isFilterExpanded.value
+}
+
+const handleFilterToggle = (expanded) => {
+  isFilterExpanded.value = expanded
 }
 </script>
 
