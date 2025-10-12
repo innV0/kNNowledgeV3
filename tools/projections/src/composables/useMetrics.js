@@ -512,7 +512,62 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     return metric.formula
   }
 
-  const exportData = () => {
+  const exportToMarkdown = () => {
+    let markdown = '# Projections\n\n'
+    markdown += `* tags:: [[${metrics.value.map(m => m.name).join(']], [[')}]]\n`
+    markdown += `* selectedMetricId:: ${selectedMetricId.value || ''}\n`
+    markdown += `* viewMode:: monthly\n`
+    markdown += `* chartMetrics:: ${JSON.stringify(chartMetrics.value)}\n\n`
+    markdown += '* ## Business Metrics (Metrics Array)\n\n'
+
+    metrics.value.forEach(metric => {
+      markdown += `* [[${metric.name}]]\n`
+      markdown += `  * id:: ${metric.id}\n`
+      markdown += `  * slug:: ${metric.slug}\n`
+      markdown += `  * description:: ${metric.description}\n`
+      markdown += `  * type:: ${metric.type}\n`
+      markdown += `  * unit:: ${metric.unit || ''}\n`
+      markdown += `  * color:: ${metric.color}\n`
+      markdown += `  * interpolation:: ${metric.interpolation}\n`
+      // Export tags in Logseq format
+      markdown += `  * tags:: [[${metric.tags.join(']], [[')}]]\n`
+
+      if (metric.type === 'calculated' && metric.formula) {
+        markdown += `  * formula:: ${metric.formula}\n`
+      } else if (metric.type === 'variable' && metric.values) {
+        markdown += '  * values::\n'
+        Object.entries(metric.values).forEach(([key, value]) => {
+          markdown += `    * ${key}:: ${value}\n`
+        })
+      }
+
+      if (metric.format) {
+        markdown += '  * format::\n'
+        Object.entries(metric.format).forEach(([key, value]) => {
+          markdown += `    * ${key}:: ${value}\n`
+        })
+      }
+      markdown += '\n'
+    })
+
+    const now = new Date()
+    const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)
+    const filename = `projections-data-${timestamp}.md`
+    const blob = new Blob([markdown], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const exportData = (format = 'json') => {
+    if (format === 'markdown') {
+      exportToMarkdown()
+      return
+    }
+
     const data = {
       metrics: metrics.value,
       selectedMetricId: selectedMetricId.value,
@@ -531,13 +586,181 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     URL.revokeObjectURL(url)
   }
 
+  const parseMarkdownToJson = (markdownContent) => {
+    const lines = markdownContent.split('\n')
+    const data = {
+      metrics: [],
+      selectedMetricId: null,
+      viewMode: 'monthly',
+      chartMetrics: []
+    }
+  
+    let currentSection = null
+    let currentMetric = null
+    let inMetricsSection = false
+  
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+      const trimmedLine = line.trim()
+  
+      // Parse metadata at the top
+      if (trimmedLine.startsWith('* tags::')) {
+        // Skip tags for now
+      } else if (trimmedLine.startsWith('* selectedMetricId::')) {
+        data.selectedMetricId = trimmedLine.split('::')[1].trim()
+      } else if (trimmedLine.startsWith('* viewMode::')) {
+        data.viewMode = trimmedLine.split('::')[1].trim()
+      } else if (trimmedLine.startsWith('* chartMetrics::')) {
+        const chartMetricsStr = trimmedLine.split('::')[1].trim()
+        // Handle Logseq array format like [item1, item2] without quotes
+        if (chartMetricsStr.startsWith('[') && chartMetricsStr.endsWith(']')) {
+          const items = chartMetricsStr.slice(1, -1).split(',').map(item => item.trim())
+          data.chartMetrics = items
+        } else {
+          data.chartMetrics = JSON.parse(chartMetricsStr)
+        }
+      }
+  
+      // Detect sections
+      if (trimmedLine === '# Projections') {
+        currentSection = 'projections'
+      } else if (trimmedLine === '* ## Business Metrics (Metrics Array)' || trimmedLine === '## Business Metrics (Metrics Array)') {
+        inMetricsSection = true
+      } else if (trimmedLine.startsWith('# ') && trimmedLine !== '# Projections') {
+        // End of projections section
+        inMetricsSection = false
+      }
+  
+      // Parse metrics
+      if (inMetricsSection && trimmedLine.startsWith('* [[') && trimmedLine.includes(']]')) {
+        // New metric
+        const nameMatch = trimmedLine.match(/\* \[\[([^\]]+)\]\]/)
+        if (nameMatch) {
+          if (currentMetric) {
+            data.metrics.push(currentMetric)
+          }
+          currentMetric = {
+            name: nameMatch[1],
+            id: '',
+            slug: '',
+            description: '',
+            type: 'variable',
+            unit: '',
+            color: '#f8f9fa',
+            interpolation: 'linear',
+            tags: [],
+            values: {},
+            format: {
+              decimals: 2,
+              compact: false,
+              currency: '',
+              percentage: false,
+              scientific: false,
+              suffix: '',
+              rounding: 'round',
+              colorize: false,
+              minThreshold: 0.01
+            }
+          }
+        }
+      } else if (currentMetric && (line.startsWith('    * ') || line.startsWith('  * ') || line.startsWith(' * ')) && trimmedLine.includes('::')) {
+        // Metric property (4 spaces, 2 spaces, or 1 space indentation)
+        const indentLevel = line.startsWith('    * ') ? 6 : (line.startsWith('  * ') ? 4 : 3)
+        const [prop, ...valueParts] = line.substring(indentLevel).split('::')
+        const value = valueParts.join('::').trim()
+  
+        switch (prop.trim()) {
+          case 'id':
+            currentMetric.id = value
+            break
+          case 'slug':
+            currentMetric.slug = value
+            break
+          case 'description':
+            currentMetric.description = value
+            break
+          case 'type':
+            currentMetric.type = value
+            break
+          case 'unit':
+            currentMetric.unit = value
+            break
+          case 'color':
+            currentMetric.color = value
+            break
+          case 'interpolation':
+            currentMetric.interpolation = value
+            break
+          case 'tags':
+            // Handle Logseq array format like [[tag1]], [[tag2]]
+            if (value.startsWith('[[') && value.includes(']], [[')) {
+              currentMetric.tags = value.split(']], [[').map(tag =>
+                tag.replace(/\[\[|\]\]/g, '').trim()
+              )
+            } else {
+              currentMetric.tags = JSON.parse(value)
+            }
+            break
+          case 'formula':
+            currentMetric.formula = value
+            break
+          case 'values':
+            // Values are parsed in the next lines
+            break
+          case 'format':
+            // Format is parsed in the next lines
+            break
+        }
+      } else if (currentMetric && (line.startsWith('      * ') || line.startsWith('    * ') || line.startsWith('  * ')) && trimmedLine.includes('::')) {
+        // Sub-property (values or format) (6 spaces, 4 spaces, or 2 spaces indentation)
+        let indentLevel = 4  // All start with 2 spaces + '* ' = 4 characters
+        if (line.startsWith('      * ')) indentLevel = 8  // 6 spaces + '* ' = 8 characters
+        else if (line.startsWith('    * ')) indentLevel = 6  // 4 spaces + '* ' = 6 characters
+        const [subProp, ...valueParts] = line.substring(indentLevel).split('::')
+        const value = valueParts.join('::').trim()
+  
+        if (currentMetric.values && subProp.match(/^\d+-\d+$/)) {
+          // Value entry like "1-1:: 500"
+          currentMetric.values[subProp] = parseFloat(value)
+        } else if (subProp === 'decimals' || subProp === 'compact' || subProp === 'currency' ||
+                   subProp === 'percentage' || subProp === 'scientific' || subProp === 'suffix' ||
+                   subProp === 'rounding' || subProp === 'colorize' || subProp === 'minThreshold') {
+          // Format property
+          if (subProp === 'decimals' || subProp === 'minThreshold') {
+            currentMetric.format[subProp] = parseFloat(value)
+          } else if (subProp === 'compact' || subProp === 'percentage' || subProp === 'scientific' || subProp === 'colorize') {
+            currentMetric.format[subProp] = value === 'true'
+          } else {
+            currentMetric.format[subProp] = value
+          }
+        }
+      }
+    }
+  
+    // Add the last metric
+    if (currentMetric) {
+      data.metrics.push(currentMetric)
+    }
+  
+    return data
+  }
+
   const importData = (event) => {
     const file = event.target.files[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = (e) => {
         try {
-          const data = JSON.parse(e.target.result)
+          let data
+
+          if (file.name.endsWith('.md')) {
+            // Parse Markdown format
+            data = parseMarkdownToJson(e.target.result)
+          } else {
+            // Parse JSON format
+            data = JSON.parse(e.target.result)
+          }
+
           const newMetrics = (data.metrics || []).map(m => {
             const metric = {
               ...m,
@@ -563,18 +786,23 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
             }
             return metric
           })
+
           metrics.value.splice(0, metrics.value.length, ...newMetrics)
           selectedMetricId.value = data.selectedMetricId || null
           chartMetrics.value = data.chartMetrics || []
+
           if (!selectedMetricId.value && metrics.value.length > 0) {
             selectedMetricId.value = metrics.value.find(m => m.type === 'variable')?.id || metrics.value[0].id
           }
+
           recalculate()
+
           // Trigger reactivity for chart update
           setTimeout(() => {
             metrics.value = [...metrics.value]
           }, 10)
         } catch (error) {
+          console.error('Error loading file:', error)
           alert('Error loading file: ' + error.message)
         }
       }
@@ -623,6 +851,7 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     formatValue,
     getDetailedFormula,
     exportData,
+    exportToMarkdown,
     importData,
     parseFormulaForBuilder
   }

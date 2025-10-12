@@ -16,16 +16,22 @@
           <i class="fas fa-filter mr-1"></i>
           Filters
         </button>
-        <input type="file" @change="importData" accept=".json"
-               class="hidden" ref="fileInput">
+        <input type="file" @change="importData" accept=".json,.md"
+                class="hidden" ref="fileInput">
         <button @click="$refs.fileInput.click()"
                 class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
           Import Data
         </button>
-        <button @click="exportData" v-if="metrics.length > 0"
-                class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-          Export Data
-        </button>
+        <div v-if="metrics.length > 0" class="flex items-center gap-2">
+          <select v-model="exportFormat" class="px-3 py-2 border border-gray-300 rounded">
+            <option value="json">JSON</option>
+            <option value="markdown">Markdown</option>
+          </select>
+          <button @click="exportData(exportFormat)"
+                  class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+            Export Data
+          </button>
+        </div>
       </div>
 
       <!-- Welcome message -->
@@ -106,6 +112,7 @@ const formulaMetric2 = ref('')
 const formulaOffset2 = ref(0)
 const offsetOptions = Array.from({ length: 121 }, (_, i) => i - 60)
 const isFilterExpanded = ref(false)
+const exportFormat = ref('json')
 
 // Composables
 const { calculateProjections } = useProjections()
