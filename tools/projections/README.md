@@ -2,7 +2,6 @@
 
 A modern, simplified web application for creating and visualizing financial projections for startup businesses.
 
-
 Projections: https://lucascervera.github.io/kNNowledgeV3/tools/projections/
 
 ## Features
