@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white rounded-lg p-4 shadow mb-6">
+  <div class="bg-white rounded p-3 shadow">
     <div class="relative">
-      <canvas :id="chartId" width="800" height="200" class="w-full h-auto border border-gray-200 rounded"></canvas>
+      <canvas :id="chartId" width="800" height="180" class="w-full h-auto border border-gray-200 rounded"></canvas>
     </div>
   </div>
 </template>

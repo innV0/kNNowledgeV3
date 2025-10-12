@@ -1,47 +1,54 @@
 <template>
-  <div id="app" class="h-screen flex bg-gray-50">
-    <div class="flex-1 p-6 overflow-y-auto">
+  <div id="app" class="h-screen flex bg-gray-50 text-sm">
+    <div class="flex-1 p-3 overflow-y-auto">
       <!-- Controls -->
-      <div class="flex gap-3 mb-6">
+      <div class="flex gap-2 mb-3 flex-wrap">
         <button @click="viewMode = viewMode === 'monthly' ? 'yearly' : 'monthly'"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Switch to {{ viewMode === 'monthly' ? 'Yearly' : 'Monthly' }} View
+                class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
+          {{ viewMode === 'monthly' ? 'Yearly' : 'Monthly' }}
         </button>
         <button @click="addMetric"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                class="px-3 py-1.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
           Add Metric
         </button>
         <button @click="toggleTableFilter"
-                :class="{ 'px-4 py-2 rounded': true, 'bg-gray-600 text-white hover:bg-gray-700': !isFilterExpanded, 'bg-gray-800 text-white': isFilterExpanded }">
+                :class="{ 'px-3 py-1.5 rounded text-xs': true, 'bg-gray-600 text-white hover:bg-gray-700': !isFilterExpanded, 'bg-gray-800 text-white': isFilterExpanded }">
           <i class="fas fa-filter mr-1"></i>
           Filters
+        </button>
+        <button @click="sidebarCollapsed = !sidebarCollapsed"
+                class="px-3 py-1.5 bg-gray-600 text-white rounded text-xs hover:bg-gray-700">
+          <i :class="{ 'fas mr-1': true, 'fa-angle-right': sidebarCollapsed, 'fa-angle-left': !sidebarCollapsed }"></i>
+          {{ sidebarCollapsed ? 'Show' : 'Hide' }} Panel
         </button>
         <input type="file" @change="importData" accept=".json,.md"
                 class="hidden" ref="fileInput">
         <button @click="$refs.fileInput.click()"
-                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-          Import Data
+                class="px-3 py-1.5 bg-green-600 text-white rounded text-xs hover:bg-green-700">
+          Import
         </button>
-        <div v-if="metrics.length > 0" class="flex items-center gap-2">
-          <select v-model="exportFormat" class="px-3 py-2 border border-gray-300 rounded">
+        <div v-if="metrics.length > 0" class="flex items-center gap-1">
+          <select v-model="exportFormat" class="px-2 py-1.5 border border-gray-300 rounded text-xs">
             <option value="json">JSON</option>
-            <option value="markdown">Markdown</option>
+            <option value="markdown">MD</option>
           </select>
           <button @click="exportData(exportFormat)"
-                  class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-            Export Data
+                  class="px-3 py-1.5 bg-purple-600 text-white rounded text-xs hover:bg-purple-700">
+            Export
           </button>
         </div>
       </div>
 
       <!-- Welcome message -->
-      <div v-if="metrics.length === 0" class="bg-white rounded-lg p-6 shadow mb-6">
-        <h2 class="text-2xl mb-4">Welcome to Financial Projections Tool</h2>
-        <p>Import a JSON data file to load your business metrics and start analyzing projections.</p>
+      <div v-if="metrics.length === 0" class="bg-white rounded p-4 shadow mb-3">
+        <h2 class="text-lg mb-2">Welcome to Financial Projections Tool</h2>
+        <p class="text-sm">Import a JSON or Markdown data file to load your business metrics and start analyzing projections.</p>
       </div>
 
       <!-- Chart -->
-      <ChartView v-if="metrics.length > 0" />
+      <div v-if="metrics.length > 0" class="sticky top-0 z-10 bg-gray-50 pb-3">
+        <ChartView />
+      </div>
 
       <!-- Table -->
       <MetricTable
@@ -59,7 +66,7 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="w-1/3 bg-white p-4 border-l border-gray-200 overflow-y-auto">
+    <div v-if="!sidebarCollapsed" class="w-1/3 bg-white p-3 border-l border-gray-200 overflow-y-auto">
       <MetricDetails
         :selected-metric="selectedMetric"
         :metrics="metrics"
@@ -113,6 +120,7 @@ const formulaOffset2 = ref(0)
 const offsetOptions = Array.from({ length: 121 }, (_, i) => i - 60)
 const isFilterExpanded = ref(false)
 const exportFormat = ref('json')
+const sidebarCollapsed = ref(false)
 
 // Composables
 const { calculateProjections } = useProjections()

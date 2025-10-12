@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { FormulaParser } from './formulaParser.js'
 
 // Interpolation functions exported for use in other modules
 export const interpolateValues = (metric) => {
@@ -124,6 +125,9 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
   const chartMetrics = ref([])
   const currentType = ref('')
 
+  // Create formula parser instance
+  const formulaParser = computed(() => new FormulaParser(metrics))
+
   const selectedMetric = computed(() => {
     if (!selectedMetricId.value || metrics.value.length === 0) return null
     return metrics.value.find(m => m.id === selectedMetricId.value)
@@ -213,6 +217,7 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     if (selectedMetric.value.type === 'calculated') {
       selectedMetric.value.formula = ''
       selectedMetric.value.values = {} // Clear values for calculated metrics
+      // Legacy formula builder variables (keep for backward compatibility)
       formulaMetric1.value = ''
       formulaOffset1.value = 0
       formulaOperation.value = '+'
@@ -224,6 +229,7 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
       if (!selectedMetric.value.values) {
         selectedMetric.value.values = {}
       }
+      // Legacy formula builder variables (keep for backward compatibility)
       formulaMetric1.value = ''
       formulaOffset1.value = 0
       formulaOperation.value = '+'
@@ -234,20 +240,48 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
   }
 
   const parseDependencies = (formula, currentMetricId = null) => {
-    const deps = []
-    const parts = formula.split(' ')
-    if (parts.length === 3) {
-      const [slugOffset1, , slugOffset2] = parts
-      const [slug1, offset1Str] = slugOffset1.split(':')
-      const [slug2, offset2Str] = slugOffset2.split(':')
-      const offset1 = parseInt(offset1Str) || 0
-      const offset2 = parseInt(offset2Str) || 0
-      const m1 = metrics.value.find(m => m.slug === slug1)
-      const m2 = metrics.value.find(m => m.slug === slug2)
-      if (m1 && (m1.id !== currentMetricId || offset1 >= 0)) deps.push(m1.id)
-      if (m2 && (m2.id !== currentMetricId || offset2 >= 0)) deps.push(m2.id)
+    try {
+      const validation = formulaParser.value.validate(formula)
+      if (!validation.valid) return []
+
+      const deps = []
+
+      // Traverse AST to find metric dependencies
+      const findMetrics = (node) => {
+        if (node.type === 'metric') {
+          const metric = metrics.value.find(m => m.slug === node.name)
+          if (metric && (metric.id !== currentMetricId || node.offset >= 0)) {
+            deps.push(metric.id)
+          }
+        } else if (node.type === 'binary') {
+          findMetrics(node.left)
+          findMetrics(node.right)
+        } else if (node.type === 'unary') {
+          findMetrics(node.operand)
+        } else if (node.type === 'function') {
+          node.arguments.forEach(arg => findMetrics(arg))
+        }
+      }
+
+      findMetrics(validation.ast)
+      return [...new Set(deps)] // Remove duplicates
+    } catch (error) {
+      // Fallback to old parsing for backward compatibility
+      const deps = []
+      const parts = formula.split(' ')
+      if (parts.length === 3) {
+        const [slugOffset1, , slugOffset2] = parts
+        const [slug1, offset1Str] = slugOffset1.split(':')
+        const [slug2, offset2Str] = slugOffset2.split(':')
+        const offset1 = parseInt(offset1Str) || 0
+        const offset2 = parseInt(offset2Str) || 0
+        const m1 = metrics.value.find(m => m.slug === slug1)
+        const m2 = metrics.value.find(m => m.slug === slug2)
+        if (m1 && (m1.id !== currentMetricId || offset1 >= 0)) deps.push(m1.id)
+        if (m2 && (m2.id !== currentMetricId || offset2 >= 0)) deps.push(m2.id)
+      }
+      return deps
     }
-    return deps
   }
 
   const hasCycle = (startMetricId, newDeps) => {
@@ -279,19 +313,29 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     return dfs(startMetricId)
   }
 
-  const updateFormula = () => {
-    if (formulaMetric1.value && formulaMetric2.value) {
-      const newFormula = `${formulaMetric1.value}:${formulaOffset1.value} ${formulaOperation.value} ${formulaMetric2.value}:${formulaOffset2.value}`
-      const newDeps = parseDependencies(newFormula, selectedMetric.value.id)
-
-      if (hasCycle(selectedMetric.value.id, newDeps)) {
-        alert('This formula would create a circular dependency. Please choose different metrics.')
-        return
-      }
-
-      selectedMetric.value.formula = newFormula
+  const updateFormula = (newFormula) => {
+    if (!newFormula || !newFormula.trim()) {
+      selectedMetric.value.formula = ''
       recalculate()
+      return
     }
+
+    // Validate the formula
+    const validation = formulaParser.value.validate(newFormula.trim())
+    if (!validation.valid) {
+      alert(`Invalid formula: ${validation.error}`)
+      return
+    }
+
+    // Check for circular dependencies
+    const newDeps = parseDependencies(newFormula.trim(), selectedMetric.value.id)
+    if (hasCycle(selectedMetric.value.id, newDeps)) {
+      alert('This formula would create a circular dependency. Please choose different metrics.')
+      return
+    }
+
+    selectedMetric.value.formula = newFormula.trim()
+    recalculate()
   }
 
   // Table-based value management
@@ -853,6 +897,7 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
     exportData,
     exportToMarkdown,
     importData,
-    parseFormulaForBuilder
+    parseFormulaForBuilder,
+    formulaParser
   }
 }

@@ -1,4 +1,5 @@
 import { interpolateValues } from './useMetrics'
+import { FormulaParser } from './formulaParser.js'
 
 export function useProjections() {
   const calculateProjections = (metrics) => {
@@ -78,6 +79,18 @@ export function useProjections() {
 
 
   const evaluateFormula = (formula, month, data, metrics) => {
+    try {
+      // Try new enhanced parser first
+      const parser = new FormulaParser(metrics)
+      const validation = parser.validate(formula)
+      if (validation.valid) {
+        return parser.evaluate(validation.ast, month)
+      }
+    } catch (error) {
+      console.warn('Enhanced formula parser failed, falling back to legacy parser:', error.message)
+    }
+
+    // Fallback to legacy parser for backward compatibility
     const tokens = formula.split(' ')
     if (tokens.length < 3 || tokens.length % 2 === 0) return 0 // Must be odd number: val op val op val...
 
