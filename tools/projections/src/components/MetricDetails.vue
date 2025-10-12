@@ -1,66 +1,66 @@
 <template>
-  <div>
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-semibold">Metric Details</h2>
-      <div class="flex gap-2">
+  <div class="text-sm">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-lg font-semibold">Metric Details</h2>
+      <div class="flex gap-1">
         <button @click="moveMetricUp" v-if="selectedMetric && canMoveUp"
-                class="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+                class="p-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-xs">
           <i class="fas fa-arrow-up"></i>
         </button>
         <button @click="moveMetricDown" v-if="selectedMetric && canMoveDown"
-                class="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+                class="p-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-xs">
           <i class="fas fa-arrow-down"></i>
         </button>
         <button @click="$emit('toggle-chart')"
-                :class="{ 'p-2 rounded border text-sm': true, 'bg-blue-600 text-white border-blue-600': selectedMetric && chartMetrics.includes(selectedMetric.id), 'border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800': !(selectedMetric && chartMetrics.includes(selectedMetric.id)) }">
+                :class="{ 'p-1.5 rounded border text-xs': true, 'bg-blue-600 text-white border-blue-600': selectedMetric && chartMetrics.includes(selectedMetric.id), 'border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800': !(selectedMetric && chartMetrics.includes(selectedMetric.id)) }">
           <i class="fas fa-chart-line"></i>
         </button>
         <button @click="$emit('toggle-edit')"
-                class="px-3 py-1 bg-blue-600 text-white rounded text-sm border border-blue-600">
+                class="px-2 py-1 bg-blue-600 text-white rounded text-xs border border-blue-600">
           <i class="fas fa-pencil-alt mr-1"></i> {{ editMode ? 'Save' : 'Edit' }}
         </button>
         <button v-if="selectedMetric" @click="deleteMetric"
-                class="p-2 rounded border border-red-500 text-red-500 text-sm hover:bg-red-50">
+                class="p-1.5 rounded border border-red-500 text-red-500 text-xs hover:bg-red-50">
           <i class="fas fa-trash"></i>
         </button>
       </div>
     </div>
 
-    <div v-if="selectedMetric" class="space-y-4">
+    <div v-if="selectedMetric" class="space-y-3">
       <!-- Metric Name -->
-      <div v-if="editMode && selectedMetric" class="mb-4">
-        <label class="block text-sm font-medium mb-1">Metric Name</label>
+      <div v-if="editMode && selectedMetric" class="mb-2">
+        <label class="block text-xs font-medium mb-1">Metric Name</label>
         <input v-model="selectedMetric.name" @input="$emit('recalculate')"
-               class="w-full px-3 py-2 border border-gray-300 rounded text-lg font-semibold">
+               class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm font-semibold">
       </div>
-      <div v-else-if="selectedMetric" class="mb-4">
-        <h3 class="text-xl font-semibold">{{ selectedMetric.name }}</h3>
+      <div v-else-if="selectedMetric" class="mb-2">
+        <h3 class="text-base font-semibold">{{ selectedMetric.name }}</h3>
       </div>
 
       <!-- Description -->
       <div v-if="editMode && selectedMetric">
-        <label class="block text-sm font-medium mb-1">Description</label>
+        <label class="block text-xs font-medium mb-1">Description</label>
         <textarea v-model="selectedMetric.description" @input="$emit('recalculate')"
-                  rows="2" class="w-full px-3 py-2 border border-gray-300 rounded"></textarea>
+                  rows="2" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"></textarea>
       </div>
-      <div v-else-if="selectedMetric && selectedMetric.description" class="text-gray-600 text-sm">
+      <div v-else-if="selectedMetric && selectedMetric.description" class="text-gray-600 text-xs">
         {{ selectedMetric.description }}
       </div>
 
       <!-- Type and Unit -->
-      <div v-if="editMode && selectedMetric" class="grid grid-cols-2 gap-4">
+      <div v-if="editMode && selectedMetric" class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium mb-1">Type</label>
+          <label class="block text-xs font-medium mb-1">Type</label>
           <select :value="currentType" @change="$emit('update-type', $event)"
-                  class="w-full px-3 py-2 border border-gray-300 rounded">
+                  class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm">
             <option value="variable">Variable</option>
             <option value="calculated">Calculated</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Unit</label>
+          <label class="block text-xs font-medium mb-1">Unit</label>
           <select v-model="unitSelection" @change="onUnitChange"
-                  class="w-full px-3 py-2 border border-gray-300 rounded">
+                  class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm">
             <option value="">No unit</option>
             <option value="units">units</option>
             <option value="€">€</option>
@@ -71,91 +71,76 @@
           </select>
           <input v-if="unitSelection === 'custom'" v-model="customUnitInput"
                  @input="updateCustomUnit" placeholder="Enter custom unit"
-                 class="w-full mt-1 px-3 py-2 border border-gray-300 rounded">
+                 class="w-full mt-1 px-2 py-1.5 border border-gray-300 rounded text-sm">
         </div>
       </div>
 
       <!-- Aggregation -->
       <div v-if="editMode && selectedMetric">
-        <label class="block text-sm font-medium mb-1">Yearly Aggregation</label>
+        <label class="block text-xs font-medium mb-1">Yearly Aggregation</label>
         <select v-model="selectedMetric.yearlyAggregation" @change="$emit('recalculate')"
-                class="w-full px-3 py-2 border border-gray-300 rounded">
+                class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm">
           <option value="last">Last value of year</option>
           <option value="sum">Sum of monthly values</option>
           <option value="average">Average of monthly values</option>
         </select>
       </div>
 
-      <!-- Formula Builder for Calculated -->
+      <!-- Enhanced Formula Input for Calculated -->
       <div v-if="editMode && currentType === 'calculated' && selectedMetric">
-        <label class="block text-sm font-medium mb-2">Formula Builder</label>
-        <div class="flex gap-2 items-center flex-wrap">
-          <select :value="formulaMetric1" @change="updateFormulaMetric1"
-                  class="px-2 py-1 border border-gray-300 rounded text-sm">
-            <option value="">Select metric...</option>
-            <option v-for="m in metrics" :value="m.slug" :key="m.id">{{ m.name }}</option>
-          </select>
-          <select :value="formulaOffset1" @change="updateFormulaOffset1"
-                  class="px-2 py-1 border border-gray-300 rounded text-sm">
-            <option v-for="offset in offsetOptions" :value="offset" :key="offset">{{ offset }}</option>
-          </select>
-          <select :value="formulaOperation" @change="updateFormulaOperation"
-                  class="px-2 py-1 border border-gray-300 rounded text-sm">
-            <option value="+">+</option>
-            <option value="*">×</option>
-          </select>
-          <select :value="formulaMetric2" @change="updateFormulaMetric2"
-                  class="px-2 py-1 border border-gray-300 rounded text-sm">
-            <option value="">Select metric...</option>
-            <option v-for="m in metrics" :value="m.slug" :key="m.id">{{ m.name }}</option>
-          </select>
-          <select :value="formulaOffset2" @change="updateFormulaOffset2"
-                  class="px-2 py-1 border border-gray-300 rounded text-sm">
-            <option v-for="offset in offsetOptions" :value="offset" :key="offset">{{ offset }}</option>
-          </select>
-        </div>
+        <FormulaInput
+          :modelValue="selectedMetric.formula || ''"
+          :metrics="metrics"
+          :currentPeriod="0"
+          @update:modelValue="updateFormula"
+          @valid-change="formulaValid = $event"
+        />
       </div>
 
       <!-- Formula Display -->
-      <div v-else-if="selectedMetric && selectedMetric.formula" class="text-gray-600 text-sm italic">
+      <div v-else-if="selectedMetric && selectedMetric.formula" class="text-gray-600 text-xs italic">
         Formula: {{ getDetailedFormula(selectedMetric) }}
       </div>
 
       <!-- Values Section -->
-      <h4 class="font-semibold mb-2">Values</h4>
+      <h4 class="font-semibold mb-1 text-sm">Values</h4>
 
       <!-- Calculated Values Display -->
-      <div v-if="currentType === 'calculated' && selectedMetric" class="mb-6">
-        <p class="text-sm text-gray-600">This metric is calculated automatically based on the formula above. Values are shown in the table.</p>
+      <div v-if="currentType === 'calculated' && selectedMetric" class="mb-3">
+        <p class="text-xs text-gray-600">This metric is calculated automatically based on the formula above. Values are shown in the table.</p>
       </div>
 
       <!-- Variable Values Table -->
-      <div v-if="editMode && currentType === 'variable' && selectedMetric" class="mb-6">
-        <h5 class="font-semibold mb-3">Values by Year and Month</h5>
-        <p class="text-sm text-gray-600 mb-4">Enter specific values for any month/year combination. Missing values will be interpolated automatically.</p>
+      <div v-if="editMode && currentType === 'variable' && selectedMetric" class="mb-3">
+        <h5 class="font-semibold mb-2 text-sm">Values by Year and Month</h5>
+        <p class="text-xs text-gray-600 mb-2">Enter specific values for any month/year combination. Missing values will be interpolated automatically.</p>
 
-        <div class="overflow-x-auto border border-gray-300 rounded">
+        <div class="overflow-x-auto">
           <table class="w-full text-xs">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-1 py-1 text-left font-medium border-b border-gray-300">Year</th>
-                <th v-for="month in 12" :key="month" class="px-1 py-1 text-center font-medium border-b border-gray-300 min-w-10">
+                <th class="px-1 py-1 text-left font-medium text-xs">Year</th>
+                <th v-for="month in 12" :key="month" class="px-1 py-1 text-center font-medium min-w-8 text-xs">
                   M{{ month }}
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="year in 5" :key="year" class="border-b border-gray-200">
-                <td class="px-1 py-1 font-medium bg-gray-50 border-r border-gray-300 text-xs">
+              <tr v-for="year in 5" :key="year">
+                <td class="px-1 py-1 font-medium bg-gray-50 text-xs">
                   {{ year }}
                 </td>
-                <td v-for="month in 12" :key="month" class="px-1 py-1 text-center border-r border-gray-200 last:border-r-0">
+                <td v-for="month in 12" :key="month" class="px-1 py-1 text-center">
                   <input
                     type="number"
                     step="any"
                     :value="getMetricValue(year, month)"
                     @input="setMetricValue(year, month, $event.target.value)"
-                    class="w-full px-0.5 py-0.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    :class="{
+                      'w-full px-0.5 py-0.5 text-xs border-none rounded focus:outline-none focus:ring-1 focus:ring-blue-500': true,
+                      'bg-blue-50': getMetricValue(year, month) !== '',
+                      'bg-white': getMetricValue(year, month) === ''
+                    }"
                     placeholder="">
                 </td>
               </tr>
@@ -163,10 +148,10 @@
           </table>
         </div>
 
-        <div class="mt-4">
-          <label class="block text-sm font-medium mb-1">Interpolation Method</label>
+        <div class="mt-2">
+          <label class="block text-xs font-medium mb-1">Interpolation Method</label>
           <select v-model="selectedMetric.interpolation" @change="$emit('recalculate')"
-                  class="px-3 py-2 border border-gray-300 rounded">
+                  class="px-2 py-1.5 border border-gray-300 rounded text-sm">
             <option value="none">No Interpolation (Individual Values)</option>
             <option value="linear">Linear Interpolation</option>
             <option value="curve">Curve Interpolation (Spline)</option>
@@ -176,9 +161,9 @@
 
       <!-- Color Picker -->
       <div v-if="selectedMetric">
-        <label class="block text-sm font-medium mb-1">Color</label>
+        <label class="block text-xs font-medium mb-1">Color</label>
         <select v-model="selectedMetric.color" @change="$emit('recalculate')"
-                class="w-full px-3 py-2 border border-gray-300 rounded">
+                class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm">
           <option value="#ffffff">White</option>
           <option value="#f8f9fa">Light Gray</option>
           <option value="#e9ecef">Gray 100</option>
@@ -199,26 +184,25 @@
           <option value="#1976d2">Blue 700</option>
           <option value="#1565c0">Blue 800</option>
           <option value="#0d47a1">Blue 900</option>
-          <!-- Add more color options as needed -->
         </select>
       </div>
 
       <!-- Tags -->
       <div v-if="selectedMetric">
-        <label class="block text-sm font-medium mb-1">Tags</label>
-        <div v-if="editMode" class="space-y-2">
+        <label class="block text-xs font-medium mb-1">Tags</label>
+        <div v-if="editMode" class="space-y-1">
           <input
             v-model="newTag"
             @keydown.enter="addTag"
             @keydown="handleTagInput"
             placeholder="Add a tag and press Enter"
-            class="w-full px-3 py-2 border border-gray-300 rounded"
+            class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
           >
           <div class="flex flex-wrap gap-1">
             <span
               v-for="tag in selectedMetric.tags"
               :key="tag"
-              class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
+              class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800"
             >
               {{ tag }}
               <button
@@ -234,11 +218,11 @@
           <span
             v-for="tag in selectedMetric.tags"
             :key="tag"
-            class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800"
+            class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-800"
           >
             {{ tag }}
           </span>
-          <span v-if="selectedMetric.tags.length === 0" class="text-gray-500 text-sm">No tags</span>
+          <span v-if="selectedMetric.tags.length === 0" class="text-gray-500 text-xs">No tags</span>
           </div>
         </div>
   
@@ -405,6 +389,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import FormulaInput from './FormulaInput.vue'
 
 const props = defineProps({
   selectedMetric: Object,
@@ -426,6 +411,7 @@ const newTag = ref('')
 const customUnitInput = ref('')
 const unitSelection = ref('')
 const customCurrencySymbol = ref('')
+const formulaValid = ref(true)
 
 // Watch for selectedMetric changes to sync unit selection and custom unit input
 watch(() => props.selectedMetric, (newMetric) => {
@@ -452,11 +438,7 @@ const emit = defineEmits([
   'recalculate',
   'set-metric-value',
   'get-metric-value',
-  'update-formula-metric1',
-  'update-formula-offset1',
-  'update-formula-operation',
-  'update-formula-metric2',
-  'update-formula-offset2',
+  'update-formula',
   'move-metric-up',
   'move-metric-down'
 ])
@@ -573,24 +555,8 @@ const deleteMetric = () => {
   }
 }
 
-const updateFormulaMetric1 = (event) => {
-  emit('update-formula-metric1', event.target.value)
-}
-
-const updateFormulaOffset1 = (event) => {
-  emit('update-formula-offset1', parseInt(event.target.value))
-}
-
-const updateFormulaOperation = (event) => {
-  emit('update-formula-operation', event.target.value)
-}
-
-const updateFormulaMetric2 = (event) => {
-  emit('update-formula-metric2', event.target.value)
-}
-
-const updateFormulaOffset2 = (event) => {
-  emit('update-formula-offset2', parseInt(event.target.value))
+const updateFormula = (newFormula) => {
+  emit('update-formula', newFormula)
 }
 
 // Unit management functions
@@ -755,3 +721,26 @@ const hasActiveFormats = computed(() => {
          format.colorize || format.decimals !== 2 || format.suffix
 })
 </script>
+
+<style scoped>
+/* Ensure table layout is correct */
+table {
+  table-layout: auto;
+}
+
+/* Percentage formatting */
+.percentage::after {
+  content: '%';
+}
+
+/* Hide number input arrows/spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+</style>

@@ -1,14 +1,14 @@
 <template>
-  <div class="bg-white rounded-lg overflow-hidden shadow">
+  <div class="bg-white rounded overflow-hidden shadow">
     <!-- Tag Filter Controls -->
-    <div class="p-4 border-b border-gray-200 bg-gray-50">
-      <div class="flex items-center gap-4">
+    <div v-if="isFilterExpanded" class="p-2 border-b border-gray-200 bg-gray-50">
+      <div class="flex items-center gap-3 flex-wrap">
         <div class="flex items-center gap-2">
-          <label class="text-sm font-medium text-gray-700">Filter by tags:</label>
+          <label class="text-xs font-medium text-gray-700">Filter by tags:</label>
           <select
             v-model="selectedFilterTags"
             multiple
-            class="px-3 py-1 border border-gray-300 rounded text-sm min-w-48"
+            class="px-2 py-1 border border-gray-300 rounded text-xs min-w-40"
             @change="updateFilteredMetrics"
           >
             <option v-for="tag in availableTags" :key="tag" :value="tag">
@@ -19,32 +19,32 @@
         <button
           v-if="selectedFilterTags.length > 0"
           @click="clearTagFilters"
-          class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-100"
+          class="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-100"
         >
-          Clear filters
+          Clear
         </button>
-        <span v-if="selectedFilterTags.length > 0" class="text-sm text-gray-600">
-          Showing {{ filteredMetrics.length }} of {{ metrics.length }} metrics
+        <span v-if="selectedFilterTags.length > 0" class="text-xs text-gray-600">
+          {{ filteredMetrics.length }}/{{ metrics.length }}
         </span>
       </div>
     </div>
 
     <div class="overflow-x-auto overflow-y-visible">
-      <table class="min-w-full">
+      <table class="min-w-full text-xs">
         <thead>
           <tr>
-            <th class="px-3 py-2 text-left font-semibold bg-gray-50 border-b border-gray-200 h-8 align-middle sticky w-80">
+            <th class="px-2 py-1.5 text-left font-semibold bg-gray-50 border-b border-gray-200 h-6 align-middle sticky w-64">
               Metric
             </th>
-            <th class="px-3 py-2 text-left font-semibold bg-gray-50 border-b border-gray-200 h-8 align-middle w-48">
+            <th class="px-2 py-1.5 text-left font-semibold bg-gray-50 border-b border-gray-200 h-6 align-middle w-40">
               Tags
             </th>
             <th
               v-for="period in periods"
               :key="period"
-              class="px-2 py-1 text-center font-semibold bg-gray-50 border-b border-gray-200 h-8 align-middle min-w-12"
+              class="px-1 py-1 text-center font-semibold bg-gray-50 border-b border-gray-200 h-6 align-middle min-w-10"
             >
-              {{ viewMode === 'monthly' ? 'Month' : 'Year' }} {{ period }}
+              {{ viewMode === 'monthly' ? 'M' : 'Y' }}{{ period }}
             </th>
           </tr>
         </thead>
@@ -53,35 +53,38 @@
             v-for="(metric, index) in filteredMetrics"
             :key="metric.id"
             :class="{
-              'ring-2 ring-blue-500': selectedMetricId === metric.id,
+              'ring-1 ring-blue-500': selectedMetricId === metric.id,
               'cursor-pointer hover:bg-gray-50': true,
               'text-blue-600': metric.type === 'variable'
             }"
             :style="{ backgroundColor: metric.color }"
             @click="$emit('select-metric', metric.id)"
           >
-            <td class="px-3 py-1 border-b border-gray-200 h-8 align-middle sticky bg-inherit w-80">
-              {{ projections[metrics.indexOf(metric)]?.name }}
-              <span v-if="metric.unit && metric.unit !== '$'" class="text-gray-600 text-sm">
-                ({{ metric.unit }})
-              </span>
+            <td class="px-2 py-1 border-b border-gray-200 h-6 align-middle sticky bg-inherit w-64">
+              <div class="truncate">
+                {{ projections[metrics.indexOf(metric)]?.name }}
+                <span v-if="metric.unit && metric.unit !== '$'" class="text-gray-600 text-xs ml-1">
+                  ({{ metric.unit }})
+                </span>
+              </div>
             </td>
-            <td class="px-3 py-1 border-b border-gray-200 h-8 align-middle w-48">
-              <div class="flex flex-wrap gap-1">
+            <td class="px-2 py-1 border-b border-gray-200 h-6 align-middle w-40">
+              <div class="flex flex-wrap gap-0.5">
                 <span
-                  v-for="tag in metric.tags"
+                  v-for="tag in metric.tags.slice(0, 3)"
                   :key="tag"
-                  class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800"
+                  class="inline-flex items-center px-1 py-0.5 rounded text-xs bg-blue-100 text-blue-800"
                 >
                   {{ tag }}
                 </span>
+                <span v-if="metric.tags.length > 3" class="text-gray-400 text-xs">+{{ metric.tags.length - 3 }}</span>
                 <span v-if="metric.tags.length === 0" class="text-gray-400 text-xs">-</span>
               </div>
             </td>
             <td
               v-for="period in periods"
               :key="period"
-              class="px-2 py-1 text-right border-b border-gray-200 h-8 align-middle"
+              class="px-1 py-1 text-right border-b border-gray-200 h-6 align-middle"
             >
               <span :class="{
                 'text-green-600': metric.format?.colorize && getValue(projections[metrics.indexOf(metric)], period) > 0,
@@ -137,10 +140,11 @@ const props = defineProps({
   periods: Array,
   viewMode: String,
   selectedMetricId: String,
-  formatValue: Function
+  formatValue: Function,
+  isFilterExpanded: Boolean
 })
 
-const emit = defineEmits(['select-metric'])
+const emit = defineEmits(['select-metric', 'toggle-filter'])
 
 const selectedFilterTags = ref([])
 
@@ -180,6 +184,10 @@ const updateFilteredMetrics = () => {
 
 const clearTagFilters = () => {
   selectedFilterTags.value = []
+}
+
+const toggleFilter = () => {
+  emit('toggle-filter', !props.isFilterExpanded)
 }
 
 

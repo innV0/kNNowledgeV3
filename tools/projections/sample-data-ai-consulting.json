@@ -1,0 +1,485 @@
+{
+  "metrics": [
+    {
+      "id": "websiteTraffic",
+      "name": "🌐 Website Traffic/Month",
+      "slug": "website_traffic_month",
+      "description": "Monthly unique visitors to the website",
+      "unit": "",
+      "color": "#2196f3",
+      "type": "variable",
+      "values": {
+        "1-1": 5000,
+        "1-2": 5500,
+        "1-3": 6000,
+        "1-4": 6500,
+        "1-5": 7000,
+        "1-6": 8000,
+        "2-1": 9000,
+        "2-2": 10000,
+        "2-3": 11000
+      },
+      "interpolation": "linear",
+      "tags": ["marketing", "traffic", "organic"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "visitors",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "googleAdsSpend",
+      "name": "📢 Google Ads Spend/Month",
+      "slug": "google_ads_spend_month",
+      "description": "Monthly budget allocated to Google Ads campaigns",
+      "unit": "$",
+      "color": "#ff9800",
+      "type": "variable",
+      "values": {
+        "1-1": 3000,
+        "1-2": 3500,
+        "1-3": 4000,
+        "1-4": 4500,
+        "1-5": 5000,
+        "1-6": 5500,
+        "2-1": 6000,
+        "2-2": 6500,
+        "2-3": 7000
+      },
+      "interpolation": "linear",
+      "tags": ["marketing", "paid", "costs"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "googleAdsClicks",
+      "name": "👆 Google Ads Clicks/Month",
+      "slug": "google_ads_clicks_month",
+      "description": "Monthly clicks from Google Ads campaigns",
+      "unit": "",
+      "color": "#4caf50",
+      "type": "variable",
+      "values": {
+        "1-1": 600,
+        "1-2": 700,
+        "1-3": 800,
+        "1-4": 900,
+        "1-5": 1000,
+        "1-6": 1100,
+        "2-1": 1200,
+        "2-2": 1300,
+        "2-3": 1400
+      },
+      "interpolation": "linear",
+      "tags": ["marketing", "paid", "engagement"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "clicks",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "adsConversionRate",
+      "name": "🎯 Ads Conversion Rate",
+      "slug": "ads_conversion_rate",
+      "description": "Percentage of ad clicks that convert to leads",
+      "unit": "%",
+      "color": "#9c27b0",
+      "type": "variable",
+      "values": {
+        "1-1": 8.5,
+        "1-3": 9.2,
+        "1-6": 10.1,
+        "2-1": 11.0
+      },
+      "interpolation": "linear",
+      "tags": ["marketing", "conversion", "performance"],
+      "format": {
+        "decimals": 1,
+        "compact": false,
+        "currency": "",
+        "percentage": true,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "organicLeads",
+      "name": "🌱 Organic Leads/Month",
+      "slug": "organic_leads_month",
+      "description": "Leads generated from organic website traffic",
+      "unit": "",
+      "color": "#795548",
+      "type": "calculated",
+      "formula": "website_traffic_month:0 * 0.02",
+      "tags": ["marketing", "organic", "leads"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "leads",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "paidLeads",
+      "name": "💰 Paid Leads/Month",
+      "slug": "paid_leads_month",
+      "description": "Leads generated from Google Ads campaigns",
+      "unit": "",
+      "color": "#607d8b",
+      "type": "calculated",
+      "formula": "google_ads_clicks_month:0 * ads_conversion_rate:0 / 100",
+      "tags": ["marketing", "paid", "leads"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "leads",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "totalLeads",
+      "name": "📋 Total Leads/Month",
+      "slug": "total_leads_month",
+      "description": "Combined leads from all marketing channels",
+      "unit": "",
+      "color": "#3f51b5",
+      "type": "calculated",
+      "formula": "organic_leads_month:0 + paid_leads_month:0",
+      "tags": ["marketing", "leads", "funnel"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "leads",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "leadToConsultationRate",
+      "name": "🤝 Lead to Consultation Rate",
+      "slug": "lead_to_consultation_rate",
+      "description": "Percentage of leads that convert to initial consultations",
+      "unit": "%",
+      "color": "#e91e63",
+      "type": "variable",
+      "values": {
+        "1-1": 25.0,
+        "1-4": 28.0,
+        "1-8": 32.0,
+        "2-1": 35.0
+      },
+      "interpolation": "linear",
+      "tags": ["sales", "conversion", "consultation"],
+      "format": {
+        "decimals": 1,
+        "compact": false,
+        "currency": "",
+        "percentage": true,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "consultations",
+      "name": "💼 Consultations/Month",
+      "slug": "consultations_month",
+      "description": "Monthly initial consultation meetings",
+      "unit": "",
+      "color": "#00bcd4",
+      "type": "calculated",
+      "formula": "total_leads_month:0 * lead_to_consultation_rate:0 / 100",
+      "tags": ["sales", "consultation", "funnel"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "consultations",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "consultationToSaleRate",
+      "name": "✅ Consultation to Sale Rate",
+      "slug": "consultation_to_sale_rate",
+      "description": "Percentage of consultations that convert to paid projects",
+      "unit": "%",
+      "color": "#8bc34a",
+      "type": "variable",
+      "values": {
+        "1-1": 40.0,
+        "1-6": 45.0,
+        "2-1": 50.0
+      },
+      "interpolation": "linear",
+      "tags": ["sales", "conversion", "closing"],
+      "format": {
+        "decimals": 1,
+        "compact": false,
+        "currency": "",
+        "percentage": true,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "projectsWon",
+      "name": "🎉 Projects Won/Month",
+      "slug": "projects_won_month",
+      "description": "Monthly new client projects secured",
+      "unit": "",
+      "color": "#4caf50",
+      "type": "calculated",
+      "formula": "consultations_month:0 * consultation_to_sale_rate:0 / 100",
+      "tags": ["sales", "projects", "revenue"],
+      "format": {
+        "decimals": 1,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "projects",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "avgHoursPerProject",
+      "name": "⏱️ Avg Hours per Project",
+      "slug": "avg_hours_per_project",
+      "description": "Average consulting hours sold per project",
+      "unit": "",
+      "color": "#ff5722",
+      "type": "variable",
+      "values": {
+        "1-1": 120,
+        "1-6": 140,
+        "2-1": 160
+      },
+      "interpolation": "linear",
+      "tags": ["sales", "hours", "pricing"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "hours",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "hourlyRate",
+      "name": "💵 Hourly Rate",
+      "slug": "hourly_rate",
+      "description": "Price per consulting hour",
+      "unit": "$",
+      "color": "#673ab7",
+      "type": "variable",
+      "values": {
+        "1-1": 150,
+        "1-6": 165,
+        "2-1": 180
+      },
+      "interpolation": "linear",
+      "tags": ["pricing", "revenue"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "/hour",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "monthlyRevenue",
+      "name": "💰 Monthly Revenue",
+      "slug": "monthly_revenue",
+      "description": "Total revenue from consulting hours",
+      "unit": "$",
+      "color": "#4caf50",
+      "type": "calculated",
+      "formula": "projects_won_month:0 * avg_hours_per_project:0 * hourly_rate:0",
+      "tags": ["revenue", "financial"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "monthlyCosts",
+      "name": "💸 Monthly Costs",
+      "slug": "monthly_costs",
+      "description": "Total operational costs including ads and overhead",
+      "unit": "$",
+      "color": "#f44336",
+      "type": "calculated",
+      "formula": "google_ads_spend_month:0 + 8000",
+      "tags": ["costs", "financial"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "monthlyProfit",
+      "name": "💎 Monthly Profit",
+      "slug": "monthly_profit",
+      "description": "Net profit after costs",
+      "unit": "$",
+      "color": "#2196f3",
+      "type": "calculated",
+      "formula": "monthly_revenue:0 - monthly_costs:0",
+      "tags": ["profit", "financial"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "profitMargin",
+      "name": "📊 Profit Margin",
+      "slug": "profit_margin",
+      "description": "Profit as percentage of revenue",
+      "unit": "%",
+      "color": "#ff9800",
+      "type": "calculated",
+      "formula": "monthly_profit:0 / monthly_revenue:0 * 100",
+      "tags": ["profit", "margin", "performance"],
+      "format": {
+        "decimals": 1,
+        "compact": false,
+        "currency": "",
+        "percentage": true,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": true,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "customerAcquisitionCost",
+      "name": "🎯 Customer Acquisition Cost",
+      "slug": "customer_acquisition_cost",
+      "description": "Cost to acquire each paying customer",
+      "unit": "$",
+      "color": "#9c27b0",
+      "type": "calculated",
+      "formula": "monthly_costs:0 / projects_won_month:0",
+      "tags": ["acquisition", "costs", "efficiency"],
+      "format": {
+        "decimals": 0,
+        "compact": false,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    },
+    {
+      "id": "lifetimeValue",
+      "name": "💎 Customer Lifetime Value",
+      "slug": "customer_lifetime_value",
+      "description": "Total revenue per customer over their relationship",
+      "unit": "$",
+      "color": "#00bcd4",
+      "type": "calculated",
+      "formula": "monthly_revenue:0 / projects_won_month:0 * 2.5",
+      "tags": ["value", "retention", "revenue"],
+      "format": {
+        "decimals": 0,
+        "compact": true,
+        "currency": "$",
+        "percentage": false,
+        "scientific": false,
+        "suffix": "",
+        "rounding": "round",
+        "colorize": false,
+        "minThreshold": 0.01
+      }
+    }
+  ],
+  "selectedMetricId": "websiteTraffic",
+  "viewMode": "monthly",
+  "chartMetrics": ["websiteTraffic", "totalLeads", "consultations", "projectsWon", "monthlyRevenue", "monthlyProfit"]
+}
