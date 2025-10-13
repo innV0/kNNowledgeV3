@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [vue()],
   base: '/kNNowledgeV3/tools/projections/', // Path for subdirectory deployment
   build: {
-    outDir: 'dist'
+    outDir: '.'
   }
 })
