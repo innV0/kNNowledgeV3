@@ -14,9 +14,24 @@ Projections > https://lucascervera.github.io/kNNowledgeV3/tools/projections/
 - **Import/Export**: Share models as JSON files
 - **Responsive Design**: Works on desktop and mobile devices
 
-## Live Demo
+## Download and Local Usage
 
-Access the live application at: [GitHub Pages URL]
+### Standalone Version (Recommended for Local Use)
+
+For offline usage without installation, download the standalone version:
+
+1. **Download**: Get the `singlefile-index.html` file from the repository
+2. **Open**: Double-click the file to open it in your web browser
+3. **Use**: The application runs completely offline with all features included
+
+**Note**: If your browser blocks the file due to security restrictions, try:
+- Dragging the file into your browser window
+- Using Chrome with `--allow-file-access-from-files` flag
+- Or run a local server: `npx serve .` and open `singlefile-index.html`
+
+### Online Version
+
+Access the live application at: https://lucascervera.github.io/kNNowledgeV3/tools/projections/
 
 ## Development
 
@@ -72,10 +87,48 @@ Missing values are automatically interpolated using linear interpolation.
 
 ## Usage
 
+### Getting Started
+
+1. **Open the Application**: Double-click `singlefile-index.html` or visit the online version
+2. **Load Sample Data** (Optional): Click "Load Sample Data" to see example projections
+
+### Creating Your Financial Model
+
 1. **Add Metrics**: Click "Add Metric" to create new business metrics
+   - Choose between "Variable" (manual input) or "Calculated" (formula-based)
+   - Variable metrics allow direct value entry
+   - Calculated metrics use formulas referencing other metrics
+
 2. **Enter Values**: Use the table to input specific values for any month/year
-3. **View Charts**: Toggle metrics on/off in the chart view
-4. **Export Data**: Save your model as a JSON file for sharing
+   - Click on any cell to edit values
+   - Values are stored in year-month format (e.g., "1-1" for Year 1, Month 1)
+   - Missing values are automatically interpolated
+
+3. **Use Formulas**: For calculated metrics, enter formulas like:
+   - `revenue * 0.3` (30% of revenue)
+   - `SUM(previous_3_months)` (rolling 3-month sum)
+   - `growth_rate * previous_value` (compound growth)
+
+### Visualizing Data
+
+4. **View Charts**: Switch to "Chart View" to visualize projections
+   - Toggle metrics on/off using the checkboxes
+   - Charts update in real-time as you modify data
+   - Supports line charts for trend analysis
+
+### Data Management
+
+5. **Import/Export**: Share your financial models
+   - **Export**: Click "Export Data" to download your model as JSON
+   - **Import**: Click "Import Data" and select a previously exported JSON file
+   - All formulas, values, and settings are preserved
+
+### Tips for Best Results
+
+- Start with high-level metrics (Revenue, Costs) before detailed breakdowns
+- Use consistent time periods for accurate projections
+- Save your work frequently using Export
+- Test formulas with small datasets before scaling up
 
 ## Contributing
 
