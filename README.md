@@ -1,4 +1,2 @@
 
-Projections > https://lucascervera.github.io/kNNowledgeV3/tools/projections/README.md
-
-Projections > https://lucascervera.github.io/kNNowledgeV3/tools/projections/
+Projections > https://github.com/innV0/kNNowledgeV3/blob/main/tools/projections/dist/index.html
