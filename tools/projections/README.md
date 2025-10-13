@@ -4,6 +4,7 @@ A modern, simplified web application for creating and visualizing financial proj
 
 Projections > https://lucascervera.github.io/kNNowledgeV3/tools/projections/
 
+
 ## Features
 
 - **Intuitive Data Entry**: Table-based input system with automatic interpolation
