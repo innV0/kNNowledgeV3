@@ -11,9 +11,12 @@
         <h1 class="text-4xl font-bold text-center mb-8" id="main-title">Business Model Artifacts Viewer</h1>
 
         <div class="text-center">
-            <input type="file" id="json-file-input" class="border p-2 rounded-lg">
+            <input type="file" id="json-file-input" class="border p-2 rounded-lg" accept=".json,.md">
             <button id="load-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
                 Load Artifacts
+            </button>
+            <button id="export-logseq-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg ml-4" style="display: none;">
+                Export to Logseq
             </button>
         </div>
 
@@ -32,7 +35,15 @@
             const reader = new FileReader();
             reader.onload = (event) => {
                 try {
-                    const data = JSON.parse(event.target.result);
+                    let data;
+                    if (file.name.endsWith('.md')) {
+                        // Parse Logseq markdown format
+                        data = parseLogseqToJson(event.target.result);
+                    } else {
+                        // Parse JSON format
+                        data = JSON.parse(event.target.result);
+                    }
+
                     const mainTitleElement = document.getElementById('main-title');
                     if (data.projectName) {
                         mainTitleElement.textContent = `Business Model Artifacts for ${data.projectName}`;
@@ -40,8 +51,34 @@
                         mainTitleElement.textContent = 'Business Model Artifacts Viewer';
                     }
                     renderArtifacts(data);
+                    // Show export button after loading data
+                    document.getElementById('export-logseq-button').style.display = 'inline-block';
                 } catch (e) {
-                    alert('Error parsing JSON file: ' + e.message);
+                    alert('Error parsing file: ' + e.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Add Logseq export functionality
+        document.getElementById('export-logseq-button').addEventListener('click', () => {
+            const fileInput = document.getElementById('json-file-input');
+            if (fileInput.files.length === 0) {
+                alert('Please load a JSON file first.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    const logseqContent = exportToLogseq(data);
+                    const filename = `${(data.projectName || 'Business Artifacts').replace(/[^a-zA-Z0-9-_]/g, '_')}.md`;
+                    downloadFile(logseqContent, filename, 'text/markdown');
+                    alert('Logseq file exported successfully! You can now import it into your Logseq graph.');
+                } catch (e) {
+                    console.error('Logseq export error:', e);
+                    alert('Error exporting to Logseq: ' + e.message);
                 }
             };
             reader.readAsText(file);
@@ -52,13 +89,48 @@
             container.innerHTML = ''; // Clear previous artifacts
 
             if (data.businessModelCanvas) {
-                container.appendChild(renderBusinessModelCanvas(data.businessModelCanvas));
+                // Handle nested object structure from ghostbusters.json
+                if (data.businessModelCanvas.keyPartners?.items) {
+                    // Convert nested structure to flat arrays
+                    const canvas = data.businessModelCanvas;
+                    const flatCanvas = {
+                        keyPartners: canvas.keyPartners.items,
+                        keyActivities: canvas.keyActivities?.items || [],
+                        keyResources: canvas.keyResources?.items || [],
+                        valueProposition: canvas.valuePropositions?.items || canvas.valueProposition || [],
+                        customerRelationships: canvas.customerRelationships?.items || [],
+                        channels: canvas.channels?.items || [],
+                        customerSegments: canvas.customerSegments?.items || [],
+                        costStructure: canvas.costStructure?.items || [],
+                        revenueStreams: canvas.revenueStreams?.items || []
+                    };
+                    container.appendChild(renderBusinessModelCanvas(flatCanvas));
+                } else {
+                    // Use direct structure
+                    container.appendChild(renderBusinessModelCanvas(data.businessModelCanvas));
+                }
             }
             if (data.leanCanvas) {
-                container.appendChild(renderLeanCanvas(data.leanCanvas));
-            }
-            if (data.salesFunnel) {
-                container.appendChild(renderSalesFunnel(data.salesFunnel));
+                // Handle nested object structure from ghostbusters.json
+                if (data.leanCanvas.problem?.items) {
+                    // Convert nested structure to flat arrays/strings
+                    const lean = data.leanCanvas;
+                    const flatLean = {
+                        problem: lean.problem.items,
+                        solution: lean.solution?.items || [],
+                        keyMetrics: lean.keyMetrics?.items || [],
+                        uniqueValueProposition: lean.uniqueValueProposition?.items?.[0] || lean.uniqueValueProposition || '',
+                        unfairAdvantage: lean.unfairAdvantage?.items || [],
+                        channels: lean.channels?.items || [],
+                        customerSegments: lean.customerSegments?.items || [],
+                        costStructure: lean.costStructure?.items || [],
+                        revenueStreams: lean.revenueStreams?.items || []
+                    };
+                    container.appendChild(renderLeanCanvas(flatLean));
+                } else {
+                    // Use direct structure
+                    container.appendChild(renderLeanCanvas(data.leanCanvas));
+                }
             }
             if (data.customerJourneyMap) {
                 container.appendChild(renderCustomerJourneyMap(data.customerJourneyMap));
@@ -67,13 +139,50 @@
                 container.appendChild(renderBuyerPersona(data.buyerPersona));
             }
             if (data.empathyMap) {
-                container.appendChild(renderEmpathyMap(data.empathyMap));
+                // Handle nested object structure from ghostbusters.json
+                if (data.empathyMap.says?.items) {
+                    // Convert nested structure to flat arrays
+                    const empathy = data.empathyMap;
+                    const flatEmpathy = {
+                        says: empathy.says.items,
+                        thinks: empathy.thinks?.items || [],
+                        does: empathy.does?.items || [],
+                        feels: empathy.feels?.items || []
+                    };
+                    container.appendChild(renderEmpathyMap(flatEmpathy));
+                } else {
+                    // Use direct structure
+                    container.appendChild(renderEmpathyMap(data.empathyMap));
+                }
             }
             if (data.valuePropositionCanvas) {
-                container.appendChild(renderValuePropositionCanvas(data.valuePropositionCanvas));
+                // Handle nested object structure from ghostbusters.json
+                if (data.valuePropositionCanvas.productsServices?.items) {
+                    // Convert nested structure to flat arrays
+                    const vpc = data.valuePropositionCanvas;
+                    const flatVpc = {
+                        valueMap: {
+                            productsAndServices: vpc.productsServices?.items || [],
+                            painRelievers: vpc.painRelievers?.items || [],
+                            gainCreators: vpc.gainCreators?.items || []
+                        },
+                        customerProfile: {
+                            customerJobs: vpc.customerJobs?.items || [],
+                            customerPains: vpc.pains?.items || [],
+                            customerGains: vpc.gains?.items || []
+                        }
+                    };
+                    container.appendChild(renderValuePropositionCanvas(flatVpc));
+                } else {
+                    // Use direct structure
+                    container.appendChild(renderValuePropositionCanvas(data.valuePropositionCanvas));
+                }
             }
-            if (data.swotMatrix) { // Note: my JSON uses 'swotMatrix', HTML uses 'swotAnalysis'
-                container.appendChild(renderSwotAnalysis(data.swotMatrix));
+            if (data.swotMatrix || data.swotAnalysis) { // Support both naming conventions
+                container.appendChild(renderSwotAnalysis(data.swotMatrix || data.swotAnalysis));
+            }
+            if (data.competitiveAnalysis) {
+                container.appendChild(renderCompetitiveAnalysis(data.competitiveAnalysis));
             }
             // The following artifacts are not generated by me, so they will not be rendered unless the JSON contains them.
             // if (data.pestelAnalysis) {
@@ -94,9 +203,6 @@
             // if (data.productRoadmap) {
             //     container.appendChild(renderProductRoadmap(data.productRoadmap));
             // }
-            // if (data.competitiveAnalysis) {
-            //     container.appendChild(renderCompetitiveAnalysis(data.competitiveAnalysis));
-            // }
             // if (data.okrFramework) {
             //     container.appendChild(renderOkrFramework(data.okrFramework));
             // }
@@ -106,7 +212,7 @@
             // if (data.jobsToBeDone) {
             //     container.appendChild(renderJobsToBeDone(data.jobsToBeDone));
             // }
-            
+
             // Re-initialize Mermaid to render the new diagrams
             mermaid.init(undefined, container.querySelectorAll('.mermaid'));
         }
@@ -124,6 +230,10 @@
         function createList(items) {
             const ul = document.createElement('ul');
             ul.className = 'list-disc list-inside mt-2';
+            if (!Array.isArray(items)) {
+                console.warn('createList received non-array:', items);
+                return ul;
+            }
             for (const item of items) {
                 const li = document.createElement('li');
                 li.textContent = item;
@@ -139,54 +249,54 @@
 
             const keyPartners = document.createElement('div');
             keyPartners.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            keyPartners.innerHTML = `<h3 class="font-bold">Socios Clave</h3>`;
+            keyPartners.innerHTML = `<h3 class="font-bold">Key Partners</h3>`;
             keyPartners.appendChild(createList(data.keyPartners));
 
             const keyActivitiesResources = document.createElement('div');
             keyActivitiesResources.className = 'col-span-1 grid grid-rows-2 gap-4';
             const keyActivities = document.createElement('div');
             keyActivities.className = 'bg-white p-2 rounded-lg border';
-            keyActivities.innerHTML = `<h3 class="font-bold">Actividades Clave</h3>`;
+            keyActivities.innerHTML = `<h3 class="font-bold">Key Activities</h3>`;
             keyActivities.appendChild(createList(data.keyActivities));
             const keyResources = document.createElement('div');
             keyResources.className = 'bg-white p-2 rounded-lg border';
-            keyResources.innerHTML = `<h3 class="font-bold">Recursos Clave</h3>`;
+            keyResources.innerHTML = `<h3 class="font-bold">Key Resources</h3>`;
             keyResources.appendChild(createList(data.keyResources));
             keyActivitiesResources.appendChild(keyActivities);
             keyActivitiesResources.appendChild(keyResources);
 
             const valuePropositions = document.createElement('div');
             valuePropositions.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            valuePropositions.innerHTML = `<h3 class="font-bold">Propuesta de Valor</h3>`;
+            valuePropositions.innerHTML = `<h3 class="font-bold">Value Propositions</h3>`;
             valuePropositions.appendChild(createList(data.valueProposition));
 
             const customerRelationshipsChannels = document.createElement('div');
             customerRelationshipsChannels.className = 'col-span-1 grid grid-rows-2 gap-4';
             const customerRelationships = document.createElement('div');
             customerRelationships.className = 'bg-white p-2 rounded-lg border';
-            customerRelationships.innerHTML = `<h3 class="font-bold">Relación con Clientes</h3>`;
+            customerRelationships.innerHTML = `<h3 class="font-bold">Customer Relationships</h3>`;
             customerRelationships.appendChild(createList(data.customerRelationships));
             const channels = document.createElement('div');
             channels.className = 'bg-white p-2 rounded-lg border';
-            channels.innerHTML = `<h3 class="font-bold">Canales</h3>`;
+            channels.innerHTML = `<h3 class="font-bold">Channels</h3>`;
             channels.appendChild(createList(data.channels));
             customerRelationshipsChannels.appendChild(customerRelationships);
             customerRelationshipsChannels.appendChild(channels);
 
             const customerSegments = document.createElement('div');
             customerSegments.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            customerSegments.innerHTML = `<h3 class="font-bold">Segmentos de Clientes</h3>`;
+            customerSegments.innerHTML = `<h3 class="font-bold">Customer Segments</h3>`;
             customerSegments.appendChild(createList(data.customerSegments));
 
             const bottomGrid = document.createElement('div');
             bottomGrid.className = 'col-span-5 grid grid-cols-2 gap-4 mt-4';
             const costStructure = document.createElement('div');
             costStructure.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            costStructure.innerHTML = `<h3 class="font-bold">Estructura de Costes</h3>`;
+            costStructure.innerHTML = `<h3 class="font-bold">Cost Structure</h3>`;
             costStructure.appendChild(createList(data.costStructure));
             const revenueStreams = document.createElement('div');
             revenueStreams.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            revenueStreams.innerHTML = `<h3 class="font-bold">Fuentes de Ingresos</h3>`;
+            revenueStreams.innerHTML = `<h3 class="font-bold">Revenue Streams</h3>`;
             revenueStreams.appendChild(createList(data.revenueStreams));
             bottomGrid.appendChild(costStructure);
             bottomGrid.appendChild(revenueStreams);
@@ -209,25 +319,25 @@
 
             const problem = document.createElement('div');
             problem.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            problem.innerHTML = `<h3 class="font-bold">Problema</h3>`;
+            problem.innerHTML = `<h3 class="font-bold">Problem</h3>`;
             problem.appendChild(createList(data.problem));
 
             const solutionMetrics = document.createElement('div');
             solutionMetrics.className = 'col-span-1 grid grid-rows-2 gap-4';
             const solution = document.createElement('div');
             solution.className = 'bg-white p-2 rounded-lg border';
-            solution.innerHTML = `<h3 class="font-bold">Solución</h3>`;
+            solution.innerHTML = `<h3 class="font-bold">Solution</h3>`;
             solution.appendChild(createList(data.solution));
             const keyMetrics = document.createElement('div');
             keyMetrics.className = 'bg-white p-2 rounded-lg border';
-            keyMetrics.innerHTML = `<h3 class="font-bold">Métricas Clave</h3>`;
+            keyMetrics.innerHTML = `<h3 class="font-bold">Key Metrics</h3>`;
             keyMetrics.appendChild(createList(data.keyMetrics));
             solutionMetrics.appendChild(solution);
             solutionMetrics.appendChild(keyMetrics);
 
             const uniqueValueProposition = document.createElement('div');
             uniqueValueProposition.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            uniqueValueProposition.innerHTML = `<h3 class="font-bold">Propuesta de Valor Única</h3>`;
+            uniqueValueProposition.innerHTML = `<h3 class="font-bold">Unique Value Proposition</h3>`;
             const pUVP = document.createElement('p');
             pUVP.textContent = data.uniqueValueProposition;
             uniqueValueProposition.appendChild(pUVP);
@@ -236,29 +346,29 @@
             unfairAdvantageChannels.className = 'col-span-1 grid grid-rows-2 gap-4';
             const unfairAdvantage = document.createElement('div');
             unfairAdvantage.className = 'bg-white p-2 rounded-lg border';
-            unfairAdvantage.innerHTML = `<h3 class="font-bold">Ventaja Injusta</h3>`;
+            unfairAdvantage.innerHTML = `<h3 class="font-bold">Unfair Advantage</h3>`;
             unfairAdvantage.appendChild(createList(data.unfairAdvantage));
             const channels = document.createElement('div');
             channels.className = 'bg-white p-2 rounded-lg border';
-            channels.innerHTML = `<h3 class="font-bold">Canales</h3>`;
+            channels.innerHTML = `<h3 class="font-bold">Channels</h3>`;
             channels.appendChild(createList(data.channels));
             unfairAdvantageChannels.appendChild(unfairAdvantage);
             unfairAdvantageChannels.appendChild(channels);
 
             const customerSegments = document.createElement('div');
             customerSegments.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            customerSegments.innerHTML = `<h3 class="font-bold">Segmentos de Clientes</h3>`;
+            customerSegments.innerHTML = `<h3 class="font-bold">Customer Segments</h3>`;
             customerSegments.appendChild(createList(data.customerSegments));
 
             const bottomGrid = document.createElement('div');
             bottomGrid.className = 'col-span-5 grid grid-cols-2 gap-4 mt-4';
             const costStructure = document.createElement('div');
             costStructure.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            costStructure.innerHTML = `<h3 class="font-bold">Estructura de Costes</h3>`;
+            costStructure.innerHTML = `<h3 class="font-bold">Cost Structure</h3>`;
             costStructure.appendChild(createList(data.costStructure));
             const revenueStreams = document.createElement('div');
             revenueStreams.className = 'col-span-1 bg-white p-2 rounded-lg border';
-            revenueStreams.innerHTML = `<h3 class="font-bold">Fuentes de Ingresos</h3>`;
+            revenueStreams.innerHTML = `<h3 class="font-bold">Revenue Streams</h3>`;
             revenueStreams.appendChild(createList(data.revenueStreams));
             bottomGrid.appendChild(costStructure);
             bottomGrid.appendChild(revenueStreams);
@@ -275,74 +385,84 @@
         }
 
         function renderSalesFunnel(data) {
-            const box = createArtifactBox('📈 Embudo de Ventas');
-            box.innerHTML += `<p class="mb-4"><strong>Objetivo:</strong> ${data.objective}</p>`;
+            const box = createArtifactBox('📈 Sales Funnel');
+            if (data.objective) {
+                box.innerHTML += `<p class="mb-4"><strong>Objetivo:</strong> ${data.objective}</p>`;
+            }
 
             const stagesContainer = document.createElement('div');
             stagesContainer.className = 'space-y-4';
 
-            data.stages.forEach(stage => {
+            if (data.stages && Array.isArray(data.stages)) {
+                data.stages.forEach(stage => {
                 const stageBox = document.createElement('div');
                 stageBox.className = 'bg-white p-4 rounded-lg shadow border';
                 stageBox.innerHTML = `<h3 class="text-lg font-bold mb-2">${stage.name}</h3>`;
                 stageBox.innerHTML += `<p>${stage.description}</p>`;
                 
-                if (stage.customerActions && stage.customerActions.length > 0) {
-                    stageBox.innerHTML += `<h4 class="font-bold mt-2">Acciones del Cliente:</h4>`;
-                    stageBox.appendChild(createList(stage.customerActions));
-                }
-                if (stage.biotechnoActions && stage.biotechnoActions.length > 0) {
-                    stageBox.innerHTML += `<h4 class="font-bold mt-2">Acciones de Biotechno:</h4>`;
-                    stageBox.appendChild(createList(stage.biotechnoActions));
-                }
-                if (stage.keyMetrics && stage.keyMetrics.length > 0) {
-                    stageBox.innerHTML += `<h4 class="font-bold mt-2">Métricas Clave:</h4>`;
-                    stageBox.appendChild(createList(stage.keyMetrics));
-                }
-                stagesContainer.appendChild(stageBox);
-            });
+                    if (stage.customerActions && stage.customerActions.length > 0) {
+                        stageBox.innerHTML += `<h4 class="font-bold mt-2">Acciones del Cliente:</h4>`;
+                        stageBox.appendChild(createList(stage.customerActions));
+                    }
+                    if (stage.biotechnoActions && stage.biotechnoActions.length > 0) {
+                        stageBox.innerHTML += `<h4 class="font-bold mt-2">Acciones de Biotechno:</h4>`;
+                        stageBox.appendChild(createList(stage.biotechnoActions));
+                    }
+                    if (stage.keyMetrics && stage.keyMetrics.length > 0) {
+                        stageBox.innerHTML += `<h4 class="font-bold mt-2">Métricas Clave:</h4>`;
+                        stageBox.appendChild(createList(stage.keyMetrics));
+                    }
+                    stagesContainer.appendChild(stageBox);
+                });
+            }
 
             box.appendChild(stagesContainer);
             return box;
         }
 
         function renderCustomerJourneyMap(data) {
-            const box = createArtifactBox('🗺️ Mapa del Viaje del Cliente');
-            box.innerHTML += `<p class="mb-4"><strong>Persona:</strong> ${data.persona}</p>`;
-            box.innerHTML += `<p class="mb-4"><strong>Escenario:</strong> ${data.scenario}</p>`;
+            const box = createArtifactBox('🗺️ Customer Journey Map');
+            if (data.persona) {
+                box.innerHTML += `<p class="mb-4"><strong>Persona:</strong> ${data.persona}</p>`;
+            }
+            if (data.scenario) {
+                box.innerHTML += `<p class="mb-4"><strong>Scenario:</strong> ${data.scenario}</p>`;
+            }
 
             const flex = document.createElement('div');
             flex.className = 'flex space-x-4 overflow-x-auto';
 
             const colors = ['bg-blue-100', 'bg-green-100', 'bg-yellow-100', 'bg-purple-100', 'bg-red-100'];
 
-            data.phases.forEach((phase, i) => {
+            if (data.phases && Array.isArray(data.phases)) {
+                data.phases.forEach((phase, i) => {
                 const stageBox = document.createElement('div');
                 stageBox.className = `${colors[i % colors.length]} p-4 rounded-lg shadow-md w-72 flex-shrink-0`;
                 stageBox.innerHTML = `<h3 class="text-lg font-bold mb-2">${phase.name}</h3>`;
                 
-                if (phase.contactPoints && phase.contactPoints.length > 0) {
-                    stageBox.innerHTML += `<p class="font-bold mt-2">Puntos de Contacto:</p>`;
-                    stageBox.appendChild(createList(phase.contactPoints));
-                }
-                if (phase.customerActions && phase.customerActions.length > 0) {
-                    stageBox.innerHTML += `<p class="font-bold mt-2">Acciones del Cliente:</p>`;
-                    stageBox.appendChild(createList(phase.customerActions));
-                }
-                if (phase.customerThoughts && phase.customerThoughts.length > 0) {
-                    stageBox.innerHTML += `<p class="font-bold mt-2">Pensamientos del Cliente:</p>`;
-                    stageBox.appendChild(createList(phase.customerThoughts));
-                }
-                if (phase.customerFeelings && phase.customerFeelings.length > 0) {
-                    stageBox.innerHTML += `<p class="font-bold mt-2">Sentimientos del Cliente:</p>`;
-                    stageBox.appendChild(createList(phase.customerFeelings));
-                }
-                if (phase.biotechnoOpportunities && phase.biotechnoOpportunities.length > 0) {
-                    stageBox.innerHTML += `<p class="font-bold mt-2">Oportunidades para Biotechno:</p>`;
-                    stageBox.appendChild(createList(phase.biotechnoOpportunities));
-                }
-                flex.appendChild(stageBox);
-            });
+                    if (phase.contactPoints && phase.contactPoints.length > 0) {
+                     stageBox.innerHTML += `<p class="font-bold mt-2">Contact Points:</p>`;
+                     stageBox.appendChild(createList(phase.contactPoints));
+                 }
+                 if (phase.customerActions && phase.customerActions.length > 0) {
+                     stageBox.innerHTML += `<p class="font-bold mt-2">Customer Actions:</p>`;
+                     stageBox.appendChild(createList(phase.customerActions));
+                 }
+                 if (phase.customerThoughts && phase.customerThoughts.length > 0) {
+                     stageBox.innerHTML += `<p class="font-bold mt-2">Customer Thoughts:</p>`;
+                     stageBox.appendChild(createList(phase.customerThoughts));
+                 }
+                 if (phase.customerFeelings && phase.customerFeelings.length > 0) {
+                     stageBox.innerHTML += `<p class="font-bold mt-2">Customer Feelings:</p>`;
+                     stageBox.appendChild(createList(phase.customerFeelings));
+                 }
+                 if (phase.biotechnoOpportunities && phase.biotechnoOpportunities.length > 0) {
+                     stageBox.innerHTML += `<p class="font-bold mt-2">Opportunities for Ghostbusters:</p>`;
+                     stageBox.appendChild(createList(phase.biotechnoOpportunities));
+                 }
+                    flex.appendChild(stageBox);
+                });
+            }
 
             box.appendChild(flex);
             return box;
@@ -357,7 +477,7 @@
             // Demographics
             const demographics = document.createElement('div');
             demographics.className = 'bg-white p-4 rounded-lg shadow border';
-            demographics.innerHTML = '<h4 class="text-lg font-bold mb-2">Datos Demográficos</h4>';
+            demographics.innerHTML = '<h4 class="text-lg font-bold mb-2">Demographics</h4>';
             const demographicsList = document.createElement('ul');
             demographicsList.className = 'list-disc list-inside';
             for (const key in data.demographics) {
@@ -371,7 +491,7 @@
             // Psychographics
             const psychographics = document.createElement('div');
             psychographics.className = 'bg-white p-4 rounded-lg shadow border';
-            psychographics.innerHTML = '<h4 class="text-lg font-bold mb-2">Perfil Psicológico</h4>';
+            psychographics.innerHTML = '<h4 class="text-lg font-bold mb-2">Psychographics</h4>';
             const psychographicsList = document.createElement('ul');
             psychographicsList.className = 'list-disc list-inside';
             for (const key in data.psychographics) {
@@ -385,21 +505,21 @@
             // Goals
             const goals = document.createElement('div');
             goals.className = 'bg-white p-4 rounded-lg shadow border';
-            goals.innerHTML = '<h4 class="text-lg font-bold mb-2">Objetivos</h4>';
+            goals.innerHTML = '<h4 class="text-lg font-bold mb-2">Goals</h4>';
             goals.appendChild(createList(data.goals));
             grid.appendChild(goals);
 
             // Challenges & Pain Points
             const challenges = document.createElement('div');
             challenges.className = 'bg-white p-4 rounded-lg shadow border';
-            challenges.innerHTML = '<h4 class="text-lg font-bold mb-2">Retos y Puntos de Dolor</h4>';
+            challenges.innerHTML = '<h4 class="text-lg font-bold mb-2">Challenges & Pain Points</h4>';
             challenges.appendChild(createList(data.challengesAndPainPoints));
             grid.appendChild(challenges);
 
             // Behavior
             const behavior = document.createElement('div');
             behavior.className = 'bg-white p-4 rounded-lg shadow col-span-2 border';
-            behavior.innerHTML = '<h4 class="text-lg font-bold mb-2">Comportamiento</h4>';
+            behavior.innerHTML = '<h4 class="text-lg font-bold mb-2">Behavior</h4>';
             const behaviorList = document.createElement('ul');
             behaviorList.className = 'list-disc list-inside';
             for (const key in data.behavior) {
@@ -418,7 +538,7 @@
             // Typical Quotes
             const typicalQuotes = document.createElement('div');
             typicalQuotes.className = 'bg-white p-4 rounded-lg shadow col-span-2 border';
-            typicalQuotes.innerHTML = '<h4 class="text-lg font-bold mb-2">Frases Típicas</h4>';
+            typicalQuotes.innerHTML = '<h4 class="text-lg font-bold mb-2">Typical Quotes</h4>';
             typicalQuotes.appendChild(createList(data.typicalQuotes));
             grid.appendChild(typicalQuotes);
 
@@ -427,49 +547,49 @@
         }
 
         function renderEmpathyMap(data) {
-            const box = createArtifactBox('🤔 Mapa de Empatía');
+            const box = createArtifactBox('🤔 Empathy Map');
             const grid = document.createElement('div');
             grid.className = 'grid grid-cols-2 gap-4';
 
             // Sees
             const seesBox = document.createElement('div');
             seesBox.className = 'bg-white p-4 rounded-lg shadow border';
-            seesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">¿Qué ve?</h3>`;
+            seesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Sees</h3>`;
             seesBox.appendChild(createList(data.sees));
             grid.appendChild(seesBox);
 
             // Hears
             const hearsBox = document.createElement('div');
             hearsBox.className = 'bg-white p-4 rounded-lg shadow border';
-            hearsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">¿Qué oye?</h3>`;
+            hearsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Hears</h3>`;
             hearsBox.appendChild(createList(data.hears));
             grid.appendChild(hearsBox);
 
             // Thinks and Feels
             const thinksAndFeelsBox = document.createElement('div');
             thinksAndFeelsBox.className = 'bg-white p-4 rounded-lg shadow border';
-            thinksAndFeelsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">¿Qué piensa y siente?</h3>`;
+            thinksAndFeelsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Thinks & Feels</h3>`;
             thinksAndFeelsBox.appendChild(createList(data.thinksAndFeels));
             grid.appendChild(thinksAndFeelsBox);
 
             // Says and Does
             const saysAndDoesBox = document.createElement('div');
             saysAndDoesBox.className = 'bg-white p-4 rounded-lg shadow border';
-            saysAndDoesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">¿Qué dice y hace?</h3>`;
+            saysAndDoesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Says & Does</h3>`;
             saysAndDoesBox.appendChild(createList(data.saysAndDoes));
             grid.appendChild(saysAndDoesBox);
 
             // Pains
             const painsBox = document.createElement('div');
             painsBox.className = 'bg-white p-4 rounded-lg shadow border';
-            painsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Esfuerzos (Pains)</h3>`;
+            painsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Pains</h3>`;
             painsBox.appendChild(createList(data.pains));
             grid.appendChild(painsBox);
 
             // Gains
             const gainsBox = document.createElement('div');
             gainsBox.className = 'bg-white p-4 rounded-lg shadow border';
-            gainsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Resultados (Gains)</h3>`;
+            gainsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Gains</h3>`;
             gainsBox.appendChild(createList(data.gains));
             grid.appendChild(gainsBox);
 
@@ -478,7 +598,7 @@
         }
 
         function renderValuePropositionCanvas(data) {
-            const box = createArtifactBox('💡 Lienzo de Propuesta de Valor');
+            const box = createArtifactBox('💡 Value Proposition Canvas');
             const grid = document.createElement('div');
             grid.className = 'grid grid-cols-2 gap-4';
 
@@ -486,15 +606,15 @@
             left.className = 'space-y-4';
             const productsServices = document.createElement('div');
             productsServices.className = 'bg-white p-4 rounded-lg shadow-md border';
-            productsServices.innerHTML = `<h3 class="text-lg font-bold mb-2">Productos y Servicios</h3>`;
+            productsServices.innerHTML = `<h3 class="text-lg font-bold mb-2">Products & Services</h3>`;
             productsServices.appendChild(createList(data.valueMap.productsAndServices));
             const painRelievers = document.createElement('div');
             painRelievers.className = 'bg-white p-4 rounded-lg shadow-md border';
-            painRelievers.innerHTML = `<h3 class="text-lg font-bold mt-4 mb-2">Aliviadores de Frustraciones</h3>`;
+            painRelievers.innerHTML = `<h3 class="text-lg font-bold mt-4 mb-2">Pain Relievers</h3>`;
             painRelievers.appendChild(createList(data.valueMap.painRelievers));
             const gainCreators = document.createElement('div');
             gainCreators.className = 'bg-white p-4 rounded-lg shadow-md border';
-            gainCreators.innerHTML = `<h3 class="text-lg font-bold mt-4 mb-2">Creadores de Alegrías</h3>`;
+            gainCreators.innerHTML = `<h3 class="text-lg font-bold mt-4 mb-2">Gain Creators</h3>`;
             gainCreators.appendChild(createList(data.valueMap.gainCreators));
             left.appendChild(productsServices);
             left.appendChild(painRelievers);
@@ -504,15 +624,15 @@
             right.className = 'space-y-4';
             const customerJobs = document.createElement('div');
             customerJobs.className = 'bg-white p-4 rounded-lg shadow-md border';
-            customerJobs.innerHTML = `<h3 class="font-bold mb-2">Tareas del Cliente</h3>`;
+            customerJobs.innerHTML = `<h3 class="font-bold mb-2">Customer Jobs</h3>`;
             customerJobs.appendChild(createList(data.customerProfile.customerJobs));
             const pains = document.createElement('div');
             pains.className = 'bg-white p-4 rounded-lg shadow-md border';
-            pains.innerHTML = `<h3 class="font-bold mt-4 mb-2">Frustraciones del Cliente</h3>`;
+            pains.innerHTML = `<h3 class="font-bold mt-4 mb-2">Customer Pains</h3>`;
             pains.appendChild(createList(data.customerProfile.customerPains));
             const gains = document.createElement('div');
             gains.className = 'bg-white p-4 rounded-lg shadow-md border';
-            gains.innerHTML = `<h3 class="text-lg font-bold mt-4 mb-2">Alegrías del Cliente</h3>`;
+            gains.innerHTML = `<h3 class="text-lg font-bold mt-4 mb-2">Customer Gains</h3>`;
             gains.appendChild(createList(data.customerProfile.customerGains));
             right.appendChild(customerJobs);
             right.appendChild(pains);
@@ -526,36 +646,36 @@
         }
 
         function renderSwotAnalysis(data) {
-            const box = createArtifactBox('📊 Matriz DAFO/SWOT');
+            const box = createArtifactBox('📊 SWOT Analysis');
             const grid = document.createElement('div');
             grid.className = 'grid grid-cols-2 gap-4';
 
             // Strengths
             const strengthsBox = document.createElement('div');
             strengthsBox.className = 'bg-white p-4 rounded-lg shadow border';
-            strengthsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Fortalezas (Strengths)</h3>`;
-            strengthsBox.appendChild(createList(data.strengths));
+            strengthsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Strengths</h3>`;
+            strengthsBox.appendChild(createList(data.strengths?.items || data.strengths || []));
             grid.appendChild(strengthsBox);
 
             // Weaknesses
             const weaknessesBox = document.createElement('div');
             weaknessesBox.className = 'bg-white p-4 rounded-lg shadow border';
-            weaknessesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Debilidades (Weaknesses)</h3>`;
-            weaknessesBox.appendChild(createList(data.weaknesses));
+            weaknessesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Weaknesses</h3>`;
+            weaknessesBox.appendChild(createList(data.weaknesses?.items || data.weaknesses || []));
             grid.appendChild(weaknessesBox);
 
             // Opportunities
             const opportunitiesBox = document.createElement('div');
             opportunitiesBox.className = 'bg-white p-4 rounded-lg shadow border';
-            opportunitiesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Oportunidades (Opportunities)</h3>`;
-            opportunitiesBox.appendChild(createList(data.opportunities));
+            opportunitiesBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Opportunities</h3>`;
+            opportunitiesBox.appendChild(createList(data.opportunities?.items || data.opportunities || []));
             grid.appendChild(opportunitiesBox);
 
             // Threats
             const threatsBox = document.createElement('div');
             threatsBox.className = 'bg-white p-4 rounded-lg shadow border';
-            threatsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Amenazas (Threats)</h3>`;
-            threatsBox.appendChild(createList(data.threats));
+            threatsBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Threats</h3>`;
+            threatsBox.appendChild(createList(data.threats?.items || data.threats || []));
             grid.appendChild(threatsBox);
 
             box.appendChild(grid);
@@ -693,42 +813,43 @@
             return box;
         }
 
-        function renderCompetitiveAnalysis(data) {
-            const box = createArtifactBox('🆚 Competitive Analysis');
-            const table = document.createElement('table');
-            table.className = 'table-auto w-full';
-            const thead = document.createElement('thead');
-            thead.className = 'bg-gray-200';
-            const headerRow = document.createElement('tr');
-            for (const header of data.headers) {
-                const th = document.createElement('th');
-                th.className = 'px-4 py-2';
-                th.textContent = header;
-                headerRow.appendChild(th);
-            }
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
+       function renderCompetitiveAnalysis(data) {
+           const box = createArtifactBox('🆚 Competitive Analysis');
+           const table = document.createElement('table');
+           table.className = 'table-auto w-full';
+           const thead = document.createElement('thead');
+           thead.className = 'bg-gray-200';
+           const headerRow = document.createElement('tr');
+           for (const header of data.headers || []) {
+               const th = document.createElement('th');
+               th.className = 'px-4 py-2';
+               th.textContent = header;
+               headerRow.appendChild(th);
+           }
+           thead.appendChild(headerRow);
+           table.appendChild(thead);
 
-            const tbody = document.createElement('tbody');
-            for (const row of data.rows) {
-                const tr = document.createElement('tr');
-                const featureCell = document.createElement('td');
-                featureCell.className = 'border px-4 py-2';
-                featureCell.textContent = row.feature;
-                tr.appendChild(featureCell);
-                for (const value of row.values) {
-                    const td = document.createElement('td');
-                    td.className = 'border px-4 py-2';
-                    td.textContent = value;
-                    tr.appendChild(td);
-                }
-                tbody.appendChild(tr);
-            }
-            table.appendChild(tbody);
+           const tbody = document.createElement('tbody');
+           for (const row of data.rows || []) {
+               const tr = document.createElement('tr');
+               const featureCell = document.createElement('td');
+               featureCell.className = 'border px-4 py-2';
+               featureCell.textContent = row.feature || row[0] || '';
+               tr.appendChild(featureCell);
+               const values = row.values || row.slice(1) || [];
+               for (const value of values) {
+                   const td = document.createElement('td');
+                   td.className = 'border px-4 py-2';
+                   td.textContent = value;
+                   tr.appendChild(td);
+               }
+               tbody.appendChild(tr);
+           }
+           table.appendChild(tbody);
 
-            box.appendChild(table);
-            return box;
-        }
+           box.appendChild(table);
+           return box;
+       }
 
         function renderOkrFramework(data) {
             const box = createArtifactBox('🎯 OKR Framework');
@@ -778,6 +899,362 @@
             const box = createArtifactBox('🛠️ Jobs to be Done (JTBD)');
             box.appendChild(createList(data.jobs));
             return box;
+        }
+
+        function exportToLogseq(data) {
+            let content = '';
+
+            // Validate data structure
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid data format: expected object');
+            }
+
+            // Page-level properties
+            const projectName = data.projectName || 'Business Artifacts';
+            if (typeof projectName !== 'string') {
+                throw new Error('Invalid project name: expected string');
+            }
+
+            content += `project_name:: ${projectName.replace(/\n/g, ' ')}\n`;
+            content += `export_format:: logseq\n`;
+            content += `created_date:: ${new Date().toISOString()}\n`;
+
+            const artifactKeys = Object.keys(data).filter(key => key !== 'projectName');
+            content += `artifact_count:: ${artifactKeys.length}\n`;
+            content += `tags:: [[business-modeling]], [[artifacts]]\n\n`;
+
+            // Business Model Canvas
+            if (data.businessModelCanvas) {
+                content += '## Business Model Canvas\n\n';
+                content += 'artifact_type:: business-model-canvas\n';
+                content += `last_modified:: ${new Date().toISOString()}\n\n`;
+
+                const canvas = data.businessModelCanvas;
+                content += '### Key Partners\n';
+                content += formatListForLogseq(canvas.keyPartners?.items || canvas.keyPartners || []);
+                content += '\n\n';
+
+                content += '### Key Activities\n';
+                content += formatListForLogseq(canvas.keyActivities?.items || canvas.keyActivities || []);
+                content += '\n\n';
+
+                content += '### Key Resources\n';
+                content += formatListForLogseq(canvas.keyResources?.items || canvas.keyResources || []);
+                content += '\n\n';
+
+                content += '### Value Propositions\n';
+                content += formatListForLogseq(canvas.valuePropositions?.items || canvas.valueProposition || []);
+                content += '\n\n';
+
+                content += '### Customer Relationships\n';
+                content += formatListForLogseq(canvas.customerRelationships?.items || canvas.customerRelationships || []);
+                content += '\n\n';
+
+                content += '### Channels\n';
+                content += formatListForLogseq(canvas.channels?.items || canvas.channels || []);
+                content += '\n\n';
+
+                content += '### Customer Segments\n';
+                content += formatListForLogseq(canvas.customerSegments?.items || canvas.customerSegments || []);
+                content += '\n\n';
+
+                content += '### Cost Structure\n';
+                content += formatListForLogseq(canvas.costStructure?.items || canvas.costStructure || []);
+                content += '\n\n';
+
+                content += '### Revenue Streams\n';
+                content += formatListForLogseq(canvas.revenueStreams?.items || canvas.revenueStreams || []);
+                content += '\n\n';
+            }
+
+            // Lean Canvas
+            if (data.leanCanvas) {
+                content += '## Lean Canvas\n\n';
+                content += 'artifact_type:: lean-canvas\n';
+                content += `last_modified:: ${new Date().toISOString()}\n\n`;
+
+                const lean = data.leanCanvas;
+                content += '### Problem\n';
+                content += formatListForLogseq(lean.problem?.items || lean.problem || []);
+                content += '\n\n';
+
+                content += '### Solution\n';
+                content += formatListForLogseq(lean.solution?.items || lean.solution || []);
+                content += '\n\n';
+
+                content += '### Key Metrics\n';
+                content += formatListForLogseq(lean.keyMetrics?.items || lean.keyMetrics || []);
+                content += '\n\n';
+
+                content += '### Unique Value Proposition\n';
+                content += `${lean.uniqueValueProposition || 'Not specified'}\n\n`;
+
+                content += '### Unfair Advantage\n';
+                content += formatListForLogseq(lean.unfairAdvantage?.items || lean.unfairAdvantage || []);
+                content += '\n\n';
+
+                content += '### Channels\n';
+                content += formatListForLogseq(lean.channels?.items || lean.channels || []);
+                content += '\n\n';
+
+                content += '### Customer Segments\n';
+                content += formatListForLogseq(lean.customerSegments?.items || lean.customerSegments || []);
+                content += '\n\n';
+
+                content += '### Cost Structure\n';
+                content += formatListForLogseq(lean.costStructure?.items || lean.costStructure || []);
+                content += '\n\n';
+
+                content += '### Revenue Streams\n';
+                content += formatListForLogseq(lean.revenueStreams?.items || lean.revenueStreams || []);
+                content += '\n\n';
+            }
+
+            // SWOT Analysis
+            if (data.swotAnalysis || data.swotMatrix) {
+                content += '## SWOT Analysis\n\n';
+                content += 'artifact_type:: swot-analysis\n';
+                content += `last_modified:: ${new Date().toISOString()}\n\n`;
+
+                const swot = data.swotAnalysis || data.swotMatrix;
+                content += '### Strengths\n';
+                content += formatListForLogseq(swot.strengths?.items || swot.strengths || []);
+                content += '\n\n';
+
+                content += '### Weaknesses\n';
+                content += formatListForLogseq(swot.weaknesses?.items || swot.weaknesses || []);
+                content += '\n\n';
+
+                content += '### Opportunities\n';
+                content += formatListForLogseq(swot.opportunities?.items || swot.opportunities || []);
+                content += '\n\n';
+
+                content += '### Threats\n';
+                content += formatListForLogseq(swot.threats?.items || swot.threats || []);
+                content += '\n\n';
+            }
+
+            // Value Proposition Canvas
+            if (data.valuePropositionCanvas) {
+                content += '## Value Proposition Canvas\n\n';
+                content += 'artifact_type:: value-proposition-canvas\n';
+                content += `last_modified:: ${new Date().toISOString()}\n\n`;
+
+                const vpc = data.valuePropositionCanvas;
+                content += '### Value Map\n';
+                content += '#### Products & Services\n';
+                content += formatListForLogseq(vpc.valueMap?.productsAndServices || vpc.productsServices || []);
+                content += '\n\n';
+
+                content += '#### Pain Relievers\n';
+                content += formatListForLogseq(vpc.valueMap?.painRelievers || vpc.painRelievers || []);
+                content += '\n\n';
+
+                content += '#### Gain Creators\n';
+                content += formatListForLogseq(vpc.valueMap?.gainCreators || vpc.gainCreators || []);
+                content += '\n\n';
+
+                content += '### Customer Profile\n';
+                content += '#### Customer Jobs\n';
+                content += formatListForLogseq(vpc.customerProfile?.customerJobs || vpc.customerJobs || []);
+                content += '\n\n';
+
+                content += '#### Customer Pains\n';
+                content += formatListForLogseq(vpc.customerProfile?.customerPains || vpc.pains || []);
+                content += '\n\n';
+
+                content += '#### Customer Gains\n';
+                content += formatListForLogseq(vpc.customerProfile?.customerGains || vpc.gains || []);
+                content += '\n\n';
+            }
+
+            // Competitive Analysis
+            if (data.competitiveAnalysis) {
+                content += '## Competitive Analysis\n\n';
+                content += 'artifact_type:: competitive-analysis\n';
+                content += `last_modified:: ${new Date().toISOString()}\n\n`;
+
+                const comp = data.competitiveAnalysis;
+                if (comp.headers && comp.rows) {
+                    // Create table format for competitive analysis
+                    content += '| Feature |';
+                    comp.headers.slice(1).forEach(header => {
+                        content += ` ${header} |`;
+                    });
+                    content += '\n| --- |';
+                    comp.headers.slice(1).forEach(() => {
+                        content += ' --- |';
+                    });
+                    content += '\n';
+
+                    comp.rows.forEach(row => {
+                        content += `| ${row.feature || row[0]} |`;
+                        (row.values || row.slice(1)).forEach(value => {
+                            content += ` ${value} |`;
+                        });
+                        content += '\n';
+                    });
+                    content += '\n';
+                }
+            }
+
+            return content;
+        }
+
+        function formatListForLogseq(items) {
+            if (!Array.isArray(items)) return '';
+            return items.map(item => `- ${item}`).join('\n');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function parseLogseqToJson(markdownContent) {
+            const lines = markdownContent.split('\n');
+            const data = {};
+
+            let currentSection = null;
+            let currentArtifact = null;
+            let inList = false;
+            let listItems = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                // Parse page properties
+                if (line.startsWith('project_name::')) {
+                    data.projectName = line.split('::')[1].trim();
+                } else if (line.startsWith('export_format::')) {
+                    // Skip
+                } else if (line.startsWith('created_date::')) {
+                    // Skip
+                } else if (line.startsWith('artifact_count::')) {
+                    // Skip
+                } else if (line.startsWith('tags::')) {
+                    // Skip
+                }
+
+                // Detect main sections
+                else if (line === '## Business Model Canvas') {
+                    currentSection = 'businessModelCanvas';
+                    data.businessModelCanvas = {};
+                    currentArtifact = data.businessModelCanvas;
+                } else if (line === '## Lean Canvas') {
+                    currentSection = 'leanCanvas';
+                    data.leanCanvas = {};
+                    currentArtifact = data.leanCanvas;
+                } else if (line === '## SWOT Analysis') {
+                    currentSection = 'swotAnalysis';
+                    data.swotAnalysis = {};
+                    currentArtifact = data.swotAnalysis;
+                } else if (line === '## Value Proposition Canvas') {
+                    currentSection = 'valuePropositionCanvas';
+                    data.valuePropositionCanvas = { valueMap: {}, customerProfile: {} };
+                    currentArtifact = data.valuePropositionCanvas;
+                } else if (line === '## Competitive Analysis') {
+                    currentSection = 'competitiveAnalysis';
+                    data.competitiveAnalysis = { headers: [], rows: [] };
+                    currentArtifact = data.competitiveAnalysis;
+                }
+
+                // Parse artifact properties and content
+                else if (currentArtifact && line.startsWith('artifact_type::')) {
+                    // Skip artifact type
+                } else if (currentArtifact && line.startsWith('last_modified::')) {
+                    // Skip last modified
+                }
+
+                // Parse sub-headings and content
+                else if (currentArtifact && line.startsWith('### ')) {
+                    const heading = line.substring(4).toLowerCase().replace(/[^a-z]/g, '');
+                    inList = false;
+                    listItems = [];
+
+                    // Map headings to data structure
+                    if (currentSection === 'businessModelCanvas') {
+                        if (heading.includes('keypartners')) currentArtifact.keyPartners = [];
+                        else if (heading.includes('keyactivities')) currentArtifact.keyActivities = [];
+                        else if (heading.includes('keyresources')) currentArtifact.keyResources = [];
+                        else if (heading.includes('valuepropositions')) currentArtifact.valueProposition = [];
+                        else if (heading.includes('customerrelationships')) currentArtifact.customerRelationships = [];
+                        else if (heading.includes('channels')) currentArtifact.channels = [];
+                        else if (heading.includes('customersegments')) currentArtifact.customerSegments = [];
+                        else if (heading.includes('coststructure')) currentArtifact.costStructure = [];
+                        else if (heading.includes('revenuestreams')) currentArtifact.revenueStreams = [];
+                    } else if (currentSection === 'swotAnalysis') {
+                        if (heading.includes('strengths')) currentArtifact.strengths = [];
+                        else if (heading.includes('weaknesses')) currentArtifact.weaknesses = [];
+                        else if (heading.includes('opportunities')) currentArtifact.opportunities = [];
+                        else if (heading.includes('threats')) currentArtifact.threats = [];
+                    } else if (currentSection === 'valuePropositionCanvas') {
+                        if (heading.includes('products')) currentArtifact.valueMap.productsAndServices = [];
+                        else if (heading.includes('painrelievers')) currentArtifact.valueMap.painRelievers = [];
+                        else if (heading.includes('gaincreators')) currentArtifact.valueMap.gainCreators = [];
+                        else if (heading.includes('customerjobs')) currentArtifact.customerProfile.customerJobs = [];
+                        else if (heading.includes('customerpains')) currentArtifact.customerProfile.customerPains = [];
+                        else if (heading.includes('customergains')) currentArtifact.customerProfile.customerGains = [];
+                    }
+                }
+
+                // Parse list items
+                else if (currentArtifact && line.startsWith('- ')) {
+                    const item = line.substring(2);
+                    if (currentSection === 'businessModelCanvas') {
+                        if (currentArtifact.keyPartners && !currentArtifact.keyActivities) {
+                            currentArtifact.keyPartners.push(item);
+                        } else if (currentArtifact.keyActivities && !currentArtifact.keyResources) {
+                            currentArtifact.keyActivities.push(item);
+                        } else if (currentArtifact.keyResources && !currentArtifact.valueProposition) {
+                            currentArtifact.keyResources.push(item);
+                        } else if (currentArtifact.valueProposition && !currentArtifact.customerRelationships) {
+                            currentArtifact.valueProposition.push(item);
+                        } else if (currentArtifact.customerRelationships && !currentArtifact.channels) {
+                            currentArtifact.customerRelationships.push(item);
+                        } else if (currentArtifact.channels && !currentArtifact.customerSegments) {
+                            currentArtifact.channels.push(item);
+                        } else if (currentArtifact.customerSegments && !currentArtifact.costStructure) {
+                            currentArtifact.customerSegments.push(item);
+                        } else if (currentArtifact.costStructure && !currentArtifact.revenueStreams) {
+                            currentArtifact.costStructure.push(item);
+                        } else if (currentArtifact.revenueStreams) {
+                            currentArtifact.revenueStreams.push(item);
+                        }
+                    } else if (currentSection === 'swotAnalysis') {
+                        if (currentArtifact.strengths && !currentArtifact.weaknesses) {
+                            currentArtifact.strengths.push(item);
+                        } else if (currentArtifact.weaknesses && !currentArtifact.opportunities) {
+                            currentArtifact.weaknesses.push(item);
+                        } else if (currentArtifact.opportunities && !currentArtifact.threats) {
+                            currentArtifact.opportunities.push(item);
+                        } else if (currentArtifact.threats) {
+                            currentArtifact.threats.push(item);
+                        }
+                    } else if (currentSection === 'valuePropositionCanvas') {
+                        if (currentArtifact.valueMap.productsAndServices && !currentArtifact.valueMap.painRelievers) {
+                            currentArtifact.valueMap.productsAndServices.push(item);
+                        } else if (currentArtifact.valueMap.painRelievers && !currentArtifact.valueMap.gainCreators) {
+                            currentArtifact.valueMap.painRelievers.push(item);
+                        } else if (currentArtifact.valueMap.gainCreators && !currentArtifact.customerProfile.customerJobs) {
+                            currentArtifact.valueMap.gainCreators.push(item);
+                        } else if (currentArtifact.customerProfile.customerJobs && !currentArtifact.customerProfile.customerPains) {
+                            currentArtifact.customerProfile.customerJobs.push(item);
+                        } else if (currentArtifact.customerProfile.customerPains && !currentArtifact.customerProfile.customerGains) {
+                            currentArtifact.customerProfile.customerPains.push(item);
+                        } else if (currentArtifact.customerProfile.customerGains) {
+                            currentArtifact.customerProfile.customerGains.push(item);
+                        }
+                    }
+                }
+            }
+
+            return data;
         }
     </script>
 </body>
