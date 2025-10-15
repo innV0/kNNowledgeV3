@@ -51,3 +51,51 @@ To view the artifacts for a specific project:
 ## Usage
 
 To use this tool, simply provide the requested information about your business. The tool will then automatically generate the JSON and Markdown output files in the current working directory.
+
+## Loading Artifacts
+
+The artifacts viewer supports loading both JSON and Logseq Markdown files:
+
+1. **Load JSON files**: Click "Load Artifacts" and select a `.json` file
+2. **Load Logseq files**: Click "Load Artifacts" and select a `.md` file exported from Logseq
+3. **Export to Logseq**: After loading, click "Export to Logseq" to download a Logseq-compatible version
+
+## Logseq Export
+
+The artifacts viewer now supports exporting business modeling artifacts in Logseq-compatible Markdown format:
+
+1. **Load Artifacts**: Open `artifacts.html` in your browser and load a JSON file using the "Load Artifacts" button
+2. **Export to Logseq**: Click the "Export to Logseq" button that appears after loading
+3. **Import to Logseq**: The downloaded `.md` file can be imported directly into your Logseq graph
+
+### Logseq Export Features
+
+- **Single Page Format**: All artifacts are exported to a single Markdown page with hierarchical structure
+- **Page Properties**: Includes Logseq properties like `project_name::`, `export_format:: logseq`, `created_date::`, etc.
+- **Artifact Sections**: Each business artifact becomes a main heading (## Business Model Canvas, ## SWOT Analysis, etc.)
+- **Structured Content**: Lists and tables are properly formatted for Logseq rendering
+- **Cross-references**: Internal page references using Logseq's linking syntax
+
+### Example Logseq Page Structure
+
+```
+project_name:: My Business Project
+export_format:: logseq
+created_date:: 2025-10-15T19:13:37.000Z
+tags:: [[business-modeling]], [[artifacts]]
+
+## Business Model Canvas
+
+artifact_type:: business-model-canvas
+last_modified:: 2025-10-15T19:13:37.000Z
+
+### Key Partners
+- Local government agencies
+- Strategic partners
+
+### Key Activities
+- Service delivery
+- Customer support
+
+[... continues with all artifacts ...]
+```
