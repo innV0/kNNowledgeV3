@@ -364,5 +364,159 @@
         "Proton pack technology failures"
       ]
     }
+  },
+  "pestelAnalysis": {
+    "title": "PESTEL Analysis",
+    "political": {
+      "title": "Political",
+      "items": ["Government regulations on paranormal activities", "Public safety regulations"]
+    },
+    "economic": {
+      "title": "Economic",
+      "items": ["Economic downturn affecting spending on non-essential services", "Insurance coverage for paranormal damages"]
+    },
+    "social": {
+      "title": "Social",
+      "items": ["Increasing public awareness and acceptance of paranormal phenomena", "Media portrayal of paranormal activities"]
+    },
+    "technological": {
+      "title": "Technological",
+      "items": ["Advancements in paranormal detection and containment technology", "Competition from DIY ghost hunting gadgets"]
+    },
+    "environmental": {
+      "title": "Environmental",
+      "items": ["Impact of paranormal activities on the environment", "Regulations on energy consumption of equipment"]
+    },
+    "legal": {
+      "title": "Legal",
+      "items": ["Liability for damages caused by paranormal entities or containment attempts", "Licensing and certification for paranormal investigators"]
+    }
+  },
+  "portersFiveForces": {
+    "title": "Porter's Five Forces",
+    "threatOfNewEntrants": {
+      "title": "Threat of New Entrants",
+      "level": "Low",
+      "items": ["High initial investment in specialized equipment", "Need for specialized knowledge and experience"]
+    },
+    "bargainingPowerOfBuyers": {
+      "title": "Bargaining Power of Buyers",
+      "level": "High",
+      "items": ["Customers can choose from different paranormal investigation groups", "Customers can choose to do nothing"]
+    },
+    "bargainingPowerOfSuppliers": {
+      "title": "Bargaining Power of Suppliers",
+      "level": "Low",
+      "items": ["Most technology is proprietary", "Some components are standard electronic parts"]
+    },
+    "threatOfSubstituteProducts": {
+      "title": "Threat of Substitute Products or Services",
+      "level": "High",
+      "items": ["Ignoring the problem", "DIY solutions and rituals", "Moving to a new property"]
+    },
+    "rivalryAmongExistingCompetitors": {
+      "title": "Rivalry Among Existing Competitors",
+      "level": "Moderate",
+      "items": ["A few other professional paranormal investigation groups", "Amateur ghost hunting groups"]
+    }
+  },
+  "ansoffMatrix": {
+    "title": "Ansoff Matrix",
+    "marketPenetration": {
+      "title": "Market Penetration",
+      "items": ["Increase market share in New York by offering new promotional packages", "Loyalty programs for existing customers"]
+    },
+    "marketDevelopment": {
+      "title": "Market Development",
+      "items": ["Expand services to other major cities in the US (Chicago, Los Angeles)", "Offer services to new customer segments (e.g., historical societies)"]
+    },
+    "productDevelopment": {
+      "title": "Product Development",
+      "items": ["Develop new and improved paranormal containment technology (Proton Pack 2.0)", "Offer new services like paranormal consulting for movies"]
+    },
+    "diversification": {
+      "title": "Diversification",
+      "items": ["Offer paranormal-themed entertainment services (e.g., escape rooms)", "Franchise the Ghostbusters brand internationally"]
+    }
+  },
+  "raciMatrix": {
+    "title": "RACI Matrix",
+    "headers": ["Task", "Dr. Venkman", "Dr. Stantz", "Dr. Spengler", "Winston Zeddemore"],
+    "rows": [
+      {"task": "Client Communication", "values": ["R", "A", "C", "I"]},
+      {"task": "Paranormal Investigation", "values": ["R", "R", "A", "R"]},
+      {"task": "Entity Containment", "values": ["I", "R", "A", "R"]},
+      {"task": "Equipment Maintenance", "values": ["I", "C", "A", "R"]}
+    ]
+  },
+  "userStories": {
+    "title": "User Stories",
+    "stories": [
+      {
+        "as": "a homeowner",
+        "iWant": "to get rid of the ghost in my house",
+        "soThat": "my family can feel safe again."
+      },
+      {
+        "as": "a business owner",
+        "iWant": "to ensure my property is free from paranormal activity",
+        "soThat": "it doesn't affect my business and my employees feel safe."
+      },
+      {
+        "as": "a real estate agent",
+        "iWant": "to get a certificate of paranormal clearance for a property",
+        "soThat": "I can sell it at a better price."
+      }
+    ]
+  },
+  "productRoadmap": {
+    "title": "Product Roadmap",
+    "phases": [
+      {
+        "name": "Phase 1: Research and Development",
+        "items": ["Proton Pack technology patent approval", "Develop new trap system"]
+      },
+      {
+        "name": "Phase 2: Pilot Testing",
+        "items": ["Pilot launch in New York", "First corporate contract signed"]
+      },
+      {
+        "name": "Phase 3: National Launch",
+        "items": ["National expansion to 10 major cities", "100 successful cases completed"]
+      }
+    ]
+  },
+  "competitiveAnalysis": {
+    "title": "Competitive Analysis",
+    "headers": ["Feature", "Ghostbusters", "Paranormal Purge Inc."],
+    "rows": [
+      {"feature": "Technology", "values": ["Patented Proton Packs", "Standard EMF meters"]},
+      {"feature": "Experience", "values": ["Decades of experience", "Newly founded"]},
+      {"feature": "Services", "values": ["Capture, Containment, Consulting", "Investigation only"]},
+      {"feature": "Branding", "values": ["Strong brand recognition", "Unknown brand"]}
+    ]
+  },
+  "okrFramework": {
+    "title": "OKR Framework",
+    "objective": "Become the #1 paranormal investigation and containment service in the world.",
+    "keyResults": [
+      "Increase customer satisfaction from 4.8 to 4.9",
+      "Expand to 10 new cities in the next year",
+      "Reduce average response time from 30 to 25 minutes"
+    ]
+  },
+  "goldenCircle": {
+    "title": "Golden Circle",
+    "why": "To make the world a safer place by protecting people from supernatural threats.",
+    "how": "By using cutting-edge technology and a team of highly skilled experts.",
+    "what": "We provide professional ghost removal services and paranormal protection."
+  },
+  "jobsToBeDone": {
+    "title": "Jobs to be Done (JTBD)",
+    "jobs": [
+      "Help me get my life back to normal after a paranormal event.",
+      "Give me peace of mind that my home is safe from ghosts.",
+      "Protect my property's value from paranormal devaluation."
+    ]
   }
 }

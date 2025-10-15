@@ -1,44 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ghostbusters Business Model</title>
+    <title>Krono Business Model</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
 </head>
 <body class="bg-gray-50">
     <div class="container mx-auto p-4">
-        <h1 class="text-4xl font-bold text-center mb-8">👻 Ghostbusters Business Model</h1>
-
-        <div class="text-center">
-            <input type="file" id="json-file-input" class="border p-2 rounded-lg">
-            <button id="load-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
-                Load Artifacts
-            </button>
-        </div>
+        <h1 class="text-4xl font-bold text-center mb-8">👻 Krono Business Model</h1>
 
         <div id="artifacts-container" class="mt-8">
         </div>
     </div>
 
     <script>
-        document.getElementById('load-button').addEventListener('click', () => {
-            const fileInput = document.getElementById('json-file-input');
-            if (fileInput.files.length === 0) {
-                alert('Please select a JSON file first.');
-                return;
-            }
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const data = JSON.parse(event.target.result);
-                    renderArtifacts(data);
-                } catch (e) {
-                    alert('Error parsing JSON file: ' + e.message);
-                }
-            };
-            reader.readAsText(file);
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('Krono.json')
+                .then(response => response.json())
+                .then(data => renderArtifacts(data))
+                .catch(error => console.error('Error loading Krono.json:', error));
         });
 
         function renderArtifacts(data) {
@@ -53,6 +34,16 @@
             container.appendChild(renderEmpathyMap(data.empathyMap));
             container.appendChild(renderValuePropositionCanvas(data.valuePropositionCanvas));
             container.appendChild(renderSwotAnalysis(data.swotAnalysis));
+            container.appendChild(renderPestelAnalysis(data.pestelAnalysis));
+            container.appendChild(renderPortersFiveForces(data.portersFiveForces));
+            container.appendChild(renderAnsoffMatrix(data.ansoffMatrix));
+            container.appendChild(renderRaciMatrix(data.raciMatrix));
+            container.appendChild(renderUserStories(data.userStories));
+            container.appendChild(renderProductRoadmap(data.productRoadmap));
+            container.appendChild(renderCompetitiveAnalysis(data.competitiveAnalysis));
+            container.appendChild(renderOkrFramework(data.okrFramework));
+            container.appendChild(renderGoldenCircle(data.goldenCircle));
+            container.appendChild(renderJobsToBeDone(data.jobsToBeDone));
             
             // Re-initialize Mermaid to render the new diagrams
             mermaid.init(undefined, container.querySelectorAll('.mermaid'));
@@ -408,6 +399,224 @@
             }
 
             box.appendChild(grid);
+            return box;
+        }
+
+        function renderPestelAnalysis(data) {
+            const box = createArtifactBox('🌍 PESTEL Analysis');
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-3 gap-4';
+
+            for (const key in data) {
+                if (key === 'title') continue;
+                const section = data[key];
+                const sectionBox = document.createElement('div');
+                sectionBox.className = 'bg-white p-4 rounded-lg shadow border';
+                sectionBox.innerHTML = `<h3 class="text-lg font-bold mb-2">${section.title}</h3>`;
+                sectionBox.appendChild(createList(section.items));
+                grid.appendChild(sectionBox);
+            }
+
+            box.appendChild(grid);
+            return box;
+        }
+
+        function renderPortersFiveForces(data) {
+            const box = createArtifactBox("⚔️ Porter's Five Forces");
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-3 gap-4';
+
+            for (const key in data) {
+                if (key === 'title') continue;
+                const force = data[key];
+                const forceBox = document.createElement('div');
+                forceBox.className = 'bg-white p-4 rounded-lg shadow border';
+                forceBox.innerHTML = `<h3 class="text-lg font-bold mb-2">${force.title} <span class="text-sm font-normal ${force.level === 'Low' ? 'text-green-500' : force.level === 'Moderate' ? 'text-yellow-500' : 'text-red-500'}">(${force.level})</span></h3>`;
+                forceBox.appendChild(createList(force.items));
+                grid.appendChild(forceBox);
+            }
+
+            box.appendChild(grid);
+            return box;
+        }
+
+        function renderAnsoffMatrix(data) {
+            const box = createArtifactBox('📈 Ansoff Matrix');
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-2 gap-4';
+
+            for (const key in data) {
+                if (key === 'title') continue;
+                const strategy = data[key];
+                const strategyBox = document.createElement('div');
+                strategyBox.className = 'bg-white p-4 rounded-lg shadow border';
+                strategyBox.innerHTML = `<h3 class="font-bold mb-2">${strategy.title}</h3>`;
+                strategyBox.appendChild(createList(strategy.items));
+                grid.appendChild(strategyBox);
+            }
+
+            box.appendChild(grid);
+            return box;
+        }
+
+        function renderRaciMatrix(data) {
+            const box = createArtifactBox('🧑‍🤝‍🧑 RACI Matrix');
+            const table = document.createElement('table');
+            table.className = 'table-auto w-full';
+            const thead = document.createElement('thead');
+            thead.className = 'bg-gray-200';
+            const headerRow = document.createElement('tr');
+            for (const header of data.headers) {
+                const th = document.createElement('th');
+                th.className = 'px-4 py-2';
+                th.textContent = header;
+                headerRow.appendChild(th);
+            }
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            for (const row of data.rows) {
+                const tr = document.createElement('tr');
+                const taskCell = document.createElement('td');
+                taskCell.className = 'border px-4 py-2';
+                taskCell.textContent = row.task;
+                tr.appendChild(taskCell);
+                for (const value of row.values) {
+                    const td = document.createElement('td');
+                    td.className = 'border px-4 py-2 text-center';
+                    td.textContent = value;
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+
+            box.appendChild(table);
+            return box;
+        }
+
+        function renderUserStories(data) {
+            const box = createArtifactBox('📖 User Stories');
+            const container = document.createElement('div');
+            container.className = 'space-y-4';
+
+            for (const story of data.stories) {
+                const storyBox = document.createElement('div');
+                storyBox.className = 'bg-white p-4 rounded-lg shadow border';
+                storyBox.innerHTML = `
+                    <p><span class="font-bold">As a</span> ${story.as}</p>
+                    <p><span class="font-bold">I want</span> ${story.iWant}</p>
+                    <p><span class="font-bold">So that</span> ${story.soThat}</p>
+                `;
+                container.appendChild(storyBox);
+            }
+
+            box.appendChild(container);
+            return box;
+        }
+
+        function renderProductRoadmap(data) {
+            const box = createArtifactBox('🗺️ Product Roadmap');
+            const container = document.createElement('div');
+            container.className = 'space-y-4';
+
+            for (const phase of data.phases) {
+                const phaseBox = document.createElement('div');
+                phaseBox.className = 'bg-white p-4 rounded-lg shadow border';
+                phaseBox.innerHTML = `<h3 class="text-lg font-bold mb-2">${phase.name}</h3>`;
+                phaseBox.appendChild(createList(phase.items));
+                container.appendChild(phaseBox);
+            }
+
+            box.appendChild(container);
+            return box;
+        }
+
+        function renderCompetitiveAnalysis(data) {
+            const box = createArtifactBox('🆚 Competitive Analysis');
+            const table = document.createElement('table');
+            table.className = 'table-auto w-full';
+            const thead = document.createElement('thead');
+            thead.className = 'bg-gray-200';
+            const headerRow = document.createElement('tr');
+            for (const header of data.headers) {
+                const th = document.createElement('th');
+                th.className = 'px-4 py-2';
+                th.textContent = header;
+                headerRow.appendChild(th);
+            }
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            for (const row of data.rows) {
+                const tr = document.createElement('tr');
+                const featureCell = document.createElement('td');
+                featureCell.className = 'border px-4 py-2';
+                featureCell.textContent = row.feature;
+                tr.appendChild(featureCell);
+                for (const value of row.values) {
+                    const td = document.createElement('td');
+                    td.className = 'border px-4 py-2';
+                    td.textContent = value;
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+
+            box.appendChild(table);
+            return box;
+        }
+
+        function renderOkrFramework(data) {
+            const box = createArtifactBox('🎯 OKR Framework');
+            const container = document.createElement('div');
+            container.className = 'space-y-4';
+
+            const objectiveBox = document.createElement('div');
+            objectiveBox.className = 'bg-white p-4 rounded-lg shadow border';
+            objectiveBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Objective</h3><p>${data.objective}</p>`;
+            container.appendChild(objectiveBox);
+
+            const keyResultsBox = document.createElement('div');
+            keyResultsBox.className = 'bg-white p-4 rounded-lg shadow border';
+            keyResultsBox.innerHTML = '<h3 class="text-lg font-bold mb-2">Key Results</h3>';
+            keyResultsBox.appendChild(createList(data.keyResults));
+            container.appendChild(keyResultsBox);
+
+            box.appendChild(container);
+            return box;
+        }
+
+        function renderGoldenCircle(data) {
+            const box = createArtifactBox('🎯 Golden Circle');
+            const container = document.createElement('div');
+            container.className = 'space-y-4';
+
+            const whyBox = document.createElement('div');
+            whyBox.className = 'bg-white p-4 rounded-lg shadow border';
+            whyBox.innerHTML = `<h3 class="text-lg font-bold mb-2">Why</h3><p>${data.why}</p>`;
+            container.appendChild(whyBox);
+
+            const howBox = document.createElement('div');
+            howBox.className = 'bg-white p-4 rounded-lg shadow border';
+            howBox.innerHTML = `<h3 class="text-lg font-bold mb-2">How</h3><p>${data.how}</p>`;
+            container.appendChild(howBox);
+
+            const whatBox = document.createElement('div');
+            whatBox.className = 'bg-white p-4 rounded-lg shadow border';
+            whatBox.innerHTML = `<h3 class="text-lg font-bold mb-2">What</h3><p>${data.what}</p>`;
+            container.appendChild(whatBox);
+
+            box.appendChild(container);
+            return box;
+        }
+
+        function renderJobsToBeDone(data) {
+            const box = createArtifactBox('🛠️ Jobs to be Done (JTBD)');
+            box.appendChild(createList(data.jobs));
             return box;
         }
     </script>
