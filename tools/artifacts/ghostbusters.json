@@ -1,0 +1,368 @@
+{
+  "businessModelCanvas": {
+    "keyPartners": {
+      "title": "🤝 Key Partners",
+      "items": [
+        "Local government agencies"
+      ]
+    },
+    "keyActivities": {
+      "title": "🏃 Key Activities",
+      "items": [
+        "Preventive paranormal patrols",
+        "Emergency supernatural response",
+        "Entity research and cataloging",
+        "Proton pack equipment maintenance"
+      ]
+    },
+    "keyResources": {
+      "title": "🛠️ Key Resources",
+      "items": [
+        "Patented proton pack technology",
+        "Comprehensive entity database",
+        "Mobile containment units",
+        "24/7 paranormal emergency response capability",
+        "Founding team with expertise"
+      ]
+    },
+    "valuePropositions": {
+      "title": "🎁 Value Propositions",
+      "items": [
+        "Guaranteed supernatural entity capture and containment",
+        "Preventive paranormal protection services",
+        "Expert consultation on paranormal phenomena and safety protocols"
+      ]
+    },
+    "customerRelationships": {
+      "title": "❤️ Customer Relationships",
+      "items": [
+        "Dedicated paranormal investigation hotline",
+        "Mobile response units",
+        "Specialized website for paranormal services"
+      ]
+    },
+    "channels": {
+      "title": "📢 Channels",
+      "items": [
+        "Dedicated paranormal investigation hotline",
+        "Mobile response units",
+        "Specialized website for paranormal services",
+        "Partnerships with local authorities"
+      ]
+    },
+    "customerSegments": {
+      "title": "🎯 Customer Segments",
+      "items": [
+        "Residential homeowners",
+        "Commercial property owners",
+        "Urban areas",
+        "Corporate clients"
+      ]
+    },
+    "costStructure": {
+      "title": "💰 Cost Structure",
+      "items": [
+        "Vehicle fleet maintenance ($50K/month)",
+        "Proton pack technology R&D ($30K/month)",
+        "Specialized team training programs"
+      ]
+    },
+    "revenueStreams": {
+      "title": "💸 Revenue Streams",
+      "items": [
+        "Entity capture services ($500-2000 per case)",
+        "Preventive monitoring contracts ($150/month)",
+        "Specialized equipment sales",
+        "International franchise opportunities"
+      ]
+    }
+  },
+  "leanCanvas": {
+    "problem": {
+      "title": "💣 Problem",
+      "items": [
+        "Disruptive supernatural manifestations",
+        "Property devaluation due to paranormal activity",
+        "Psychological trauma from encounters with entities",
+        "Safety risks to occupants"
+      ]
+    },
+    "solution": {
+      "title": "💡 Solution",
+      "items": [
+        "Class 1-7 entity capture and containment",
+        "Preventive supernatural monitoring",
+        "Emergency paranormal response"
+      ]
+    },
+    "keyMetrics": {
+      "title": "📈 Key Metrics",
+      "items": [
+        "Paranormal capture success rate (95%)",
+        "Average emergency response time (30 minutes)",
+        "Client satisfaction rating (4.8/5)",
+        "Proton pack technology ROI"
+      ]
+    },
+    "uniqueValueProposition": {
+      "title": "💎 Unique Value Proposition",
+      "items": [
+        "Guaranteed supernatural entity capture and containment",
+        "Preventive paranormal protection services",
+        "Expert consultation on paranormal phenomena and safety protocols"
+      ]
+    },
+    "unfairAdvantage": {
+      "title": "🛡️ Unfair Advantage",
+      "items": [
+        "Patented proton pack technology",
+        "Comprehensive supernatural entity database",
+        "Team with decades of paranormal containment experience"
+      ]
+    },
+    "channels": {
+      "title": "📢 Channels",
+      "items": [
+        "Dedicated paranormal investigation hotline",
+        "Mobile response units",
+        "Specialized website for paranormal services",
+        "Partnerships with local authorities"
+      ]
+    },
+    "customerSegments": {
+      "title": "🎯 Customer Segments",
+      "items": [
+        "Residential homeowners",
+        "Commercial property owners",
+        "Urban areas",
+        "Corporate clients"
+      ]
+    },
+    "costStructure": {
+      "title": "💰 Cost Structure",
+      "items": [
+        "Vehicle fleet maintenance ($50K/month)",
+        "Proton pack technology R&D ($30K/month)",
+        "Specialized team training programs"
+      ]
+    },
+    "revenueStreams": {
+      "title": "💸 Revenue Streams",
+      "items": [
+        "Entity capture services ($500-2000 per case)",
+        "Preventive monitoring contracts ($150/month)",
+        "Specialized equipment sales",
+        "International franchise opportunities"
+      ]
+    }
+  },
+  "salesFunnel": {
+    "title": "Sales Funnel",
+    "awareness": 40,
+    "interest": 30,
+    "consideration": 20,
+    "conversion": 10,
+    "retention": 5
+  },
+  "customerJourneyMap": [
+    {
+      "stage": "Awareness",
+      "actions": "Experiences strange noises and events in their home.",
+      "touchpoints": "Word of mouth, local news, online search.",
+      "thoughtsFeelings": "\"What's happening in my house? Is it a ghost?\" - Scared, confused.",
+      "painPoints": "Lack of reliable information about paranormal activity.",
+      "opportunities": "Provide educational content on identifying paranormal phenomena."
+    },
+    {
+      "stage": "Consideration",
+      "actions": "Searches for local paranormal investigators. Reads reviews and testimonials.",
+      "touchpoints": "Ghostbusters website, social media, online forums.",
+      "thoughtsFeelings": "\"Are these guys legit? Can they really help me?\" - Hopeful, but skeptical.",
+      "painPoints": "Difficulty in choosing a trustworthy service provider.",
+      "opportunities": "Showcase testimonials and case studies to build credibility."
+    },
+    {
+      "stage": "Engagement",
+      "actions": "Calls the Ghostbusters hotline. Schedules a consultation.",
+      "touchpoints": "Phone call, website contact form.",
+      "thoughtsFeelings": "\"I hope they can solve my problem quickly.\" - Anxious, but relieved to have found help.",
+      "painPoints": "Long waiting times for a consultation.",
+      "opportunities": "Offer a 24/7 emergency response service."
+    },
+    {
+      "stage": "Service",
+      "actions": "The Ghostbusters team arrives, investigates, and captures the entity.",
+      "touchpoints": "In-person interaction with the team.",
+      "thoughtsFeelings": "\"Wow, they are so professional and efficient!\" - Impressed, relieved, and grateful.",
+      "painPoints": "The process can be disruptive and noisy.",
+      "opportunities": "Clearly communicate the process and timeline to the client."
+    },
+    {
+      "stage": "Post-Service",
+      "actions": "Receives a follow-up call and a certificate of paranormal clearance.",
+      "touchpoints": "Phone call, email.",
+      "thoughtsFeelings": "\"I feel so much safer now. I'll recommend them to everyone.\" - Happy, satisfied, and safe.",
+      "painPoints": "Lingering fears or concerns about future paranormal activity.",
+      "opportunities": "Offer preventive monitoring services for peace of mind."
+    }
+  ],
+  "buyerPersona": {
+    "name": "\"Worried Wendy\"",
+    "background": {
+      "Age": "35-45",
+      "Occupation": "Homeowner, working professional (e.g., teacher, accountant)",
+      "Family": "Married with two young children"
+    },
+    "demographics": {
+      "Income": "Middle-class",
+      "Location": "Suburban area",
+      "Education": "College-educated"
+    },
+    "goals": [
+      "Ensure the safety and well-being of her family.",
+      "Protect her property value.",
+      "Find a quick and effective solution to the paranormal activity in her home."
+    ],
+    "challenges": [
+      "Doesn't know who to trust for paranormal investigation services.",
+      "Fears being judged or ridiculed for her beliefs.",
+      "Worries about the cost of paranormal services."
+    ],
+    "howWeHelp": [
+      "We provide a professional and discreet service.",
+      "Our team of experts is highly trained and experienced.",
+      "We offer transparent pricing and flexible payment options."
+    ],
+    "marketingMessage": "\"Your family's safety is our top priority. We provide professional, effective, and affordable paranormal containment services.\"",
+    "wateringHoles": [
+      "Parenting blogs and forums",
+      "Local community groups on social media",
+      "Home improvement websites and magazines"
+    ]
+  },
+  "empathyMap": {
+    "says": {
+      "title": "Says",
+      "items": [
+        "I keep hearing strange noises at night.",
+        "I'm worried about my children's safety.",
+        "I need someone who can get rid of this thing for good.",
+        "How much is this going to cost?"
+      ]
+    },
+    "thinks": {
+      "title": "Thinks",
+      "items": [
+        "Is my house haunted?",
+        "What if the ghost hurts my family?",
+        "I hope this isn't a scam.",
+        "Can I afford this?"
+      ]
+    },
+    "does": {
+      "title": "Does",
+      "items": [
+        "Searches online for \"ghost removal services\".",
+        "Asks friends and neighbors for recommendations.",
+        "Reads online reviews of paranormal investigators.",
+        "Compares pricing of different services."
+      ]
+    },
+    "feels": {
+      "title": "Feels",
+      "items": [
+        "Anxious",
+        "Scared",
+        "Stressed",
+        "Overwhelmed"
+      ]
+    }
+  },
+  "valuePropositionCanvas": {
+    "productsServices": {
+      "title": "🎁 Products & Services",
+      "items": [
+        "Guaranteed supernatural entity capture and containment",
+        "Preventive paranormal protection services",
+        "Expert consultation on paranormal phenomena and safety protocols"
+      ]
+    },
+    "painRelievers": {
+      "title": "😌 Pain Relievers",
+      "items": [
+        "24/7 emergency response",
+        "Professional and discreet service",
+        "Transparent pricing"
+      ]
+    },
+    "gainCreators": {
+      "title": "😁 Gain Creators",
+      "items": [
+        "Certificate of paranormal clearance",
+        "Preventive monitoring services",
+        "Team of experts"
+      ]
+    },
+    "customerJobs": {
+      "title": "💼 Customer Jobs",
+      "items": [
+        "Get rid of ghosts and other supernatural entities",
+        "Protect my property and family from future paranormal activity",
+        "Understand what is happening in my home"
+      ]
+    },
+    "pains": {
+      "title": "😞 Pains",
+      "items": [
+        "Disruptive supernatural manifestations",
+        "Property devaluation due to paranormal activity",
+        "Psychological trauma from encounters with entities",
+        "Safety risks to occupants"
+      ]
+    },
+    "gains": {
+      "title": "😃 Gains",
+      "items": [
+        "Peace of mind",
+        "Increased property value",
+        "Feeling of safety and security"
+      ]
+    }
+  },
+  "swotAnalysis": {
+    "strengths": {
+      "title": "💪 Strengths",
+      "items": [
+        "Patented proton pack technology",
+        "Comprehensive supernatural entity database",
+        "Experienced and highly skilled team",
+        "Strong brand recognition"
+      ]
+    },
+    "weaknesses": {
+      "title": "😞 Weaknesses",
+      "items": [
+        "High operational costs",
+        "Limited team size",
+        "Reliance on a few key individuals"
+      ]
+    },
+    "opportunities": {
+      "title": "🚀 Opportunities",
+      "items": [
+        "Expansion into new geographical markets",
+        "Increasing public awareness of paranormal phenomena",
+        "Development of new and improved paranormal containment technology"
+      ]
+    },
+    "threats": {
+      "title": "😨 Threats",
+      "items": [
+        "Competition from other paranormal investigation groups",
+        "Government regulation of paranormal activities",
+        "Massive supernatural activity outbreaks",
+        "Proton pack technology failures"
+      ]
+    }
+  }
+}
