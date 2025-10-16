@@ -164,26 +164,24 @@
         <label class="block text-xs font-medium mb-1">Color</label>
         <select v-model="selectedMetric.color" @change="$emit('recalculate')"
                 class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm">
-          <option value="#ffffff">White</option>
           <option value="#f8f9fa">Light Gray</option>
-          <option value="#e9ecef">Gray 100</option>
-          <option value="#dee2e6">Gray 200</option>
           <option value="#ced4da">Gray 300</option>
-          <option value="#adb5bd">Gray 400</option>
           <option value="#6c757d">Gray 500</option>
-          <option value="#495057">Gray 600</option>
-          <option value="#343a40">Gray 700</option>
-          <option value="#212529">Gray 800</option>
-          <option value="#e3f2fd">Light Blue</option>
           <option value="#bbdefb">Blue 100</option>
-          <option value="#90caf9">Blue 200</option>
           <option value="#64b5f6">Blue 300</option>
-          <option value="#42a5f5">Blue 400</option>
           <option value="#2196f3">Blue 500</option>
-          <option value="#1e88e5">Blue 600</option>
-          <option value="#1976d2">Blue 700</option>
-          <option value="#1565c0">Blue 800</option>
-          <option value="#0d47a1">Blue 900</option>
+          <option value="#c8e6c9">Green 100</option>
+          <option value="#81c784">Green 300</option>
+          <option value="#4caf50">Green 500</option>
+          <option value="#ffcdd2">Red 100</option>
+          <option value="#ef5350">Red 300</option>
+          <option value="#f44336">Red 500</option>
+          <option value="#fff3e0">Orange 100</option>
+          <option value="#ffb74d">Orange 300</option>
+          <option value="#ff9800">Orange 500</option>
+          <option value="#f3e5f5">Purple 100</option>
+          <option value="#ba68c8">Purple 300</option>
+          <option value="#9c27b0">Purple 500</option>
         </select>
       </div>
 

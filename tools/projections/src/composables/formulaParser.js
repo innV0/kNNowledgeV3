@@ -309,13 +309,13 @@ export class FormulaParser {
   }
 
   evaluateMetric(ast, periodIndex) {
-    const metric = this.metrics.value.find(m => m.slug === ast.name)
+    const metric = this.metrics.find(m => m.slug === ast.name)
     if (!metric) {
       throw new Error(`Metric not found: ${ast.name}`)
     }
 
     const targetPeriod = periodIndex + ast.offset
-    if (targetPeriod < 0 || targetPeriod >= 60) {
+    if (targetPeriod < 0 || targetPeriod >= 61) {
       return 0 // Out of bounds, return 0
     }
 
@@ -332,13 +332,13 @@ export class FormulaParser {
       case '-': return left - right
       case '*': return left * right
       case '/':
-        if (right === 0) throw new Error('Division by zero')
+        if (right === 0) return 0 // Return 0 instead of throwing for division by zero
         return left / right
       case '//':
-        if (right === 0) throw new Error('Division by zero')
+        if (right === 0) return 0 // Return 0 instead of throwing for integer division by zero
         return Math.floor(left / right)
       case '%':
-        if (right === 0) throw new Error('Modulo by zero')
+        if (right === 0) return 0 // Return 0 instead of throwing for modulo by zero
         return left % right
       case '^': return Math.pow(left, right)
       default: throw new Error(`Unknown operator: ${ast.operator}`)
@@ -473,7 +473,7 @@ export class FormulaParser {
     // This would be implemented for auto-complete functionality
     // For now, return basic suggestions
     return {
-      metrics: this.metrics.value.map(m => m.slug),
+      metrics: this.metrics.map(m => m.slug),
       functions: Object.keys(this.functions),
       operators: ['+', '-', '*', '/', '//', '%', '^']
     }
@@ -482,16 +482,16 @@ export class FormulaParser {
 
 // Helper function to interpolate values (imported from useMetrics)
 function interpolateValues(metric) {
-  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(60).fill(0)
+  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(61).fill(0)
 
-  const result = new Array(60).fill(0)
+  const result = new Array(61).fill(0)
   const knownPoints = []
 
   // Collect known values
   Object.entries(metric.values).forEach(([key, value]) => {
     const [year, month] = key.split('-').map(Number)
     const monthIndex = (year - 1) * 12 + (month - 1)
-    if (monthIndex >= 0 && monthIndex < 60) {
+    if (monthIndex >= 0 && monthIndex < 61) {
       knownPoints.push({ index: monthIndex, value: Number(value) })
     }
   })
@@ -535,7 +535,7 @@ function interpolateLinear(knownPoints, result) {
   }
 
   // Fill remaining gaps with nearest known value
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 61; i++) {
     if (result[i] === 0 && knownPoints.length > 0) {
       // Find nearest known point
       const nearest = knownPoints.reduce((prev, curr) =>

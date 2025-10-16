@@ -1,17 +1,24 @@
-# Startup Financial Projections Tool
+# Unified Business Modeling Tool
 
-A modern, simplified web application for creating and visualizing financial projections for startup businesses.
+A comprehensive web application for business modeling that combines financial projections, business model documentation, and business modeling artifacts in a single unified interface.
 
 Projections > https://lucascervera.github.io/kNNowledgeV3/tools/projections/
 
 
 ## Features
 
+### Three Integrated Modules
+- **📄 Document Tab**: Business model documentation and planning content
+- **📊 Projections Tab**: Financial projections with real-time calculations and charts
+- **🎨 Artifacts Tab**: Business modeling artifacts (Business Model Canvas, Lean Canvas, SWOT Analysis, etc.)
+
+### Core Capabilities
 - **Intuitive Data Entry**: Table-based input system with automatic interpolation
 - **Drag & Drop**: Reorder metrics easily
 - **Real-time Calculations**: Instant updates with formula dependencies
 - **Interactive Charts**: Visualize projections with Chart.js
-- **Import/Export**: Share models as JSON files
+- **Unified Import/Export**: Share complete business models as Logseq Markdown files
+- **Backward Compatibility**: Import existing JSON/Markdown files
 - **Responsive Design**: Works on desktop and mobile devices
 
 ## Download and Local Usage
@@ -69,6 +76,44 @@ The application automatically deploys to GitHub Pages on every push to the main 
 
 ## Data Model
 
+### Unified Document Structure
+The application works with unified Logseq Markdown documents containing three main sections:
+
+```
+# Document
+Business model documentation and planning content...
+
+# Projections
+- tags:: [[business-modeling]]
+- selectedMetricId:: metric-1
+- viewMode:: monthly
+- chartMetrics:: ["metric-1", "metric-2"]
+
+## Business Metrics (Metrics Array)
+- [[Revenue]]
+  - id:: revenue-1
+  - type:: variable
+  - values::
+    - 1-1:: 10000
+    - 1-2:: 11000
+  - format::
+    - decimals:: 0
+    - currency:: $
+- [[Costs]]
+  - id:: costs-1
+  - type:: calculated
+  - formula:: revenue * 0.3
+  - format::
+    - decimals:: 0
+    - currency:: $
+
+# Artifacts
+## Business Model Canvas
+### Key Partners
+- Partner 1
+- Partner 2
+```
+
 ### Metrics
 - **Variable Metrics**: Direct value input with interpolation
 - **Calculated Metrics**: Formula-based calculations
@@ -85,49 +130,77 @@ Values are stored in a year-month format:
 
 Missing values are automatically interpolated using linear interpolation.
 
+### Artifacts Support
+The application supports various business modeling artifacts:
+- Business Model Canvas (9 blocks)
+- Lean Canvas (startup-focused)
+- SWOT Analysis
+- Value Proposition Canvas
+- Competitive Analysis tables
+
 ## Usage
 
 ### Getting Started
 
 1. **Open the Application**: Double-click `singlefile-index.html` or visit the online version
-2. **Load Sample Data** (Optional): Click "Load Sample Data" to see example projections
+2. **Import a Business Model**: Click "Import Logseq File" to load a complete business model document
+3. **Navigate Between Tabs**: Use the Document, Projections, and Artifacts tabs to work with different aspects of your business model
 
-### Creating Your Financial Model
+### Working with Documents
+
+The **Document Tab** displays your business model documentation:
+- Import Logseq Markdown files with H1 sections (# Document, # Projections, # Artifacts)
+- Content is rendered with basic Markdown formatting
+- Export unified documents that combine all sections
+
+### Creating Financial Projections
+
+The **Projections Tab** provides financial modeling capabilities:
 
 1. **Add Metrics**: Click "Add Metric" to create new business metrics
-   - Choose between "Variable" (manual input) or "Calculated" (formula-based)
-   - Variable metrics allow direct value entry
-   - Calculated metrics use formulas referencing other metrics
+    - Choose between "Variable" (manual input) or "Calculated" (formula-based)
+    - Variable metrics allow direct value entry
+    - Calculated metrics use formulas referencing other metrics
 
 2. **Enter Values**: Use the table to input specific values for any month/year
-   - Click on any cell to edit values
-   - Values are stored in year-month format (e.g., "1-1" for Year 1, Month 1)
-   - Missing values are automatically interpolated
+    - Click on any cell to edit values
+    - Values are stored in year-month format (e.g., "1-1" for Year 1, Month 1)
+    - Missing values are automatically interpolated
 
 3. **Use Formulas**: For calculated metrics, enter formulas like:
-   - `revenue * 0.3` (30% of revenue)
-   - `SUM(previous_3_months)` (rolling 3-month sum)
-   - `growth_rate * previous_value` (compound growth)
-
-### Visualizing Data
+    - `revenue * 0.3` (30% of revenue)
+    - `SUM(previous_3_months)` (rolling 3-month sum)
+    - `growth_rate * previous_value` (compound growth)
 
 4. **View Charts**: Switch to "Chart View" to visualize projections
-   - Toggle metrics on/off using the checkboxes
-   - Charts update in real-time as you modify data
-   - Supports line charts for trend analysis
+    - Toggle metrics on/off using the checkboxes
+    - Charts update in real-time as you modify data
+    - Supports line charts for trend analysis
+
+### Business Modeling Artifacts
+
+The **Artifacts Tab** displays business modeling artifacts extracted from Logseq files:
+- **Business Model Canvas**: 9-block strategic tool
+- **Lean Canvas**: Startup-focused business model
+- **SWOT Analysis**: Strengths, Weaknesses, Opportunities, Threats
+- **Value Proposition Canvas**: Customer value mapping
+- **Competitive Analysis**: Feature comparison tables
 
 ### Data Management
 
-5. **Import/Export**: Share your financial models
-   - **Export**: Click "Export Data" to download your model as JSON
-   - **Import**: Click "Import Data" and select a previously exported JSON file
-   - All formulas, values, and settings are preserved
+**Import/Export Options**:
+- **Unified Logseq Export**: Export complete business models as single Logseq Markdown files
+- **Artifacts Export**: Export just the artifacts section to Logseq
+- **JSON Export**: Export projections data as JSON (backward compatibility)
+- **Import**: Load Logseq files, JSON files, or Markdown files
+- All formulas, values, and settings are preserved
 
 ### Tips for Best Results
 
-- Start with high-level metrics (Revenue, Costs) before detailed breakdowns
+- Start with the Document tab to outline your business model
 - Use consistent time periods for accurate projections
-- Save your work frequently using Export
+- Create artifacts in the Artifacts tab to visualize your business model
+- Save your work frequently using unified export
 - Test formulas with small datasets before scaling up
 
 ## Contributing
