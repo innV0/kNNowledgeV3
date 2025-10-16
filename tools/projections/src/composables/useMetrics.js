@@ -3,16 +3,16 @@ import { FormulaParser } from './formulaParser.js'
 
 // Interpolation functions exported for use in other modules
 export const interpolateValues = (metric) => {
-  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(60).fill(0)
+  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(61).fill(0)
 
-  const result = new Array(60).fill(0)
+  const result = new Array(61).fill(0)
   const knownPoints = []
 
   // Collect known values
   Object.entries(metric.values).forEach(([key, value]) => {
     const [year, month] = key.split('-').map(Number)
     const monthIndex = (year - 1) * 12 + (month - 1)
-    if (monthIndex >= 0 && monthIndex < 60) {
+    if (monthIndex >= 0 && monthIndex < 61) {
       knownPoints.push({ index: monthIndex, value: Number(value) })
     }
   })
@@ -61,7 +61,7 @@ const interpolateLinear = (knownPoints, result) => {
   }
 
   // Fill remaining gaps with nearest known value
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 61; i++) {
     if (result[i] === 0 && knownPoints.length > 0) {
       // Find nearest known point
       const nearest = knownPoints.reduce((prev, curr) =>

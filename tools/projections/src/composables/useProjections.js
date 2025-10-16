@@ -101,7 +101,13 @@ export function useProjections() {
       const nextVal = getValue(tokens[i + 1], month, data, metrics)
       if (op === '+') result += nextVal
       else if (op === '*') result *= nextVal
-      else if (op === '/') result /= nextVal
+      else if (op === '/') {
+        if (nextVal === 0) {
+          console.warn('Division by zero in legacy parser, returning 0')
+          return 0
+        }
+        result /= nextVal
+      }
       else if (op === '-') result -= nextVal
     }
 

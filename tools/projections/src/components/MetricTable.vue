@@ -44,7 +44,7 @@
               :key="period"
               class="px-1 py-1 text-center font-semibold bg-gray-50 border-b border-gray-200 h-6 align-middle min-w-10"
             >
-              {{ viewMode === 'monthly' ? 'M' : 'Y' }}{{ period }}
+              {{ viewMode === 'monthly' ? 'M' : 'Y' }}{{ period + 1 }}
             </th>
           </tr>
         </thead>

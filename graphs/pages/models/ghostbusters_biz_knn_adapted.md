@@ -26,7 +26,8 @@
 					  urgency:: 9
 					  conciousness:: 8
 				- [[Propositions]]
-					- proposition:: Guaranteed supernatural entity capture and containment.
+					- #proposition Guaranteed supernatural entity capture and containment.
+						- #risk Must work
 					- proposition:: Preventive paranormal protection services.
 					- proposition:: Expert consultation on paranormal phenomena and safety protocols.
 						- [[Messages]]
@@ -45,7 +46,6 @@
 	- stakeholder:: [[General public]]
 	- stakeholder:: [[Public agencies]]
 - [[Solutions]]
-  collapsed:: true
 	- solution:: Paranormal Investigation and Containment Services
 		- [[Components]]
 			- component:: Class 1-7 entity capture and containment

@@ -10,3 +10,5 @@
 - [[Namespace/test]]
 - [[kNN guide]]
 - [[kNN config]]
+- [[sample]]
+-
