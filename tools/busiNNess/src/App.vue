@@ -1,8 +1,8 @@
 <template>
-  <div id="app" class="h-screen flex bg-gray-50 text-sm">
-    <!-- Tab Navigation -->
-    <div class="w-full">
-      <div class="flex border-b border-gray-200 bg-white">
+  <div id="app" class="h-screen flex flex-col bg-gray-50 text-sm">
+    <!-- Header with Export Button -->
+    <div class="w-full bg-white border-b border-gray-200 px-4 py-2 flex justify-between items-center flex-shrink-0">
+      <div class="flex">
         <button @click="activeTab = 'document'"
                 :class="{ 'px-4 py-2 text-sm font-medium border-b-2': true, 'border-blue-500 text-blue-600': activeTab === 'document', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'document' }">
           📄 Document
@@ -16,9 +16,18 @@
           🎨 Artifacts
         </button>
       </div>
+      <div v-if="hasAnyData" class="flex items-center gap-2">
+        <button @click="exportUnifiedDocument"
+                class="px-3 py-1.5 bg-purple-600 text-white rounded text-xs hover:bg-purple-700">
+          Export Unified Document
+        </button>
+      </div>
+    </div>
 
-      <!-- Tab Content -->
-      <div class="flex-1 p-3 overflow-y-auto" :class="{ 'pr-80': activeTab === 'projections' && !sidebarCollapsed }">
+    <!-- Tab Content Container -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Main Content Area -->
+      <div class="flex-1 p-3 overflow-y-auto" :class="{ 'pr-80': activeTab === 'projections' }">
         <!-- Document Tab -->
         <div v-if="activeTab === 'document'" class="space-y-4">
           <!-- Controls -->
@@ -28,10 +37,6 @@
             <button @click="$refs.fileInput.click()"
                     class="px-3 py-1.5 bg-green-600 text-white rounded text-xs hover:bg-green-700">
               Import Logseq File
-            </button>
-            <button v-if="documentContent" @click="exportUnifiedDocument"
-                    class="px-3 py-1.5 bg-purple-600 text-white rounded text-xs hover:bg-purple-700">
-              Export Unified Document
             </button>
           </div>
 
@@ -64,21 +69,6 @@
               <i class="fas fa-filter mr-1"></i>
               Filters
             </button>
-            <button @click="sidebarCollapsed = !sidebarCollapsed"
-                    class="px-3 py-1.5 bg-gray-600 text-white rounded text-xs hover:bg-gray-700">
-              <i :class="{ 'fas mr-1': true, 'fa-angle-right': sidebarCollapsed, 'fa-angle-left': !sidebarCollapsed }"></i>
-              {{ sidebarCollapsed ? 'Show' : 'Hide' }} Panel
-            </button>
-            <div v-if="metrics.length > 0" class="flex items-center gap-1">
-              <select v-model="exportFormat" class="px-2 py-1.5 border border-gray-300 rounded text-xs">
-                <option value="json">JSON</option>
-                <option value="markdown">MD</option>
-              </select>
-              <button @click="exportData(exportFormat)"
-                      class="px-3 py-1.5 bg-purple-600 text-white rounded text-xs hover:bg-purple-700">
-                Export
-              </button>
-            </div>
           </div>
 
           <!-- Welcome message -->
@@ -109,13 +99,6 @@
 
         <!-- Artifacts Tab -->
         <div v-if="activeTab === 'artifacts'" class="space-y-4">
-          <!-- Controls -->
-          <div class="flex gap-2 mb-3 flex-wrap">
-            <button v-if="artifactsData" @click="exportArtifactsToLogseq"
-                    class="px-3 py-1.5 bg-green-600 text-white rounded text-xs hover:bg-green-700">
-              Export Artifacts to Logseq
-            </button>
-          </div>
 
           <!-- Welcome message -->
           <div v-if="!artifactsData" class="bg-white rounded p-4 shadow mb-3">
@@ -354,10 +337,11 @@
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- Sidebar (only for Projections tab) -->
-      <div v-if="activeTab === 'projections' && !sidebarCollapsed" class="w-1/3 bg-white p-3 border-l border-gray-200 overflow-y-auto fixed right-0 top-0 h-full z-20" style="margin-top: 41px;">
+      <!-- Sidebar for Projections Tab -->
+      <div v-if="activeTab === 'projections' && metrics.length > 0" class="fixed right-0 top-0 h-full w-80 bg-white border-l border-gray-200 overflow-y-auto z-10">
         <MetricDetails
           :selected-metric="selectedMetric"
           :metrics="metrics"
@@ -372,11 +356,12 @@
           :chart-metrics="chartMetrics"
           :get-metric-value="getMetricValue"
           :set-metric-value="setMetricValue"
-          @toggle-edit="toggleEditMode"
+          @toggle-edit="editMode = !editMode"
           @toggle-chart="toggleChart"
           @update-type="updateType"
           @update-formula="updateFormula"
           @recalculate="recalculate"
+          @set-metric-value="setMetricValue"
           @move-metric-up="moveMetricUp"
           @move-metric-down="moveMetricDown"
         />
@@ -403,6 +388,11 @@ const metrics = ref([])
 const activeTab = ref('document')
 const documentContent = ref('')
 const artifactsData = ref(null)
+
+// Computed
+const hasAnyData = computed(() => {
+  return documentContent.value || metrics.value.length > 0 || artifactsData.value
+})
 
 const selectedMetricId = ref(null)
 const viewMode = ref('monthly')
@@ -542,7 +532,7 @@ watch(projections, () => {
   updateChart()
 })
 
-watch([chartMetrics, viewMode, sidebarCollapsed], () => {
+watch([chartMetrics, viewMode], () => {
   // Clear hidden datasets that are no longer in chartMetrics
   const activeMetricNames = projections.value
     .filter((_, idx) => chartMetrics.value.includes(metrics.value[idx].id))
@@ -893,14 +883,22 @@ const formatListForLogseq = (items) => {
 const importData = (event) => {
   const file = event.target.files[0]
   if (file) {
+    console.log('Starting import of file:', file.name)
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const content = e.target.result
+        console.log('File content loaded, length:', content.length)
 
         if (file.name.endsWith('.md')) {
+          console.log('Processing as Markdown file')
           // Handle Logseq unified document
           const sections = parseLogseqDocument(content)
+          console.log('Parsed sections:', {
+            document: sections.document ? sections.document.length : 0,
+            projections: sections.projections ? sections.projections.length : 0,
+            artifacts: sections.artifacts ? sections.artifacts.length : 0
+          })
 
           documentContent.value = sections.document
 
@@ -910,10 +908,14 @@ const importData = (event) => {
           // Parse projections section
           if (sections.projections && sections.projections.trim()) {
             console.log('About to parse projections section, length:', sections.projections.length)
+            console.log('Projections content preview:', sections.projections.substring(0, 200))
             parseProjectionsSection(sections.projections)
             console.log('After parsing, metrics count:', metrics.value.length)
+          } else {
+            console.log('No projections section found or empty')
           }
         } else {
+          console.log('Processing as JSON file')
           // Fallback to original JSON import
           originalImportData(event)
         }
@@ -1019,54 +1021,7 @@ const parseArtifactsSection = (artifactsContent) => {
         } else if (currentSection === 'revenuestreams' && artifacts.businessModelCanvas.revenueStreams) {
           artifacts.businessModelCanvas.revenueStreams.push(item)
         }
-      } else if (currentArtifact === 'leanCanvas') {
-        if (currentSection === 'problem' && artifacts.leanCanvas.problem) {
-          artifacts.leanCanvas.problem.push(item)
-        } else if (currentSection === 'solution' && artifacts.leanCanvas.solution) {
-          artifacts.leanCanvas.solution.push(item)
-        } else if (currentSection === 'keymetrics' && artifacts.leanCanvas.keyMetrics) {
-          artifacts.leanCanvas.keyMetrics.push(item)
-        } else if (currentSection === 'unfairadvantage' && artifacts.leanCanvas.unfairAdvantage) {
-          artifacts.leanCanvas.unfairAdvantage.push(item)
-        } else if (currentSection === 'channels' && artifacts.leanCanvas.channels) {
-          artifacts.leanCanvas.channels.push(item)
-        } else if (currentSection === 'customersegments' && artifacts.leanCanvas.customerSegments) {
-          artifacts.leanCanvas.customerSegments.push(item)
-        } else if (currentSection === 'coststructure' && artifacts.leanCanvas.costStructure) {
-          artifacts.leanCanvas.costStructure.push(item)
-        } else if (currentSection === 'revenuestreams' && artifacts.leanCanvas.revenueStreams) {
-          artifacts.leanCanvas.revenueStreams.push(item)
-        }
-      } else if (currentArtifact === 'swotAnalysis') {
-        if (currentSection === 'strengths' && artifacts.swotAnalysis.strengths) {
-          artifacts.swotAnalysis.strengths.push(item)
-        } else if (currentSection === 'weaknesses' && artifacts.swotAnalysis.weaknesses) {
-          artifacts.swotAnalysis.weaknesses.push(item)
-        } else if (currentSection === 'opportunities' && artifacts.swotAnalysis.opportunities) {
-          artifacts.swotAnalysis.opportunities.push(item)
-        } else if (currentSection === 'threats' && artifacts.swotAnalysis.threats) {
-          artifacts.swotAnalysis.threats.push(item)
-        }
-      } else if (currentArtifact === 'valuePropositionCanvas') {
-        if (currentSection === 'products' && artifacts.valuePropositionCanvas.valueMap.productsAndServices) {
-          artifacts.valuePropositionCanvas.valueMap.productsAndServices.push(item)
-        } else if (currentSection === 'painrelievers' && artifacts.valuePropositionCanvas.valueMap.painRelievers) {
-          artifacts.valuePropositionCanvas.valueMap.painRelievers.push(item)
-        } else if (currentSection === 'gaincreators' && artifacts.valuePropositionCanvas.valueMap.gainCreators) {
-          artifacts.valuePropositionCanvas.valueMap.gainCreators.push(item)
-        } else if (currentSection === 'customerjobs' && artifacts.valuePropositionCanvas.customerProfile.customerJobs) {
-          artifacts.valuePropositionCanvas.customerProfile.customerJobs.push(item)
-        } else if (currentSection === 'customerpains' && artifacts.valuePropositionCanvas.customerProfile.customerPains) {
-          artifacts.valuePropositionCanvas.customerProfile.customerPains.push(item)
-        } else if (currentSection === 'customergains' && artifacts.valuePropositionCanvas.customerProfile.customerGains) {
-          artifacts.valuePropositionCanvas.customerProfile.customerGains.push(item)
-        }
       }
-    }
-
-    // Parse unique value proposition (not a list)
-    else if (currentArtifact === 'leanCanvas' && currentSection === 'uniqueValueProposition' && trimmed && !trimmed.startsWith('-') && !trimmed.startsWith('###')) {
-      artifacts.leanCanvas.uniqueValueProposition = trimmed
     }
   }
 
@@ -1074,30 +1029,33 @@ const parseArtifactsSection = (artifactsContent) => {
 }
 
 const parseProjectionsSection = (projectionsContent) => {
-  // Try new format first, fallback to legacy
-  let parser = new ProjectionsParser()
-  let result = parser.parse(projectionsContent)
+  console.log('Parsing projections section:', projectionsContent)
+  console.log('Projections content length:', projectionsContent.length)
 
-  // If no metrics found, try legacy parser
-  if (result.metrics.length === 0) {
-    console.log('No metrics found with new parser, trying legacy format...')
-    parser = new LegacyProjectionsParser()
-    result = parser.parse(projectionsContent)
+  // Use the new ProjectionsParser class instead of the old logic
+  const parser = new ProjectionsParser()
+  const result = parser.parse(projectionsContent)
+
+  console.log('Parser result:', result)
+  console.log('Metrics in result:', result.metrics ? result.metrics.length : 'undefined')
+
+  // Update the app's metrics
+  metrics.value = result.metrics || []
+
+  // Update metadata if available
+  if (result.selectedMetricId) {
+    // Validate that the selectedMetricId exists in the metrics array
+    const metricExists = metrics.value.some(m => m.id === result.selectedMetricId)
+    selectedMetricId.value = metricExists ? result.selectedMetricId : null
+  }
+  if (result.viewMode) {
+    viewMode.value = result.viewMode
+  }
+  if (result.chartMetrics && Array.isArray(result.chartMetrics)) {
+    chartMetrics.value.splice(0, chartMetrics.value.length, ...result.chartMetrics)
   }
 
-  // Update reactive data
-  metrics.value.splice(0, metrics.value.length, ...result.metrics)
-  selectedMetricId.value = result.selectedMetricId || null
-  viewMode.value = result.viewMode || 'monthly'
-  chartMetrics.value = result.chartMetrics || []
-
-  // Trigger reactivity
-  setTimeout(() => {
-    metrics.value = [...metrics.value]
-  }, 10)
+  console.log('After parsing, metrics.value:', metrics.value)
+  console.log('Final metrics count:', metrics.value.length)
 }
 </script>
-
-<style>
-/* Tailwind CSS will be included via Vite */
-</style>

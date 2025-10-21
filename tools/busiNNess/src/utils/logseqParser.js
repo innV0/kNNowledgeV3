@@ -33,11 +33,20 @@ export class LogseqParser {
   }
 
   parseLine(line) {
-    // Detect section changes (H1 headers)
-    if (line.startsWith('# Projections')) {
+    // Detect section changes (H1 headers) - handle both with and without leading dash
+    const trimmed = line.trim()
+
+    if (trimmed === '# Projections' || trimmed === '# Data' ||
+        trimmed === '- # Projections' || trimmed === '- # Data') {
       this.currentSection = 'projections'
-    } else if (line.startsWith('# Artifacts')) {
+      console.log('Detected projections section:', trimmed)
+    } else if (trimmed === '# Artifacts' || trimmed === '- # Artifacts') {
       this.currentSection = 'artifacts'
+      console.log('Detected artifacts section:', trimmed)
+    } else if (trimmed === '# Model' || trimmed === '# Document' ||
+               trimmed === '- # Model' || trimmed === '- # Document') {
+      this.currentSection = 'document'
+      console.log('Detected document section:', trimmed)
     }
 
     // Add line to current section
@@ -179,7 +188,10 @@ export class ProjectionsParser {
   detectMetricsSection(trimmed) {
     return trimmed === '## Business Metrics (Metrics Array)' ||
             trimmed === '## Metrics' ||
-            trimmed === '- ## Metrics'
+            trimmed === '- ## Metrics' ||
+            trimmed === '- [[☎️ Paranormal Hotline Calls/Month]]' ||
+            trimmed.startsWith('- [[') && trimmed.includes(']]') ||
+            trimmed === '- [[📢 Publicity Events & Appearances/Month]]'
   }
 
   parseMetricHeader(trimmed) {
@@ -201,6 +213,13 @@ export class ProjectionsParser {
     if (trimmed.startsWith('- [[') && trimmed.includes(']]')) {
       this.finalizeCurrentMetric()
       this.startNewMetric(trimmed.replace('- ', '### '))
+      this.parsingState = 'metrics'
+      return true
+    }
+    // Direct metric header without prefix ([[Name]])
+    if (trimmed.startsWith('[[') && trimmed.includes(']]') && !trimmed.startsWith('- ') && !trimmed.startsWith('* ')) {
+      this.finalizeCurrentMetric()
+      this.startNewMetric('### ' + trimmed)
       this.parsingState = 'metrics'
       return true
     }
@@ -259,6 +278,9 @@ export class ProjectionsParser {
     if (trimmed.startsWith('- ')) {
       // Legacy format: - property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('  ')) {
+      // Indented format:   property:: value
+      [prop, ...value] = trimmed.substring(2).split('::')
     } else {
       // New format: property:: value
       [prop, ...value] = trimmed.split('::')
@@ -287,8 +309,17 @@ export class ProjectionsParser {
     if (!trimmed.includes('::')) return false
 
     let key, value
-    if (trimmed.startsWith('- ')) {
+    if (trimmed.startsWith('    - ')) {
+      // 4-space indented format:     - key:: value
+      [key, ...value] = trimmed.substring(6).split('::')
+    } else if (trimmed.startsWith('  - ')) {
+      // 2-space indented format:   - key:: value
+      [key, ...value] = trimmed.substring(4).split('::')
+    } else if (trimmed.startsWith('- ')) {
       // Legacy format: - key:: value
+      [key, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('  ')) {
+      // Indented format:   key:: value
       [key, ...value] = trimmed.substring(2).split('::')
     } else {
       // New format: key:: value
@@ -306,7 +337,13 @@ export class ProjectionsParser {
     if (!trimmed.includes('::')) return false
 
     let prop, value
-    if (trimmed.startsWith('- ')) {
+    if (trimmed.startsWith('    ')) {
+      // 4-space indented format:     property:: value
+      [prop, ...value] = trimmed.substring(4).split('::')
+    } else if (trimmed.startsWith('  ')) {
+      // 2-space indented format:   property:: value
+      [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('- ')) {
       // Legacy format: - property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
     } else {
