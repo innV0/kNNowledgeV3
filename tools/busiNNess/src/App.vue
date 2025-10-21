@@ -339,6 +339,33 @@
         </div>
 
       </div>
+
+      <!-- Sidebar for Projections Tab -->
+      <div v-if="activeTab === 'projections' && metrics.length > 0" class="fixed right-0 top-0 h-full w-80 bg-white border-l border-gray-200 overflow-y-auto z-10">
+        <MetricDetails
+          :selected-metric="selectedMetric"
+          :metrics="metrics"
+          :edit-mode="editMode"
+          :current-type="currentType"
+          :formula-metric1="formulaMetric1"
+          :formula-offset1="formulaOffset1"
+          :formula-operation="formulaOperation"
+          :formula-metric2="formulaMetric2"
+          :formula-offset2="formulaOffset2"
+          :offset-options="offsetOptions"
+          :chart-metrics="chartMetrics"
+          :get-metric-value="getMetricValue"
+          :set-metric-value="setMetricValue"
+          @toggle-edit="editMode = !editMode"
+          @toggle-chart="toggleChart"
+          @update-type="updateType"
+          @update-formula="updateFormula"
+          @recalculate="recalculate"
+          @set-metric-value="setMetricValue"
+          @move-metric-up="moveMetricUp"
+          @move-metric-down="moveMetricDown"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -1017,13 +1044,15 @@ const parseProjectionsSection = (projectionsContent) => {
 
   // Update metadata if available
   if (result.selectedMetricId) {
-    selectedMetricId.value = result.selectedMetricId
+    // Validate that the selectedMetricId exists in the metrics array
+    const metricExists = metrics.value.some(m => m.id === result.selectedMetricId)
+    selectedMetricId.value = metricExists ? result.selectedMetricId : null
   }
   if (result.viewMode) {
     viewMode.value = result.viewMode
   }
   if (result.chartMetrics && Array.isArray(result.chartMetrics)) {
-    chartMetrics.splice(0, chartMetrics.length, ...result.chartMetrics)
+    chartMetrics.value.splice(0, chartMetrics.value.length, ...result.chartMetrics)
   }
 
   console.log('After parsing, metrics.value:', metrics.value)
