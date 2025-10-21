@@ -856,14 +856,22 @@ const formatListForLogseq = (items) => {
 const importData = (event) => {
   const file = event.target.files[0]
   if (file) {
+    console.log('Starting import of file:', file.name)
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const content = e.target.result
+        console.log('File content loaded, length:', content.length)
 
         if (file.name.endsWith('.md')) {
+          console.log('Processing as Markdown file')
           // Handle Logseq unified document
           const sections = parseLogseqDocument(content)
+          console.log('Parsed sections:', {
+            document: sections.document ? sections.document.length : 0,
+            projections: sections.projections ? sections.projections.length : 0,
+            artifacts: sections.artifacts ? sections.artifacts.length : 0
+          })
 
           documentContent.value = sections.document
 
@@ -873,10 +881,14 @@ const importData = (event) => {
           // Parse projections section
           if (sections.projections && sections.projections.trim()) {
             console.log('About to parse projections section, length:', sections.projections.length)
+            console.log('Projections content preview:', sections.projections.substring(0, 200))
             parseProjectionsSection(sections.projections)
             console.log('After parsing, metrics count:', metrics.value.length)
+          } else {
+            console.log('No projections section found or empty')
           }
         } else {
+          console.log('Processing as JSON file')
           // Fallback to original JSON import
           originalImportData(event)
         }
@@ -991,134 +1003,30 @@ const parseArtifactsSection = (artifactsContent) => {
 
 const parseProjectionsSection = (projectionsContent) => {
   console.log('Parsing projections section:', projectionsContent)
+  console.log('Projections content length:', projectionsContent.length)
 
-  const parsedMetrics = []
+  // Use the new ProjectionsParser class instead of the old logic
+  const parser = new ProjectionsParser()
+  const result = parser.parse(projectionsContent)
 
-  // Split into metric blocks (marked with *)
-  const lines = projectionsContent.split('\n')
-  let currentMetric = null
-  let currentSection = null
+  console.log('Parser result:', result)
+  console.log('Metrics in result:', result.metrics ? result.metrics.length : 'undefined')
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    const trimmed = line.trim()
+  // Update the app's metrics
+  metrics.value = result.metrics || []
 
-    // Detect metric start (* [[Metric Name]])
-    if (trimmed.startsWith('* [[') && trimmed.includes(']]')) {
-      // Save previous metric if exists
-      if (currentMetric) {
-        parsedMetrics.push(currentMetric)
-      }
-
-      // Start new metric
-      const nameMatch = trimmed.match(/\* \[\[([^\]]+)\]\]/)
-      if (nameMatch) {
-        currentMetric = {
-          name: nameMatch[1],
-          id: '',
-          slug: '',
-          description: '',
-          type: 'variable',
-          unit: '',
-          color: '#007bff',
-          interpolation: 'linear',
-          tags: [],
-          values: {},
-          format: {
-            decimals: 0,
-            compact: false,
-            currency: '',
-            percentage: false,
-            scientific: false,
-            suffix: '',
-            rounding: 'round',
-            colorize: false,
-            minThreshold: 0.01
-          }
-        }
-        currentSection = null
-      }
-      continue
-    }
-
-    // Skip if no current metric
-    if (!currentMetric) continue
-
-    // Parse property lines ( - key:: value )
-    if (trimmed.startsWith('- ') && trimmed.includes('::')) {
-      const propertyMatch = trimmed.match(/- ([^:]+):: (.+)/)
-      if (propertyMatch) {
-        const [_, key, value] = propertyMatch
-
-        // Handle special case for tags (array)
-        if (key.trim() === 'tags') {
-          const tagMatches = value.match(/\[\[([^\]]+)\]\]/g)
-          if (tagMatches) {
-            currentMetric.tags = tagMatches.map(tag => tag.match(/\[\[([^\]]+)\]\]/)[1])
-          }
-        }
-        // Handle special case for formula (string)
-        else if (key.trim() === 'formula') {
-          currentMetric.formula = value.trim()
-        }
-        // Handle other properties
-        else {
-          // Try to parse as number first
-          if (!isNaN(value.trim()) && value.trim() !== '') {
-            currentMetric[key.trim()] = parseFloat(value.trim())
-          } else {
-            currentMetric[key.trim()] = value.trim()
-          }
-        }
-        currentSection = key.trim()
-        continue
-      }
-    }
-
-    // Parse nested values in subsections
-    if (currentSection && trimmed.startsWith('  - ') && trimmed.includes('::')) {
-      const nestedMatch = trimmed.match(/  - ([^:]+):: (.+)/)
-      if (nestedMatch) {
-        const [_, nestedKey, nestedValue] = nestedMatch
-
-        if (currentSection === 'values') {
-          currentMetric.values[nestedKey] = parseFloat(nestedValue) || nestedValue
-        } else if (currentSection === 'format') {
-          // Handle format properties
-          if (!isNaN(nestedValue) && nestedValue !== '') {
-            currentMetric.format[nestedKey] = parseFloat(nestedValue)
-          } else if (nestedValue === 'true') {
-            currentMetric.format[nestedKey] = true
-          } else if (nestedValue === 'false') {
-            currentMetric.format[nestedKey] = false
-          } else {
-            currentMetric.format[nestedKey] = nestedValue
-          }
-        }
-      }
-    }
+  // Update metadata if available
+  if (result.selectedMetricId) {
+    selectedMetricId.value = result.selectedMetricId
+  }
+  if (result.viewMode) {
+    viewMode.value = result.viewMode
+  }
+  if (result.chartMetrics && Array.isArray(result.chartMetrics)) {
+    chartMetrics.splice(0, chartMetrics.length, ...result.chartMetrics)
   }
 
-  // Add last metric if exists
-  if (currentMetric) {
-    parsedMetrics.push(currentMetric)
-  }
-
-  console.log('Parsed metrics:', parsedMetrics)
-
-  // Clear existing metrics and add the parsed ones
-  metrics.value = []
-
-  // Add metrics to the app
-  parsedMetrics.forEach(metric => {
-    // Convert values object to array format if needed
-    if (metric.values && typeof metric.values === 'object') {
-      // For now, keep as object - the existing code should handle it
-      // This matches what the app expects
-    }
-    metrics.value.push(metric)
-  })
-
-  console.log('After parsing, metrics count:', metrics.value.length)
+  console.log('After parsing, metrics.value:', metrics.value)
+  console.log('Final metrics count:', metrics.value.length)
 }
 </script>

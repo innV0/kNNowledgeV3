@@ -80,32 +80,43 @@ The application automatically deploys to GitHub Pages on every push to the main 
 The application works with unified Logseq Markdown documents containing three main sections:
 
 ```
-# Document
+# Model
 Business model documentation and planning content...
 
-# Projections
+# Data
 - tags:: [[business-modeling]]
 - selectedMetricId:: metric-1
 - viewMode:: monthly
 - chartMetrics:: ["metric-1", "metric-2"]
 
-## Business Metrics (Metrics Array)
 - [[Revenue]]
-  - id:: revenue-1
-  - type:: variable
-  - values::
+  id:: revenue-1
+  slug:: revenue
+  description:: Monthly revenue
+  type:: variable
+  unit:: ""
+  color:: #2196f3
+  interpolation:: linear
+  tags:: [[financial]]
+  values::
     - 1-1:: 10000
     - 1-2:: 11000
-  - format::
-    - decimals:: 0
-    - currency:: $
+  format::
+    decimals:: 0
+    currency:: $
 - [[Costs]]
-  - id:: costs-1
-  - type:: calculated
-  - formula:: revenue * 0.3
-  - format::
-    - decimals:: 0
-    - currency:: $
+  id:: costs-1
+  slug:: costs
+  description:: Monthly costs
+  type:: calculated
+  unit:: ""
+  color:: #f44336
+  formula:: revenue * 0.3
+  interpolation:: linear
+  tags:: [[financial]]
+  format::
+    decimals:: 0
+    currency:: $
 
 # Artifacts
 ## Business Model Canvas
