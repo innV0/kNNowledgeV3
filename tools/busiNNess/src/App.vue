@@ -27,7 +27,7 @@
     <!-- Tab Content Container -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Main Content Area -->
-      <div class="flex-1 p-3 overflow-y-auto" :class="{ 'pr-80': activeTab === 'projections' }">
+      <div class="flex-1 p-3 overflow-y-auto" :class="{ 'pr-1/3': activeTab === 'projections' && !sidebarCollapsed }">
         <!-- Document Tab -->
         <div v-if="activeTab === 'document'" class="space-y-4">
           <!-- Controls -->
@@ -341,30 +341,49 @@
       </div>
 
       <!-- Sidebar for Projections Tab -->
-      <div v-if="activeTab === 'projections' && metrics.length > 0" class="fixed right-0 top-0 h-full w-80 bg-white border-l border-gray-200 overflow-y-auto z-10">
-        <MetricDetails
-          :selected-metric="selectedMetric"
-          :metrics="metrics"
-          :edit-mode="editMode"
-          :current-type="currentType"
-          :formula-metric1="formulaMetric1"
-          :formula-offset1="formulaOffset1"
-          :formula-operation="formulaOperation"
-          :formula-metric2="formulaMetric2"
-          :formula-offset2="formulaOffset2"
-          :offset-options="offsetOptions"
-          :chart-metrics="chartMetrics"
-          :get-metric-value="getMetricValue"
-          :set-metric-value="setMetricValue"
-          @toggle-edit="editMode = !editMode"
-          @toggle-chart="toggleChart"
-          @update-type="updateType"
-          @update-formula="updateFormula"
-          @recalculate="recalculate"
-          @set-metric-value="setMetricValue"
-          @move-metric-up="moveMetricUp"
-          @move-metric-down="moveMetricDown"
-        />
+      <div v-if="activeTab === 'projections' && metrics.length > 0"
+           class="fixed right-0 top-0 h-full bg-white border-l border-gray-200 overflow-hidden z-10 transition-all duration-300"
+           :style="{ width: sidebarCollapsed ? '40px' : '33.333%' }">
+        <div v-if="!sidebarCollapsed" class="w-full h-full flex flex-col">
+          <div class="flex justify-between items-center p-3 border-b border-gray-200 flex-shrink-0">
+            <h2 class="text-lg font-semibold">Metric Details</h2>
+            <button @click="sidebarCollapsed = true"
+                    class="p-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-xs">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-3">
+            <MetricDetails
+              :selected-metric="selectedMetric"
+              :metrics="metrics"
+              :edit-mode="editMode"
+              :current-type="currentType"
+              :formula-metric1="formulaMetric1"
+              :formula-offset1="formulaOffset1"
+              :formula-operation="formulaOperation"
+              :formula-metric2="formulaMetric2"
+              :formula-offset2="formulaOffset2"
+              :offset-options="offsetOptions"
+              :chart-metrics="chartMetrics"
+              :get-metric-value="getMetricValue"
+              :set-metric-value="setMetricValue"
+              @toggle-edit="editMode = !editMode"
+              @toggle-chart="toggleChart"
+              @update-type="updateType"
+              @update-formula="updateFormula"
+              @recalculate="recalculate"
+              @set-metric-value="setMetricValue"
+              @move-metric-up="moveMetricUp"
+              @move-metric-down="moveMetricDown"
+            />
+          </div>
+        </div>
+        <div v-else class="w-full h-full flex items-center justify-center">
+          <button @click="sidebarCollapsed = false"
+                  class="p-2 bg-white border border-gray-200 rounded-l shadow hover:bg-gray-50 transform rotate-180">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -602,7 +621,7 @@ const exportUnifiedDocument = () => {
   let content = documentContent.value || ''
 
   if (metrics.value.length > 0) {
-    content += '\n\n# Projections\n\n'
+    content += '\n\n- # Data\n\n'
 
     // Add metadata (Logseq properties without asterisks)
     const allTags = [...new Set(metrics.value.flatMap(m => m.tags || []))]
@@ -615,41 +634,46 @@ const exportUnifiedDocument = () => {
 
     content += '## Business Metrics (Metrics Array)\n\n'
 
-    metrics.value.forEach(metric => {
-      // Metric header (H3)
-      content += `### [[${metric.name}]]\n`
+    metrics.value.forEach((metric, index) => {
+      // Metric header with bullet point
+      content += `- [[${metric.name}]]\n`
 
       // Core properties (Logseq properties without asterisks)
-      content += `id:: ${metric.id}\n`
-      content += `slug:: ${metric.slug}\n`
-      content += `description:: ${metric.description}\n`
-      content += `type:: ${metric.type}\n`
-      if (metric.unit) content += `unit:: ${metric.unit}\n`
-      content += `color:: ${metric.color}\n`
-      content += `interpolation:: ${metric.interpolation}\n`
+      content += `  id:: ${metric.id}\n`
+      content += `  slug:: ${metric.slug}\n`
+      content += `  description:: ${metric.description}\n`
+      content += `  type:: ${metric.type}\n`
+      if (metric.unit) content += `  unit:: ${metric.unit}\n`
+      content += `  color:: ${metric.color}\n`
+      content += `  interpolation:: ${metric.interpolation}\n`
       if (metric.tags && metric.tags.length > 0) {
-        content += `tags:: [[${metric.tags.join(']], [[')}]]\n`
+        content += `  tags:: [[${metric.tags.join(']], [[')}]]\n`
       }
 
       // Formula for calculated metrics
       if (metric.type === 'calculated' && metric.formula) {
-        content += `formula:: ${metric.formula}\n`
+        content += `  formula:: ${metric.formula}\n`
       }
 
       // Values subsection for variable metrics
       if (metric.type === 'variable' && metric.values && Object.keys(metric.values).length > 0) {
-        content += '\n#### Values\n'
+        content += `  values::\n`
+        content += `  collapsed:: true\n`
         // Sort keys for consistent output
         Object.keys(metric.values).sort().forEach(key => {
-          content += `- ${key}:: ${metric.values[key]}\n`
+          content += `    - ${key}:: ${metric.values[key]}\n`
         })
-      }
-
-      // Format subsection
-      if (metric.format) {
-        content += '\n#### Format\n'
+        content += `    format::\n`
+        if (metric.format) {
+          Object.entries(metric.format).forEach(([key, value]) => {
+            content += `    ${key}:: ${value}\n`
+          })
+        }
+      } else if (metric.format) {
+        // For calculated metrics or metrics without values, put format inline
+        content += `  format::\n`
         Object.entries(metric.format).forEach(([key, value]) => {
-          content += `${key}:: ${value}\n`
+          content += `    ${key}:: ${value}\n`
         })
       }
 
@@ -659,7 +683,7 @@ const exportUnifiedDocument = () => {
 
   // Add artifacts section if exists
   if (artifactsData.value) {
-    content += '\n\n# Artifacts\n\n'
+    content += '\n\n- # Artifacts\n\n'
     content += exportArtifactsToLogseqContent()
   }
 
@@ -689,9 +713,9 @@ const exportArtifactsToLogseq = () => {
 }
 
 const exportArtifactsToLogseqContent = () => {
-  if (!artifactsData.value) return '# Artifacts\n\n* No artifacts data available\n'
+  if (!artifactsData.value) return '- # Artifacts\n\n* No artifacts data available\n'
 
-  let content = '# Artifacts\n\n'
+  let content = ''
   content += `artifact_count:: ${Object.keys(artifactsData.value).length}\n`
   content += `export_format:: logseq\n`
   content += `created_date:: ${new Date().toISOString()}\n`
@@ -699,7 +723,7 @@ const exportArtifactsToLogseqContent = () => {
 
   // Business Model Canvas
   if (artifactsData.value.businessModelCanvas) {
-    content += '## Business Model Canvas\n\n'
+    content += '- ## Business Model Canvas\n\n'
     content += 'artifact_type:: business-model-canvas\n'
     content += `last_modified:: ${new Date().toISOString()}\n\n`
 
@@ -743,7 +767,7 @@ const exportArtifactsToLogseqContent = () => {
 
   // Lean Canvas
   if (artifactsData.value.leanCanvas) {
-    content += '## Lean Canvas\n\n'
+    content += '- ## Lean Canvas\n\n'
     content += 'artifact_type:: lean-canvas\n'
     content += `last_modified:: ${new Date().toISOString()}\n\n`
 
@@ -786,7 +810,7 @@ const exportArtifactsToLogseqContent = () => {
 
   // SWOT Analysis
   if (artifactsData.value.swotAnalysis) {
-    content += '## SWOT Analysis\n\n'
+    content += '- ## SWOT Analysis\n\n'
     content += 'artifact_type:: swot-analysis\n'
     content += `last_modified:: ${new Date().toISOString()}\n\n`
 
@@ -810,7 +834,7 @@ const exportArtifactsToLogseqContent = () => {
 
   // Value Proposition Canvas
   if (artifactsData.value.valuePropositionCanvas) {
-    content += '## Value Proposition Canvas\n\n'
+    content += '- ## Value Proposition Canvas\n\n'
     content += 'artifact_type:: value-proposition-canvas\n'
     content += `last_modified:: ${new Date().toISOString()}\n\n`
 
@@ -844,7 +868,7 @@ const exportArtifactsToLogseqContent = () => {
 
   // Competitive Analysis
   if (artifactsData.value.competitiveAnalysis) {
-    content += '## Competitive Analysis\n\n'
+    content += '- ## Competitive Analysis\n\n'
     content += 'artifact_type:: competitive-analysis\n'
     content += `last_modified:: ${new Date().toISOString()}\n\n`
 
@@ -939,27 +963,27 @@ const parseArtifactsSection = (artifactsContent) => {
   for (const line of lines) {
     const trimmed = line.trim()
 
-    // Detect artifact sections
-    if (trimmed === '## Business Model Canvas') {
+    // Detect artifact sections (handle both bullet and header formats)
+    if (trimmed === '## Business Model Canvas' || trimmed === '- ## Business Model Canvas') {
       currentArtifact = 'businessModelCanvas'
       artifacts.businessModelCanvas = {}
-    } else if (trimmed === '## Lean Canvas') {
+    } else if (trimmed === '## Lean Canvas' || trimmed === '- ## Lean Canvas') {
       currentArtifact = 'leanCanvas'
       artifacts.leanCanvas = {}
-    } else if (trimmed === '## SWOT Analysis') {
+    } else if (trimmed === '## SWOT Analysis' || trimmed === '- ## SWOT Analysis') {
       currentArtifact = 'swotAnalysis'
       artifacts.swotAnalysis = {}
-    } else if (trimmed === '## Value Proposition Canvas') {
+    } else if (trimmed === '## Value Proposition Canvas' || trimmed === '- ## Value Proposition Canvas') {
       currentArtifact = 'valuePropositionCanvas'
       artifacts.valuePropositionCanvas = { valueMap: {}, customerProfile: {} }
-    } else if (trimmed === '## Competitive Analysis') {
+    } else if (trimmed === '## Competitive Analysis' || trimmed === '- ## Competitive Analysis') {
       currentArtifact = 'competitiveAnalysis'
       artifacts.competitiveAnalysis = { headers: [], rows: [] }
     }
 
-    // Parse sub-sections
-    else if (currentArtifact && trimmed.startsWith('### ')) {
-      const section = trimmed.substring(4).toLowerCase().replace(/[^a-z]/g, '')
+    // Parse sub-sections (handle both bullet and header formats, including deeper levels)
+    else if (currentArtifact && (trimmed.startsWith('### ') || trimmed.startsWith('- ### ') || trimmed.startsWith('#### ') || trimmed.startsWith('- #### '))) {
+      const section = trimmed.replace(/^(- )?(###|####) /, '').toLowerCase().replace(/[^a-z]/g, '')
       currentSection = section
 
       if (currentArtifact === 'businessModelCanvas') {
@@ -1020,6 +1044,50 @@ const parseArtifactsSection = (artifactsContent) => {
           artifacts.businessModelCanvas.costStructure.push(item)
         } else if (currentSection === 'revenuestreams' && artifacts.businessModelCanvas.revenueStreams) {
           artifacts.businessModelCanvas.revenueStreams.push(item)
+        }
+      } else if (currentArtifact === 'leanCanvas') {
+        if (currentSection === 'problem' && artifacts.leanCanvas.problem) {
+          artifacts.leanCanvas.problem.push(item)
+        } else if (currentSection === 'solution' && artifacts.leanCanvas.solution) {
+          artifacts.leanCanvas.solution.push(item)
+        } else if (currentSection === 'keymetrics' && artifacts.leanCanvas.keyMetrics) {
+          artifacts.leanCanvas.keyMetrics.push(item)
+        } else if (currentSection === 'unfairadvantage' && artifacts.leanCanvas.unfairAdvantage) {
+          artifacts.leanCanvas.unfairAdvantage.push(item)
+        } else if (currentSection === 'channels' && artifacts.leanCanvas.channels) {
+          artifacts.leanCanvas.channels.push(item)
+        } else if (currentSection === 'customersegments' && artifacts.leanCanvas.customerSegments) {
+          artifacts.leanCanvas.customerSegments.push(item)
+        } else if (currentSection === 'coststructure' && artifacts.leanCanvas.costStructure) {
+          artifacts.leanCanvas.costStructure.push(item)
+        } else if (currentSection === 'revenuestreams' && artifacts.leanCanvas.revenueStreams) {
+          artifacts.leanCanvas.revenueStreams.push(item)
+        } else if (currentSection === 'uniquevalueproposition') {
+          artifacts.leanCanvas.uniqueValueProposition = item
+        }
+      } else if (currentArtifact === 'swotAnalysis') {
+        if (currentSection === 'strengths' && artifacts.swotAnalysis.strengths) {
+          artifacts.swotAnalysis.strengths.push(item)
+        } else if (currentSection === 'weaknesses' && artifacts.swotAnalysis.weaknesses) {
+          artifacts.swotAnalysis.weaknesses.push(item)
+        } else if (currentSection === 'opportunities' && artifacts.swotAnalysis.opportunities) {
+          artifacts.swotAnalysis.opportunities.push(item)
+        } else if (currentSection === 'threats' && artifacts.swotAnalysis.threats) {
+          artifacts.swotAnalysis.threats.push(item)
+        }
+      } else if (currentArtifact === 'valuePropositionCanvas') {
+        if (currentSection === 'productsandservices' && artifacts.valuePropositionCanvas.valueMap.productsAndServices) {
+          artifacts.valuePropositionCanvas.valueMap.productsAndServices.push(item)
+        } else if (currentSection === 'painrelievers' && artifacts.valuePropositionCanvas.valueMap.painRelievers) {
+          artifacts.valuePropositionCanvas.valueMap.painRelievers.push(item)
+        } else if (currentSection === 'gaincreators' && artifacts.valuePropositionCanvas.valueMap.gainCreators) {
+          artifacts.valuePropositionCanvas.valueMap.gainCreators.push(item)
+        } else if (currentSection === 'customerjobs' && artifacts.valuePropositionCanvas.customerProfile.customerJobs) {
+          artifacts.valuePropositionCanvas.customerProfile.customerJobs.push(item)
+        } else if (currentSection === 'customerpains' && artifacts.valuePropositionCanvas.customerProfile.customerPains) {
+          artifacts.valuePropositionCanvas.customerProfile.customerPains.push(item)
+        } else if (currentSection === 'customergains' && artifacts.valuePropositionCanvas.customerProfile.customerGains) {
+          artifacts.valuePropositionCanvas.customerProfile.customerGains.push(item)
         }
       }
     }

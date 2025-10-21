@@ -557,38 +557,39 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
   }
 
   const exportToMarkdown = () => {
-    let markdown = '# Projections\n\n'
-    markdown += `* tags:: [[${metrics.value.map(m => m.name).join(']], [[')}]]\n`
-    markdown += `* selectedMetricId:: ${selectedMetricId.value || ''}\n`
-    markdown += `* viewMode:: monthly\n`
-    markdown += `* chartMetrics:: ${JSON.stringify(chartMetrics.value)}\n\n`
-    markdown += '* ## Business Metrics (Metrics Array)\n\n'
+    let markdown = '# Data\n\n'
+    markdown += `tags:: [[${metrics.value.map(m => m.name).join(']], [[')}]]\n`
+    markdown += `selectedMetricId:: ${selectedMetricId.value || ''}\n`
+    markdown += `viewMode:: monthly\n`
+    markdown += `chartMetrics:: ${JSON.stringify(chartMetrics.value)}\n`
 
     metrics.value.forEach(metric => {
-      markdown += `* [[${metric.name}]]\n`
-      markdown += `  * id:: ${metric.id}\n`
-      markdown += `  * slug:: ${metric.slug}\n`
-      markdown += `  * description:: ${metric.description}\n`
-      markdown += `  * type:: ${metric.type}\n`
-      markdown += `  * unit:: ${metric.unit || ''}\n`
-      markdown += `  * color:: ${metric.color}\n`
-      markdown += `  * interpolation:: ${metric.interpolation}\n`
-      // Export tags in Logseq format
-      markdown += `  * tags:: [[${metric.tags.join(']], [[')}]]\n`
+      markdown += `\t- [[${metric.name}]]\n`
+      markdown += `\t  id:: ${metric.id}\n`
+      markdown += `\t  slug:: ${metric.slug}\n`
+      markdown += `\t  description:: ${metric.description}\n`
+      markdown += `\t  type:: ${metric.type}\n`
+      if (metric.unit) markdown += `\t  unit:: ${metric.unit}\n`
+      markdown += `\t  color:: ${metric.color}\n`
+      markdown += `\t  interpolation:: ${metric.interpolation}\n`
+      if (metric.tags && metric.tags.length > 0) {
+        markdown += `\t  tags:: [[${metric.tags.join(']], [[')}]]\n`
+      }
 
       if (metric.type === 'calculated' && metric.formula) {
-        markdown += `  * formula:: ${metric.formula}\n`
+        markdown += `\t  formula:: ${metric.formula}\n`
       } else if (metric.type === 'variable' && metric.values) {
-        markdown += '  * values::\n'
+        markdown += `\t  values::\n`
+        markdown += `\t  collapsed:: true\n`
         Object.entries(metric.values).forEach(([key, value]) => {
-          markdown += `    * ${key}:: ${value}\n`
+          markdown += `\t\t- ${key}:: ${value}\n`
         })
       }
 
       if (metric.format) {
-        markdown += '  * format::\n'
+        markdown += `\t  format::\n`
         Object.entries(metric.format).forEach(([key, value]) => {
-          markdown += `    * ${key}:: ${value}\n`
+          markdown += `\t\t${key}:: ${value}\n`
         })
       }
       markdown += '\n'

@@ -191,7 +191,8 @@ export class ProjectionsParser {
             trimmed === '- ## Metrics' ||
             trimmed === '- [[☎️ Paranormal Hotline Calls/Month]]' ||
             trimmed.startsWith('- [[') && trimmed.includes(']]') ||
-            trimmed === '- [[📢 Publicity Events & Appearances/Month]]'
+            trimmed === '- [[📢 Publicity Events & Appearances/Month]]' ||
+            trimmed === '### [[☎️ Paranormal Hotline Calls/Month]]'
   }
 
   parseMetricHeader(trimmed) {
@@ -216,8 +217,15 @@ export class ProjectionsParser {
       this.parsingState = 'metrics'
       return true
     }
+    // Tab-prefixed metric header (\t- [[Name]])
+    if (trimmed.startsWith('\t- [[') && trimmed.includes(']]')) {
+      this.finalizeCurrentMetric()
+      this.startNewMetric(trimmed.replace('\t- ', '### '))
+      this.parsingState = 'metrics'
+      return true
+    }
     // Direct metric header without prefix ([[Name]])
-    if (trimmed.startsWith('[[') && trimmed.includes(']]') && !trimmed.startsWith('- ') && !trimmed.startsWith('* ')) {
+    if (trimmed.startsWith('[[') && trimmed.includes(']]') && !trimmed.startsWith('- ') && !trimmed.startsWith('* ') && !trimmed.startsWith('\t- ')) {
       this.finalizeCurrentMetric()
       this.startNewMetric('### ' + trimmed)
       this.parsingState = 'metrics'
@@ -281,6 +289,9 @@ export class ProjectionsParser {
     } else if (trimmed.startsWith('  ')) {
       // Indented format:   property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tproperty:: value
+      [prop, ...value] = trimmed.substring(1).split('::')
     } else {
       // New format: property:: value
       [prop, ...value] = trimmed.split('::')
@@ -315,12 +326,18 @@ export class ProjectionsParser {
     } else if (trimmed.startsWith('  - ')) {
       // 2-space indented format:   - key:: value
       [key, ...value] = trimmed.substring(4).split('::')
+    } else if (trimmed.startsWith('\t\t- ')) {
+      // Tab-indented format: \t\t- key:: value
+      [key, ...value] = trimmed.substring(3).split('::')
     } else if (trimmed.startsWith('- ')) {
       // Legacy format: - key:: value
       [key, ...value] = trimmed.substring(2).split('::')
     } else if (trimmed.startsWith('  ')) {
       // Indented format:   key:: value
       [key, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tkey:: value
+      [key, ...value] = trimmed.substring(1).split('::')
     } else {
       // New format: key:: value
       [key, ...value] = trimmed.split('::')
@@ -343,9 +360,15 @@ export class ProjectionsParser {
     } else if (trimmed.startsWith('  ')) {
       // 2-space indented format:   property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t    ')) {
+      // Tab-indented format: \t    property:: value
+      [prop, ...value] = trimmed.substring(5).split('::')
     } else if (trimmed.startsWith('- ')) {
       // Legacy format: - property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tproperty:: value
+      [prop, ...value] = trimmed.substring(1).split('::')
     } else {
       // New format: property:: value
       [prop, ...value] = trimmed.split('::')
