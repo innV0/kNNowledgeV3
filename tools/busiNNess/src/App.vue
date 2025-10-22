@@ -100,6 +100,17 @@
         <!-- Artifacts Tab -->
         <div v-if="activeTab === 'artifacts'" class="space-y-4">
 
+          <!-- Dismissible Canva Templates Note -->
+          <div v-if="!dismissedCanvaNote" class="bg-blue-50 border border-blue-200 rounded p-4 mb-4 relative">
+            <button @click="dismissedCanvaNote = true"
+                    class="absolute top-2 right-2 text-blue-500 hover:text-blue-700 text-lg">
+              ×
+            </button>
+            <p class="text-blue-800 pr-6">
+              This page shows the most common, most used artifacts in a fairly neutral format. If you need to give it a more visually attractive look, you can use the <a href="https://www.canva.com/templates/" target="_blank" class="underline hover:text-blue-600">Canva templates</a>.
+            </p>
+          </div>
+
           <!-- Welcome message -->
           <div v-if="!artifactsData" class="bg-white rounded p-4 shadow mb-3">
             <h2 class="text-lg mb-2">Business Artifacts</h2>
@@ -456,6 +467,7 @@ const offsetOptions = Array.from({ length: 121 }, (_, i) => i - 60)
 const isFilterExpanded = ref(false)
 const exportFormat = ref('json')
 const sidebarCollapsed = ref(false)
+const dismissedCanvaNote = ref(false)
 const configuration = ref({
   timeHorizon: 61,
   timeUnit: 'months',
