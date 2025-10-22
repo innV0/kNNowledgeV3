@@ -121,12 +121,12 @@ const interpolateCurve = (knownPoints, result) => {
   return result
 }
 
-export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, formulaOffset1, formulaOperation, formulaMetric2, formulaOffset2) {
+export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, formulaOffset1, formulaOperation, formulaMetric2, formulaOffset2, configuration = {}) {
   const chartMetrics = ref([])
   const currentType = ref('')
 
   // Create formula parser instance
-  const formulaParser = computed(() => new FormulaParser(metrics))
+  const formulaParser = computed(() => new FormulaParser(metrics, configuration.timeHorizon || 61))
 
   const selectedMetric = computed(() => {
     if (!selectedMetricId.value || metrics.value.length === 0) return null
@@ -522,20 +522,10 @@ export function useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, 
   const getDetailedFormula = (metric) => {
     if (!metric || metric.type !== 'calculated') return ''
 
-    if (metric.id === 'totalCustomers') {
-      return 'Previous total + New customers per month'
-    } else if (metric.id === 'totalUnits') {
-      return 'Total customers × Units per customer per month'
-    } else if (metric.id === 'salesRevenue') {
-      return 'Total units sold × Price per unit'
-    } else if (metric.id === 'totalInflow') {
-      return 'Sales revenue + Other inflows per month'
-    } else if (metric.id === 'totalCogs') {
-      return 'Total units sold × COGS per unit'
-    } else if (metric.id === 'totalOutflow') {
-      return 'Total COGS + Fixed costs + Other outflows per month'
-    } else if (metric.id === 'cashBalance') {
-      return 'Previous balance + Total inflow - Total outflow'
+    // Check if this is a system metric with a configured description
+    const systemMetrics = configuration.systemMetrics || {}
+    if (systemMetrics[metric.id]) {
+      return systemMetrics[metric.id]
     }
 
     const parts = metric.formula.split(' ')

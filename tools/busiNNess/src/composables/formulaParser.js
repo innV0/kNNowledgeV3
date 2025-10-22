@@ -2,8 +2,9 @@
 // Supports advanced mathematical expressions with functions and operators
 
 export class FormulaParser {
-  constructor(metrics) {
+  constructor(metrics, timeHorizon = 61) {
     this.metrics = metrics
+    this.timeHorizon = timeHorizon
     this.functions = {
       // Statistical functions
       'SUM': this.sumFunction.bind(this),
@@ -315,11 +316,11 @@ export class FormulaParser {
     }
 
     const targetPeriod = periodIndex + ast.offset
-    if (targetPeriod < 0 || targetPeriod >= 61) {
+    if (targetPeriod < 0 || targetPeriod >= this.timeHorizon) {
       return 0 // Out of bounds, return 0
     }
 
-    const values = interpolateValues(metric)
+    const values = interpolateValues(metric, this.timeHorizon)
     return values[targetPeriod] || 0
   }
 
@@ -481,17 +482,17 @@ export class FormulaParser {
 }
 
 // Helper function to interpolate values (imported from useMetrics)
-function interpolateValues(metric) {
-  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(61).fill(0)
+function interpolateValues(metric, timeHorizon = 61) {
+  if (!metric || metric.type !== 'variable' || !metric.values) return new Array(timeHorizon).fill(0)
 
-  const result = new Array(61).fill(0)
+  const result = new Array(timeHorizon).fill(0)
   const knownPoints = []
 
   // Collect known values
   Object.entries(metric.values).forEach(([key, value]) => {
     const [year, month] = key.split('-').map(Number)
     const monthIndex = (year - 1) * 12 + (month - 1)
-    if (monthIndex >= 0 && monthIndex < 61) {
+    if (monthIndex >= 0 && monthIndex < timeHorizon) {
       knownPoints.push({ index: monthIndex, value: Number(value) })
     }
   })
@@ -535,7 +536,7 @@ function interpolateLinear(knownPoints, result) {
   }
 
   // Fill remaining gaps with nearest known value
-  for (let i = 0; i < 61; i++) {
+  for (let i = 0; i < timeHorizon; i++) {
     if (result[i] === 0 && knownPoints.length > 0) {
       // Find nearest known point
       const nearest = knownPoints.reduce((prev, curr) =>

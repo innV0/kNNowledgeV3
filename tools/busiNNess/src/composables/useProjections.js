@@ -1,12 +1,12 @@
 import { interpolateValues } from './useMetrics'
 import { FormulaParser } from './formulaParser.js'
 
-export function useProjections() {
+export function useProjections(configuration = {}) {
   const calculateProjections = (metrics) => {
     if (metrics.length === 0) return []
-    const months = 61
+    const months = configuration.timeHorizon || 61
     const data = {}
-    const hardcodedIds = ['totalUnits', 'salesRevenue', 'totalInflow', 'totalCogs', 'totalOutflow', 'cashBalance']
+    const systemMetricIds = Object.keys(configuration.systemMetrics || {})
 
     metrics.forEach(m => {
       data[m.id] = new Array(months).fill(0)
@@ -27,7 +27,7 @@ export function useProjections() {
 
     // Calculate custom calculated metrics at month 0
     metrics.forEach(m => {
-      if (m.type === 'calculated' && m.formula && !hardcodedIds.includes(m.id)) {
+      if (m.type === 'calculated' && m.formula && !systemMetricIds.includes(m.id)) {
         data[m.id][0] = evaluateFormula(m.formula, 0, data, metrics)
       }
     })
@@ -57,7 +57,7 @@ export function useProjections() {
 
       // Calculate custom calculated metrics
       metrics.forEach(m => {
-        if (m.type === 'calculated' && m.formula && !hardcodedIds.includes(m.id)) {
+        if (m.type === 'calculated' && m.formula && !systemMetricIds.includes(m.id)) {
           data[m.id][month] = evaluateFormula(m.formula, month, data, metrics)
         }
       })

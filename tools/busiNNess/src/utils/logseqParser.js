@@ -69,6 +69,11 @@ export class ProjectionsParser {
       viewMode: 'monthly',
       chartMetrics: []
     }
+    this.configuration = {
+      timeHorizon: 61,
+      timeUnit: 'months',
+      systemMetrics: {}
+    }
     this.currentMetric = null
     this.currentSubsection = null
     this.inMetricsSection = false
@@ -93,6 +98,7 @@ export class ProjectionsParser {
 
     return {
       metrics: this.metrics,
+      configuration: this.configuration,
       ...this.metadata
     }
   }
@@ -155,6 +161,17 @@ export class ProjectionsParser {
           return
         }
         break
+
+      case 'systemMetrics':
+        if (this.parseSystemMetricProperty(trimmed)) {
+          console.log('Parsed system metric property')
+          return
+        }
+        if (this.parseSubsectionHeader(trimmed)) {
+          console.log('Parsed subsection header from systemMetrics')
+          return
+        }
+        break
     }
 
     console.log('Line not parsed')
@@ -173,7 +190,9 @@ export class ProjectionsParser {
       },
       'tags': (value) => {
         // Tags are handled at document level, skip for now
-      }
+      },
+      'timeHorizon': (value) => { this.configuration.timeHorizon = parseInt(value) || 61 },
+      'timeUnit': (value) => { this.configuration.timeUnit = value || 'months' }
     }
 
     for (const [prop, setter] of Object.entries(metadataMappings)) {
@@ -315,6 +334,12 @@ export class ProjectionsParser {
       return true
     }
 
+    // Special handling for systemMetrics property - parse as object
+    if (prop === 'systemMetrics') {
+      this.parsingState = 'systemMetrics'
+      return true
+    }
+
     this.setMetricProperty(prop, fullValue)
     return true
   }
@@ -378,6 +403,34 @@ export class ProjectionsParser {
     }
 
     this.setFormatProperty(prop.trim(), value.join('::').trim())
+    return true
+  }
+
+  parseSystemMetricProperty(trimmed) {
+    if (!trimmed.includes('::')) return false
+
+    let prop, value
+    if (trimmed.startsWith('    ')) {
+      // 4-space indented format:     property:: value
+      [prop, ...value] = trimmed.substring(4).split('::')
+    } else if (trimmed.startsWith('  ')) {
+      // 2-space indented format:   property:: value
+      [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t    ')) {
+      // Tab-indented format: \t    property:: value
+      [prop, ...value] = trimmed.substring(5).split('::')
+    } else if (trimmed.startsWith('- ')) {
+      // Legacy format: - property:: value
+      [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tproperty:: value
+      [prop, ...value] = trimmed.substring(1).split('::')
+    } else {
+      // New format: property:: value
+      [prop, ...value] = trimmed.split('::')
+    }
+
+    this.configuration.systemMetrics[prop.trim()] = value.join('::').trim()
     return true
   }
 

@@ -316,6 +316,36 @@
               </div>
             </div>
 
+            <div v-if="artifactsData.empathyMap" class="bg-white rounded p-4 shadow">
+              <h3 class="text-lg font-bold mb-4">🧠 Empathy Map</h3>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="bg-blue-50 p-2 rounded border">
+                  <h4 class="font-bold mb-2 text-blue-800">Says</h4>
+                  <ul class="list-disc list-inside text-xs">
+                    <li v-for="item in artifactsData.empathyMap.says" :key="item">{{ item }}</li>
+                  </ul>
+                </div>
+                <div class="bg-purple-50 p-2 rounded border">
+                  <h4 class="font-bold mb-2 text-purple-800">Thinks</h4>
+                  <ul class="list-disc list-inside text-xs">
+                    <li v-for="item in artifactsData.empathyMap.thinks" :key="item">{{ item }}</li>
+                  </ul>
+                </div>
+                <div class="bg-green-50 p-2 rounded border">
+                  <h4 class="font-bold mb-2 text-green-800">Does</h4>
+                  <ul class="list-disc list-inside text-xs">
+                    <li v-for="item in artifactsData.empathyMap.does" :key="item">{{ item }}</li>
+                  </ul>
+                </div>
+                <div class="bg-orange-50 p-2 rounded border">
+                  <h4 class="font-bold mb-2 text-orange-800">Feels</h4>
+                  <ul class="list-disc list-inside text-xs">
+                    <li v-for="item in artifactsData.empathyMap.feels" :key="item">{{ item }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <div v-if="artifactsData.competitiveAnalysis" class="bg-white rounded p-4 shadow">
               <h3 class="text-lg font-bold mb-4">🆚 Competitive Analysis</h3>
               <div class="overflow-x-auto">
@@ -365,6 +395,7 @@
               :formula-offset2="formulaOffset2"
               :offset-options="offsetOptions"
               :chart-metrics="chartMetrics"
+              :configuration="configuration"
               :get-metric-value="getMetricValue"
               :set-metric-value="setMetricValue"
               @toggle-edit="editMode = !editMode"
@@ -425,9 +456,14 @@ const offsetOptions = Array.from({ length: 121 }, (_, i) => i - 60)
 const isFilterExpanded = ref(false)
 const exportFormat = ref('json')
 const sidebarCollapsed = ref(false)
+const configuration = ref({
+  timeHorizon: 61,
+  timeUnit: 'months',
+  systemMetrics: {}
+})
 
 // Composables
-const { calculateProjections } = useProjections()
+const { calculateProjections } = useProjections(configuration.value)
 const {
   chartMetrics,
   currentType,
@@ -447,13 +483,14 @@ const {
   getDetailedFormula,
   exportData,
   importData: originalImportData
-} = useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, formulaOffset1, formulaOperation, formulaMetric2, formulaOffset2)
+} = useMetrics(metrics, selectedMetricId, editMode, formulaMetric1, formulaOffset1, formulaOperation, formulaMetric2, formulaOffset2, configuration.value)
 
 // Computed
 const periods = computed(() => {
+  const horizon = configuration.value.timeHorizon || 61
   return viewMode.value === 'monthly'
-    ? Array.from({ length: 61 }, (_, i) => i)
-    : Array.from({ length: 5 }, (_, i) => i + 1)
+    ? Array.from({ length: horizon }, (_, i) => i)
+    : Array.from({ length: Math.ceil(horizon / 12) }, (_, i) => i + 1)
 })
 
 const projections = computed(() => {
@@ -622,6 +659,15 @@ const exportUnifiedDocument = () => {
 
   if (metrics.value.length > 0) {
     content += '\n\n- # Data\n\n'
+
+    // Add configuration
+    content += 'timeHorizon:: 61\n'
+    content += 'timeUnit:: months\n'
+    content += 'systemMetrics::\n'
+    Object.entries(configuration.value.systemMetrics).forEach(([key, value]) => {
+      content += `  ${key}:: ${value}\n`
+    })
+    content += '\n'
 
     // Add metadata (Logseq properties without asterisks)
     const allTags = [...new Set(metrics.value.flatMap(m => m.tags || []))]
@@ -933,8 +979,14 @@ const importData = (event) => {
           if (sections.projections && sections.projections.trim()) {
             console.log('About to parse projections section, length:', sections.projections.length)
             console.log('Projections content preview:', sections.projections.substring(0, 200))
-            parseProjectionsSection(sections.projections)
+            const result = parseProjectionsSection(sections.projections)
             console.log('After parsing, metrics count:', metrics.value.length)
+
+            // Update configuration from parsed data
+            if (result.configuration) {
+              configuration.value = result.configuration
+              console.log('Updated configuration:', configuration.value)
+            }
           } else {
             console.log('No projections section found or empty')
           }
@@ -988,6 +1040,10 @@ const parseArtifactsSection = (artifactsContent) => {
       currentArtifact = 'valuePropositionCanvas'
       artifacts.valuePropositionCanvas = { valueMap: {}, customerProfile: {} }
       console.log('Started Value Proposition Canvas')
+    } else if (trimmed === '## Empathy Map' || trimmed === '- ## Empathy Map') {
+      currentArtifact = 'empathyMap'
+      artifacts.empathyMap = {}
+      console.log('Started Empathy Map')
     } else if (trimmed === '## Competitive Analysis' || trimmed === '- ## Competitive Analysis') {
       currentArtifact = 'competitiveAnalysis'
       artifacts.competitiveAnalysis = { headers: [], rows: [] }
@@ -1028,6 +1084,11 @@ const parseArtifactsSection = (artifactsContent) => {
         else if (section.includes('weaknesses')) artifacts.swotAnalysis.weaknesses = []
         else if (section.includes('opportunities')) artifacts.swotAnalysis.opportunities = []
         else if (section.includes('threats')) artifacts.swotAnalysis.threats = []
+      } else if (currentArtifact === 'empathyMap') {
+        if (section.includes('says')) artifacts.empathyMap.says = []
+        else if (section.includes('thinks')) artifacts.empathyMap.thinks = []
+        else if (section.includes('does')) artifacts.empathyMap.does = []
+        else if (section.includes('feels')) artifacts.empathyMap.feels = []
       } else if (currentArtifact === 'valuePropositionCanvas') {
         if (section.includes('products')) {
           artifacts.valuePropositionCanvas.valueMap.productsAndServices = []
@@ -1111,6 +1172,16 @@ const parseArtifactsSection = (artifactsContent) => {
         } else if (currentSection === 'threats' && artifacts.swotAnalysis.threats) {
           artifacts.swotAnalysis.threats.push(item)
         }
+      } else if (currentArtifact === 'empathyMap') {
+        if (currentSection === 'says' && artifacts.empathyMap.says) {
+          artifacts.empathyMap.says.push(item)
+        } else if (currentSection === 'thinks' && artifacts.empathyMap.thinks) {
+          artifacts.empathyMap.thinks.push(item)
+        } else if (currentSection === 'does' && artifacts.empathyMap.does) {
+          artifacts.empathyMap.does.push(item)
+        } else if (currentSection === 'feels' && artifacts.empathyMap.feels) {
+          artifacts.empathyMap.feels.push(item)
+        }
       } else if (currentArtifact === 'valuePropositionCanvas') {
         if (currentSection === 'productsandservices' && artifacts.valuePropositionCanvas.valueMap.productsAndServices) {
           artifacts.valuePropositionCanvas.valueMap.productsAndServices.push(item)
@@ -1174,5 +1245,7 @@ const parseProjectionsSection = (projectionsContent) => {
 
   console.log('After parsing, metrics.value:', metrics.value)
   console.log('Final metrics count:', metrics.value.length)
+
+  return result
 }
 </script>

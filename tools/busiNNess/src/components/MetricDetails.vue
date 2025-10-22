@@ -481,18 +481,10 @@ const getGrowth = (metric, phase) => {
 const getDetailedFormula = (metric) => {
   if (!metric || metric.type !== 'calculated') return ''
 
-  if (metric.id === 'totalUnits') {
-    return 'Total customers × Units per customer per month'
-  } else if (metric.id === 'salesRevenue') {
-    return 'Total units sold × Price per unit'
-  } else if (metric.id === 'totalInflow') {
-    return 'Sales revenue + Other inflows per month'
-  } else if (metric.id === 'totalCogs') {
-    return 'Total units sold × COGS per unit'
-  } else if (metric.id === 'totalOutflow') {
-    return 'Total COGS + Fixed costs + Other outflows per month'
-  } else if (metric.id === 'cashBalance') {
-    return 'Previous balance + Total inflow - Total outflow'
+  // Check if this is a system metric with a configured description
+  const systemMetrics = props.configuration?.systemMetrics || {}
+  if (systemMetrics[metric.id]) {
+    return systemMetrics[metric.id]
   }
 
   const parts = metric.formula?.split(' ') || []
