@@ -953,6 +953,9 @@ const importData = (event) => {
 }
 
 const parseArtifactsSection = (artifactsContent) => {
+  console.log('Parsing artifacts section, content length:', artifactsContent.length)
+  console.log('Artifacts content preview:', artifactsContent.substring(0, 500))
+
   // Parse Logseq artifacts section into structured data
   const lines = artifactsContent.split('\n')
   const artifacts = {}
@@ -960,31 +963,42 @@ const parseArtifactsSection = (artifactsContent) => {
   let currentArtifact = null
   let currentSection = null
 
-  for (const line of lines) {
+  console.log('Total lines in artifacts:', lines.length)
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
     const trimmed = line.trim()
+
+    console.log(`Line ${i}: "${trimmed}" (artifact: ${currentArtifact}, section: ${currentSection})`)
 
     // Detect artifact sections (handle both bullet and header formats)
     if (trimmed === '## Business Model Canvas' || trimmed === '- ## Business Model Canvas') {
       currentArtifact = 'businessModelCanvas'
       artifacts.businessModelCanvas = {}
+      console.log('Started Business Model Canvas')
     } else if (trimmed === '## Lean Canvas' || trimmed === '- ## Lean Canvas') {
       currentArtifact = 'leanCanvas'
       artifacts.leanCanvas = {}
+      console.log('Started Lean Canvas')
     } else if (trimmed === '## SWOT Analysis' || trimmed === '- ## SWOT Analysis') {
       currentArtifact = 'swotAnalysis'
       artifacts.swotAnalysis = {}
+      console.log('Started SWOT Analysis')
     } else if (trimmed === '## Value Proposition Canvas' || trimmed === '- ## Value Proposition Canvas') {
       currentArtifact = 'valuePropositionCanvas'
       artifacts.valuePropositionCanvas = { valueMap: {}, customerProfile: {} }
+      console.log('Started Value Proposition Canvas')
     } else if (trimmed === '## Competitive Analysis' || trimmed === '- ## Competitive Analysis') {
       currentArtifact = 'competitiveAnalysis'
       artifacts.competitiveAnalysis = { headers: [], rows: [] }
+      console.log('Started Competitive Analysis')
     }
 
     // Parse sub-sections (handle both bullet and header formats, including deeper levels)
     else if (currentArtifact && (trimmed.startsWith('### ') || trimmed.startsWith('- ### ') || trimmed.startsWith('#### ') || trimmed.startsWith('- #### '))) {
       const section = trimmed.replace(/^(- )?(###|####) /, '').toLowerCase().replace(/[^a-z]/g, '')
       currentSection = section
+      console.log(`Started section: ${section}`)
 
       if (currentArtifact === 'businessModelCanvas') {
         if (section.includes('keypartners')) artifacts.businessModelCanvas.keyPartners = []
@@ -1000,7 +1014,10 @@ const parseArtifactsSection = (artifactsContent) => {
         if (section.includes('problem')) artifacts.leanCanvas.problem = []
         else if (section.includes('solution')) artifacts.leanCanvas.solution = []
         else if (section.includes('keymetrics')) artifacts.leanCanvas.keyMetrics = []
-        else if (section.includes('uniquevalueproposition')) currentSection = 'uniqueValueProposition'
+        else if (section.includes('uniquevalueproposition')) {
+          currentSection = 'uniquevalueproposition'
+          console.log('Set currentSection to uniquevalueproposition')
+        }
         else if (section.includes('unfairadvantage')) artifacts.leanCanvas.unfairAdvantage = []
         else if (section.includes('channels')) artifacts.leanCanvas.channels = []
         else if (section.includes('customersegments')) artifacts.leanCanvas.customerSegments = []
@@ -1012,18 +1029,37 @@ const parseArtifactsSection = (artifactsContent) => {
         else if (section.includes('opportunities')) artifacts.swotAnalysis.opportunities = []
         else if (section.includes('threats')) artifacts.swotAnalysis.threats = []
       } else if (currentArtifact === 'valuePropositionCanvas') {
-        if (section.includes('products')) artifacts.valuePropositionCanvas.valueMap.productsAndServices = []
-        else if (section.includes('painrelievers')) artifacts.valuePropositionCanvas.valueMap.painRelievers = []
-        else if (section.includes('gaincreators')) artifacts.valuePropositionCanvas.valueMap.gainCreators = []
-        else if (section.includes('customerjobs')) artifacts.valuePropositionCanvas.customerProfile.customerJobs = []
-        else if (section.includes('customerpains')) artifacts.valuePropositionCanvas.customerProfile.customerPains = []
-        else if (section.includes('customergains')) artifacts.valuePropositionCanvas.customerProfile.customerGains = []
+        if (section.includes('products')) {
+          artifacts.valuePropositionCanvas.valueMap.productsAndServices = []
+          currentSection = 'productsandservices'
+        }
+        else if (section.includes('painrelievers')) {
+          artifacts.valuePropositionCanvas.valueMap.painRelievers = []
+          currentSection = 'painrelievers'
+        }
+        else if (section.includes('gaincreators')) {
+          artifacts.valuePropositionCanvas.valueMap.gainCreators = []
+          currentSection = 'gaincreators'
+        }
+        else if (section.includes('customerjobs')) {
+          artifacts.valuePropositionCanvas.customerProfile.customerJobs = []
+          currentSection = 'customerjobs'
+        }
+        else if (section.includes('customerpains')) {
+          artifacts.valuePropositionCanvas.customerProfile.customerPains = []
+          currentSection = 'customerpains'
+        }
+        else if (section.includes('customergains')) {
+          artifacts.valuePropositionCanvas.customerProfile.customerGains = []
+          currentSection = 'customergains'
+        }
       }
     }
 
     // Parse list items
     else if (currentArtifact && trimmed.startsWith('- ')) {
       const item = trimmed.substring(2)
+      console.log(`Adding item to ${currentArtifact}.${currentSection}: "${item}"`)
 
       if (currentArtifact === 'businessModelCanvas') {
         if (currentSection === 'keypartners' && artifacts.businessModelCanvas.keyPartners) {
@@ -1091,8 +1127,21 @@ const parseArtifactsSection = (artifactsContent) => {
         }
       }
     }
+
+    // Handle competitive analysis table parsing (separate from list items)
+    else if (currentArtifact === 'competitiveAnalysis' && trimmed.startsWith('|') && trimmed.includes('|')) {
+      const cells = trimmed.split('|').map(cell => cell.trim()).filter(cell => cell.length > 0)
+      if (cells.length > 1) {
+        if (!artifacts.competitiveAnalysis.headers.length) {
+          artifacts.competitiveAnalysis.headers = cells
+        } else if (!cells.every(cell => cell.match(/^[-]+$/))) {
+          artifacts.competitiveAnalysis.rows.push({ feature: cells[0], values: cells.slice(1) })
+        }
+      }
+    }
   }
 
+  console.log('Final parsed artifacts:', artifacts)
   return artifacts
 }
 

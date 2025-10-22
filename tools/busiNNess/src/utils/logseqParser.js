@@ -40,13 +40,16 @@ export class LogseqParser {
         trimmed === '- # Projections' || trimmed === '- # Data') {
       this.currentSection = 'projections'
       console.log('Detected projections section:', trimmed)
+      return // Don't add section header to content
     } else if (trimmed === '# Artifacts' || trimmed === '- # Artifacts') {
       this.currentSection = 'artifacts'
       console.log('Detected artifacts section:', trimmed)
+      return // Don't add section header to content
     } else if (trimmed === '# Model' || trimmed === '# Document' ||
                trimmed === '- # Model' || trimmed === '- # Document') {
       this.currentSection = 'document'
       console.log('Detected document section:', trimmed)
+      return // Don't add section header to content
     }
 
     // Add line to current section
