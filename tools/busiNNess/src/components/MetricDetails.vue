@@ -5,23 +5,23 @@
       <div class="flex gap-1">
         <button @click="moveMetricUp" v-if="selectedMetric && canMoveUp"
                 class="p-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-xs">
-          <i class="fas fa-arrow-up"></i>
+          <ChevronUp class="h-3 w-3" />
         </button>
         <button @click="moveMetricDown" v-if="selectedMetric && canMoveDown"
                 class="p-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-xs">
-          <i class="fas fa-arrow-down"></i>
+          <ChevronDown class="h-3 w-3" />
         </button>
         <button @click="$emit('toggle-chart')"
                 :class="{ 'p-1.5 rounded border text-xs': true, 'bg-blue-600 text-white border-blue-600': selectedMetric && chartMetrics.includes(selectedMetric.id), 'border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800': !(selectedMetric && chartMetrics.includes(selectedMetric.id)) }">
-          <i class="fas fa-chart-line"></i>
+          <BarChart3 class="h-3 w-3" />
         </button>
         <button @click="$emit('toggle-edit')"
                 class="px-2 py-1 bg-blue-600 text-white rounded text-xs border border-blue-600">
-          <i class="fas fa-pencil-alt mr-1"></i> {{ editMode ? 'Save' : 'Edit' }}
+          <Pencil class="inline h-3 w-3 mr-1" /> {{ editMode ? 'Save' : 'Edit' }}
         </button>
         <button v-if="selectedMetric" @click="deleteMetric"
                 class="p-1.5 rounded border border-red-500 text-red-500 text-xs hover:bg-red-50">
-          <i class="fas fa-trash"></i>
+          <Trash2 class="h-3 w-3" />
         </button>
       </div>
     </div>
@@ -34,7 +34,12 @@
                class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm font-semibold">
       </div>
       <div v-else-if="selectedMetric" class="mb-2">
-        <h3 class="text-base font-semibold">{{ selectedMetric.name }}</h3>
+        <div class="flex items-center gap-2">
+          <h3 class="text-base font-semibold">{{ selectedMetric.name }}</h3>
+          <span v-if="selectedMetric.slug" class="text-xs text-gray-500">
+            ({{ selectedMetric.slug }})
+          </span>
+        </div>
       </div>
 
       <!-- Description -->
@@ -387,6 +392,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { ChevronUp, ChevronDown, BarChart3, Pencil, Trash2 } from 'lucide-vue-next'
 import FormulaInput from './FormulaInput.vue'
 
 const props = defineProps({

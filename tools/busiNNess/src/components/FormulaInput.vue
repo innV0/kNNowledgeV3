@@ -39,15 +39,15 @@
     <!-- Validation Status -->
     <div class="flex items-center gap-2 text-sm">
       <span v-if="validation.valid" class="text-green-600">
-        <i class="fas fa-check-circle mr-1"></i>
+        <CheckCircle class="inline h-4 w-4 mr-1" />
         Valid formula
       </span>
       <span v-else-if="validation.error" class="text-red-600">
-        <i class="fas fa-exclamation-triangle mr-1"></i>
+        <AlertTriangle class="inline h-4 w-4 mr-1" />
         {{ validation.error }}
       </span>
       <span v-else class="text-gray-500">
-        <i class="fas fa-clock mr-1"></i>
+        <Clock class="inline h-4 w-4 mr-1" />
         Checking...
       </span>
     </div>
@@ -72,6 +72,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { CheckCircle, AlertTriangle, Clock } from 'lucide-vue-next'
 import { FormulaParser } from '../composables/formulaParser.js'
 
 const props = defineProps({

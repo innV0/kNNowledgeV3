@@ -5,15 +5,15 @@
       <div class="flex">
         <button @click="activeTab = 'document'"
                 :class="{ 'px-4 py-2 text-sm font-medium border-b-2': true, 'border-blue-500 text-blue-600': activeTab === 'document', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'document' }">
-          📄 Document
-        </button>
-        <button @click="activeTab = 'projections'"
-                :class="{ 'px-4 py-2 text-sm font-medium border-b-2': true, 'border-blue-500 text-blue-600': activeTab === 'projections', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'projections' }">
-          📊 Projections
+          <FileText class="inline h-4 w-4 mr-1" /> Document
         </button>
         <button @click="activeTab = 'artifacts'"
                 :class="{ 'px-4 py-2 text-sm font-medium border-b-2': true, 'border-blue-500 text-blue-600': activeTab === 'artifacts', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'artifacts' }">
-          🎨 Artifacts
+          <Palette class="inline h-4 w-4 mr-1" /> Artifacts
+        </button>
+        <button @click="activeTab = 'projections'"
+                :class="{ 'px-4 py-2 text-sm font-medium border-b-2': true, 'border-blue-500 text-blue-600': activeTab === 'projections', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'projections' }">
+          <TrendingUp class="inline h-4 w-4 mr-1" /> Data
         </button>
       </div>
       <div v-if="hasAnyData" class="flex items-center gap-2">
@@ -48,7 +48,32 @@
 
           <!-- Document Content -->
           <div v-if="documentContent" class="bg-white rounded p-4 shadow">
-            <div v-html="renderMarkdown(documentContent)" class="prose prose-sm max-w-none"></div>
+            <!-- View Mode Toggle -->
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold">Document Content</h3>
+              <div class="flex gap-2">
+                <button
+                  @click="documentViewMode = 'markdown'"
+                  :class="{ 'px-3 py-1.5 rounded text-xs': true, 'bg-blue-600 text-white': documentViewMode === 'markdown', 'bg-gray-200 text-gray-700': documentViewMode !== 'markdown' }"
+                >
+                  Markdown View
+                </button>
+                <button
+                  @click="documentViewMode = 'tree'"
+                  :class="{ 'px-3 py-1.5 rounded text-xs': true, 'bg-blue-600 text-white': documentViewMode === 'tree', 'bg-gray-200 text-gray-700': documentViewMode !== 'tree' }"
+                >
+                  Tree View
+                </button>
+              </div>
+            </div>
+
+            <!-- Markdown View -->
+            <div v-if="documentViewMode === 'markdown'" v-html="renderMarkdown(documentContent)" class="prose prose-sm max-w-none"></div>
+
+            <!-- Tree View -->
+            <div v-else>
+              <LogseqTree :content="documentContent" />
+            </div>
           </div>
         </div>
 
@@ -66,15 +91,15 @@
             </button>
             <button @click="toggleTableFilter"
                     :class="{ 'px-3 py-1.5 rounded text-xs': true, 'bg-gray-600 text-white hover:bg-gray-700': !isFilterExpanded, 'bg-gray-800 text-white': isFilterExpanded }">
-              <i class="fas fa-filter mr-1"></i>
+              <Filter class="inline h-3 w-3 mr-1" />
               Filters
             </button>
           </div>
 
           <!-- Welcome message -->
           <div v-if="metrics.length === 0" class="bg-white rounded p-4 shadow mb-3">
-            <h2 class="text-lg mb-2">Financial Projections</h2>
-            <p class="text-sm">Import a Logseq file with projections data or switch to the Document tab to import a complete business model file.</p>
+            <h2 class="text-lg mb-2">Data & Metrics</h2>
+            <p class="text-sm">Import a Logseq file with data and metrics or switch to the Document tab to import a complete business model file.</p>
           </div>
 
           <!-- Chart -->
@@ -103,8 +128,8 @@
           <!-- Dismissible Canva Templates Note -->
           <div v-if="!dismissedCanvaNote" class="bg-blue-50 border border-blue-200 rounded p-4 mb-4 relative">
             <button @click="dismissedCanvaNote = true"
-                    class="absolute top-2 right-2 text-blue-500 hover:text-blue-700 text-lg">
-              ×
+                    class="absolute top-2 right-2 text-blue-500 hover:text-blue-700">
+              <X class="h-4 w-4" />
             </button>
             <p class="text-blue-800 pr-6">
               This page shows the most common, most used artifacts in a fairly neutral format. If you need to give it a more visually attractive look, you can use the <a href="https://www.canva.com/templates/" target="_blank" class="underline hover:text-blue-600">Canva templates</a>.
@@ -120,7 +145,7 @@
           <!-- Artifacts Content -->
           <div v-if="artifactsData" class="space-y-4">
             <div v-if="artifactsData.businessModelCanvas" class="bg-white rounded p-4 shadow">
-              <h3 class="text-lg font-bold mb-4">🎨 Business Model Canvas</h3>
+              <h3 class="text-lg font-bold mb-4"><Building2 class="inline h-5 w-5 mr-2" /> Business Model Canvas</h3>
               <div class="grid grid-cols-5 gap-4 text-sm">
                 <div class="col-span-1 bg-gray-50 p-2 rounded border">
                   <h4 class="font-bold mb-2">Key Partners</h4>
@@ -186,7 +211,7 @@
             </div>
 
             <div v-if="artifactsData.leanCanvas" class="bg-white rounded p-4 shadow">
-              <h3 class="text-lg font-bold mb-4">🚀 Lean Canvas</h3>
+              <h3 class="text-lg font-bold mb-4"><Rocket class="inline h-5 w-5 mr-2" /> Lean Canvas</h3>
               <div class="grid grid-cols-5 gap-4 text-sm">
                 <div class="col-span-1 bg-gray-50 p-2 rounded border">
                   <h4 class="font-bold mb-2">Problem</h4>
@@ -250,7 +275,7 @@
             </div>
 
             <div v-if="artifactsData.swotAnalysis" class="bg-white rounded p-4 shadow">
-              <h3 class="text-lg font-bold mb-4">📊 SWOT Analysis</h3>
+              <h3 class="text-lg font-bold mb-4"><BarChart3 class="inline h-5 w-5 mr-2" /> SWOT Analysis</h3>
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div class="bg-green-50 p-2 rounded border">
                   <h4 class="font-bold mb-2 text-green-800">Strengths</h4>
@@ -280,7 +305,7 @@
             </div>
 
             <div v-if="artifactsData.valuePropositionCanvas" class="bg-white rounded p-4 shadow">
-              <h3 class="text-lg font-bold mb-4">💡 Value Proposition Canvas</h3>
+              <h3 class="text-lg font-bold mb-4"><Lightbulb class="inline h-5 w-5 mr-2" /> Value Proposition Canvas</h3>
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div class="space-y-4">
                   <h4 class="font-bold">Value Map</h4>
@@ -328,7 +353,7 @@
             </div>
 
             <div v-if="artifactsData.empathyMap" class="bg-white rounded p-4 shadow">
-              <h3 class="text-lg font-bold mb-4">🧠 Empathy Map</h3>
+              <h3 class="text-lg font-bold mb-4"><Brain class="inline h-5 w-5 mr-2" /> Empathy Map</h3>
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div class="bg-blue-50 p-2 rounded border">
                   <h4 class="font-bold mb-2 text-blue-800">Says</h4>
@@ -358,7 +383,7 @@
             </div>
 
             <div v-if="artifactsData.competitiveAnalysis" class="bg-white rounded p-4 shadow">
-              <h3 class="text-lg font-bold mb-4">🆚 Competitive Analysis</h3>
+              <h3 class="text-lg font-bold mb-4"><Trophy class="inline h-5 w-5 mr-2" /> Competitive Analysis</h3>
               <div class="overflow-x-auto">
                 <table class="min-w-full table-auto text-sm">
                   <thead class="bg-gray-50">
@@ -387,10 +412,10 @@
            :style="{ width: sidebarCollapsed ? '40px' : '33.333%' }">
         <div v-if="!sidebarCollapsed" class="w-full h-full flex flex-col">
           <div class="flex justify-between items-center p-3 border-b border-gray-200 flex-shrink-0">
-            <h2 class="text-lg font-semibold">Metric Details</h2>
+            <h2 class="text-lg font-semibold">Data Details</h2>
             <button @click="sidebarCollapsed = true"
                     class="p-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-xs">
-              <i class="fas fa-times"></i>
+              <X class="h-3 w-3" />
             </button>
           </div>
           <div class="flex-1 overflow-y-auto p-3">
@@ -423,7 +448,7 @@
         <div v-else class="w-full h-full flex items-center justify-center">
           <button @click="sidebarCollapsed = false"
                   class="p-2 bg-white border border-gray-200 rounded-l shadow hover:bg-gray-50 transform rotate-180">
-            <i class="fas fa-chevron-left"></i>
+            <ChevronLeft class="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -434,9 +459,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, LineController, Title, Tooltip, Legend } from 'chart.js'
+import { FileText, TrendingUp, Palette, Building2, Rocket, BarChart3, Lightbulb, Brain, Trophy, Filter, X, ChevronLeft } from 'lucide-vue-next'
 import MetricTable from './components/MetricTable.vue'
 import MetricDetails from './components/MetricDetails.vue'
 import ChartView from './components/ChartView.vue'
+import LogseqTree from './components/LogseqTree.vue'
 import { useMetrics } from './composables/useMetrics'
 import { useProjections } from './composables/useProjections'
 import { LogseqParser, ProjectionsParser, LegacyProjectionsParser } from './utils/logseqParser.js'
@@ -448,6 +475,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, LineCont
 const metrics = ref([])
 const activeTab = ref('document')
 const documentContent = ref('')
+const documentViewMode = ref('tree') // Default to tree view
 const artifactsData = ref(null)
 
 // Computed
@@ -640,6 +668,8 @@ const handleFilterToggle = (expanded) => {
   isFilterExpanded.value = expanded
 }
 
+// Document content update removed for read-only mode
+
 // Unified document functions
 const parseLogseqDocument = (content) => {
   const parser = new LogseqParser()
@@ -669,6 +699,9 @@ const renderMarkdown = (markdown) => {
 const exportUnifiedDocument = () => {
   let content = documentContent.value || ''
 
+  // If we're in tree view, the content is already updated via the tree component
+  // If we're in markdown view, use the current documentContent
+
   if (metrics.value.length > 0) {
     content += '\n\n- # Data\n\n'
 
@@ -690,7 +723,7 @@ const exportUnifiedDocument = () => {
     content += `viewMode:: ${viewMode.value}\n`
     content += `chartMetrics:: ${JSON.stringify(chartMetrics.value)}\n\n`
 
-    content += '## Business Metrics (Metrics Array)\n\n'
+    content += '## Data & Metrics\n\n'
 
     metrics.value.forEach((metric, index) => {
       // Metric header with bullet point
