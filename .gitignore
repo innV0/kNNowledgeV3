@@ -1,8 +1,105 @@
-<<<<<<< Updated upstream
-=======
-tools/projections/node_modules/.bin/browserslist
->>>>>>> Stashed changes
-/tools/projections/node_modules
-/tools/artifacts/_archive
-/tools/modeliNNg/node_modules
-/tools/busiNNess/node_modules
+###############################################################################
+# 🌳 GLOBAL .GITIGNORE FOR NODE.JS MONOREPO
+# Ignore build artifacts, dependencies, logs, temporary files,
+# and project-specific folders (e.g., innV0 / kNNowledgeV3)
+###############################################################################
+
+############################
+# 🧠 NODE.JS AND DEPENDENCIES
+############################
+
+# Ignore all node_modules at any level
+**/node_modules/
+
+# Optional: lock files (uncomment if you don't want to commit them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Cache and tool folders
+**/.npm
+**/.pnp
+**/.pnp.js
+**/.turbo
+**/.parcel-cache
+**/.eslintcache
+**/.vite
+
+############################
+# ⚙️ BUILD OUTPUTS
+############################
+
+# Common build directories
+**/dist/
+**/build/
+**/out/
+**/.next/
+**/.nuxt/
+**/.cache/
+**/.vercel/
+**/.netlify/
+**/.tmp/
+
+############################
+# 🧾 LOGS AND TEMP FILES
+############################
+
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+############################
+# 💻 OS AND SYSTEM FILES
+############################
+
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+############################
+# 🧰 INTERNAL PROJECT FOLDERS
+############################
+
+# Temporary or archived folders
+/tools/artifacts/_archive/
+
+# Accidental Windows copies
+#/tools/busiNNess - Copy/
+
+############################
+# 🔒 PROJECT-SPECIFIC RULES
+############################
+
+# Ignore only the Private folder inside models
+/tools/busiNNess/models/Private/
+
+# Explicitly track the Public folder inside models
+!/tools/busiNNess/models/Public/
+!/tools/busiNNess/models/Public/**
+
+############################
+# 🧪 OPTIONAL FILES
+############################
+
+# Environment files
+**/.env
+**/.env.*
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+###############################################################################
+# ✨ END OF FILE
+###############################################################################
+/tools/busiNNess - Copy

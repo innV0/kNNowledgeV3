@@ -40,13 +40,16 @@ export class LogseqParser {
         trimmed === '- # Projections' || trimmed === '- # Data') {
       this.currentSection = 'projections'
       console.log('Detected projections section:', trimmed)
+      return // Don't add section header to content
     } else if (trimmed === '# Artifacts' || trimmed === '- # Artifacts') {
       this.currentSection = 'artifacts'
       console.log('Detected artifacts section:', trimmed)
+      return // Don't add section header to content
     } else if (trimmed === '# Model' || trimmed === '# Document' ||
                trimmed === '- # Model' || trimmed === '- # Document') {
       this.currentSection = 'document'
       console.log('Detected document section:', trimmed)
+      return // Don't add section header to content
     }
 
     // Add line to current section
@@ -65,6 +68,11 @@ export class ProjectionsParser {
       selectedMetricId: null,
       viewMode: 'monthly',
       chartMetrics: []
+    }
+    this.configuration = {
+      timeHorizon: 61,
+      timeUnit: 'months',
+      systemMetrics: {}
     }
     this.currentMetric = null
     this.currentSubsection = null
@@ -90,6 +98,7 @@ export class ProjectionsParser {
 
     return {
       metrics: this.metrics,
+      configuration: this.configuration,
       ...this.metadata
     }
   }
@@ -152,6 +161,17 @@ export class ProjectionsParser {
           return
         }
         break
+
+      case 'systemMetrics':
+        if (this.parseSystemMetricProperty(trimmed)) {
+          console.log('Parsed system metric property')
+          return
+        }
+        if (this.parseSubsectionHeader(trimmed)) {
+          console.log('Parsed subsection header from systemMetrics')
+          return
+        }
+        break
     }
 
     console.log('Line not parsed')
@@ -170,7 +190,9 @@ export class ProjectionsParser {
       },
       'tags': (value) => {
         // Tags are handled at document level, skip for now
-      }
+      },
+      'timeHorizon': (value) => { this.configuration.timeHorizon = parseInt(value) || 61 },
+      'timeUnit': (value) => { this.configuration.timeUnit = value || 'months' }
     }
 
     for (const [prop, setter] of Object.entries(metadataMappings)) {
@@ -191,7 +213,8 @@ export class ProjectionsParser {
             trimmed === '- ## Metrics' ||
             trimmed === '- [[☎️ Paranormal Hotline Calls/Month]]' ||
             trimmed.startsWith('- [[') && trimmed.includes(']]') ||
-            trimmed === '- [[📢 Publicity Events & Appearances/Month]]'
+            trimmed === '- [[📢 Publicity Events & Appearances/Month]]' ||
+            trimmed === '### [[☎️ Paranormal Hotline Calls/Month]]'
   }
 
   parseMetricHeader(trimmed) {
@@ -216,8 +239,15 @@ export class ProjectionsParser {
       this.parsingState = 'metrics'
       return true
     }
+    // Tab-prefixed metric header (\t- [[Name]])
+    if (trimmed.startsWith('\t- [[') && trimmed.includes(']]')) {
+      this.finalizeCurrentMetric()
+      this.startNewMetric(trimmed.replace('\t- ', '### '))
+      this.parsingState = 'metrics'
+      return true
+    }
     // Direct metric header without prefix ([[Name]])
-    if (trimmed.startsWith('[[') && trimmed.includes(']]') && !trimmed.startsWith('- ') && !trimmed.startsWith('* ')) {
+    if (trimmed.startsWith('[[') && trimmed.includes(']]') && !trimmed.startsWith('- ') && !trimmed.startsWith('* ') && !trimmed.startsWith('\t- ')) {
       this.finalizeCurrentMetric()
       this.startNewMetric('### ' + trimmed)
       this.parsingState = 'metrics'
@@ -281,6 +311,9 @@ export class ProjectionsParser {
     } else if (trimmed.startsWith('  ')) {
       // Indented format:   property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tproperty:: value
+      [prop, ...value] = trimmed.substring(1).split('::')
     } else {
       // New format: property:: value
       [prop, ...value] = trimmed.split('::')
@@ -301,6 +334,12 @@ export class ProjectionsParser {
       return true
     }
 
+    // Special handling for systemMetrics property - parse as object
+    if (prop === 'systemMetrics') {
+      this.parsingState = 'systemMetrics'
+      return true
+    }
+
     this.setMetricProperty(prop, fullValue)
     return true
   }
@@ -315,12 +354,18 @@ export class ProjectionsParser {
     } else if (trimmed.startsWith('  - ')) {
       // 2-space indented format:   - key:: value
       [key, ...value] = trimmed.substring(4).split('::')
+    } else if (trimmed.startsWith('\t\t- ')) {
+      // Tab-indented format: \t\t- key:: value
+      [key, ...value] = trimmed.substring(3).split('::')
     } else if (trimmed.startsWith('- ')) {
       // Legacy format: - key:: value
       [key, ...value] = trimmed.substring(2).split('::')
     } else if (trimmed.startsWith('  ')) {
       // Indented format:   key:: value
       [key, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tkey:: value
+      [key, ...value] = trimmed.substring(1).split('::')
     } else {
       // New format: key:: value
       [key, ...value] = trimmed.split('::')
@@ -343,15 +388,49 @@ export class ProjectionsParser {
     } else if (trimmed.startsWith('  ')) {
       // 2-space indented format:   property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t    ')) {
+      // Tab-indented format: \t    property:: value
+      [prop, ...value] = trimmed.substring(5).split('::')
     } else if (trimmed.startsWith('- ')) {
       // Legacy format: - property:: value
       [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tproperty:: value
+      [prop, ...value] = trimmed.substring(1).split('::')
     } else {
       // New format: property:: value
       [prop, ...value] = trimmed.split('::')
     }
 
     this.setFormatProperty(prop.trim(), value.join('::').trim())
+    return true
+  }
+
+  parseSystemMetricProperty(trimmed) {
+    if (!trimmed.includes('::')) return false
+
+    let prop, value
+    if (trimmed.startsWith('    ')) {
+      // 4-space indented format:     property:: value
+      [prop, ...value] = trimmed.substring(4).split('::')
+    } else if (trimmed.startsWith('  ')) {
+      // 2-space indented format:   property:: value
+      [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t    ')) {
+      // Tab-indented format: \t    property:: value
+      [prop, ...value] = trimmed.substring(5).split('::')
+    } else if (trimmed.startsWith('- ')) {
+      // Legacy format: - property:: value
+      [prop, ...value] = trimmed.substring(2).split('::')
+    } else if (trimmed.startsWith('\t')) {
+      // Tab-indented format: \tproperty:: value
+      [prop, ...value] = trimmed.substring(1).split('::')
+    } else {
+      // New format: property:: value
+      [prop, ...value] = trimmed.split('::')
+    }
+
+    this.configuration.systemMetrics[prop.trim()] = value.join('::').trim()
     return true
   }
 

@@ -36,9 +36,6 @@
             <th class="px-2 py-1.5 text-left font-semibold bg-gray-50 border-b border-gray-200 h-6 align-middle sticky w-64">
               Metric
             </th>
-            <th class="px-2 py-1.5 text-left font-semibold bg-gray-50 border-b border-gray-200 h-6 align-middle w-40">
-              Tags
-            </th>
             <th
               v-for="period in periods"
               :key="period"
@@ -62,23 +59,22 @@
           >
             <td class="px-2 py-1 border-b border-gray-200 h-6 align-middle sticky bg-inherit w-64">
               <div class="truncate">
-                {{ projections[metrics.indexOf(metric)]?.name }}
-                <span v-if="metric.unit && metric.unit !== '$'" class="text-gray-600 text-xs ml-1">
-                  ({{ metric.unit }})
-                </span>
-              </div>
-            </td>
-            <td class="px-2 py-1 border-b border-gray-200 h-6 align-middle w-40">
-              <div class="flex flex-wrap gap-0.5">
-                <span
-                  v-for="tag in metric.tags.slice(0, 3)"
-                  :key="tag"
-                  class="inline-flex items-center px-1 py-0.5 rounded text-xs bg-blue-100 text-blue-800"
-                >
-                  {{ tag }}
-                </span>
-                <span v-if="metric.tags.length > 3" class="text-gray-400 text-xs">+{{ metric.tags.length - 3 }}</span>
-                <span v-if="metric.tags.length === 0" class="text-gray-400 text-xs">-</span>
+                <div class="flex items-center gap-1">
+                  <span>{{ projections[metrics.indexOf(metric)]?.name }}</span>
+                  <span v-if="metric.unit && metric.unit !== '$'" class="text-gray-600 text-xs">
+                    ({{ metric.unit }})
+                  </span>
+                </div>
+                <div v-if="metric.tags && metric.tags.length > 0" class="flex flex-wrap gap-0.5 mt-0.5">
+                  <span
+                    v-for="tag in metric.tags.slice(0, 3)"
+                    :key="tag"
+                    class="inline-flex items-center px-1 py-0.5 rounded text-xs bg-blue-100 text-blue-800"
+                  >
+                    {{ tag }}
+                  </span>
+                  <span v-if="metric.tags.length > 3" class="text-gray-400 text-xs">+{{ metric.tags.length - 3 }}</span>
+                </div>
               </div>
             </td>
             <td
