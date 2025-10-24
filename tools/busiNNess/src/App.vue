@@ -1068,28 +1068,28 @@ const parseArtifactsSection = (artifactsContent) => {
 
     console.log(`Line ${i}: "${trimmed}" (artifact: ${currentArtifact}, section: ${currentSection})`)
 
-    // Detect artifact sections (handle both bullet and header formats)
-    if (trimmed === '## Business Model Canvas' || trimmed === '- ## Business Model Canvas') {
+    // Detect artifact sections (handle both bullet and header formats, including tags)
+    if (trimmed.startsWith('## Business Model Canvas') || trimmed.startsWith('- ## Business Model Canvas')) {
       currentArtifact = 'businessModelCanvas'
       artifacts.businessModelCanvas = {}
       console.log('Started Business Model Canvas')
-    } else if (trimmed === '## Lean Canvas' || trimmed === '- ## Lean Canvas') {
+    } else if (trimmed.startsWith('## Lean Canvas') || trimmed.startsWith('- ## Lean Canvas')) {
       currentArtifact = 'leanCanvas'
       artifacts.leanCanvas = {}
       console.log('Started Lean Canvas')
-    } else if (trimmed === '## SWOT Analysis' || trimmed === '- ## SWOT Analysis') {
+    } else if (trimmed.startsWith('## SWOT Analysis') || trimmed.startsWith('- ## SWOT Analysis')) {
       currentArtifact = 'swotAnalysis'
       artifacts.swotAnalysis = {}
       console.log('Started SWOT Analysis')
-    } else if (trimmed === '## Value Proposition Canvas' || trimmed === '- ## Value Proposition Canvas') {
+    } else if (trimmed.startsWith('## Value Proposition Canvas') || trimmed.startsWith('- ## Value Proposition Canvas')) {
       currentArtifact = 'valuePropositionCanvas'
       artifacts.valuePropositionCanvas = { valueMap: {}, customerProfile: {} }
       console.log('Started Value Proposition Canvas')
-    } else if (trimmed === '## Empathy Map' || trimmed === '- ## Empathy Map') {
+    } else if (trimmed.startsWith('## Empathy Map') || trimmed.startsWith('- ## Empathy Map')) {
       currentArtifact = 'empathyMap'
       artifacts.empathyMap = {}
       console.log('Started Empathy Map')
-    } else if (trimmed === '## Competitive Analysis' || trimmed === '- ## Competitive Analysis') {
+    } else if (trimmed.startsWith('## Competitive Analysis') || trimmed.startsWith('- ## Competitive Analysis')) {
       currentArtifact = 'competitiveAnalysis'
       artifacts.competitiveAnalysis = { headers: [], rows: [] }
       console.log('Started Competitive Analysis')
